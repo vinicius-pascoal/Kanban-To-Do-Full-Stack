@@ -114,6 +114,86 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
       count,
     }));
 
+    // Produtividade dos membros
+    const allCardsWithAssigned = await prisma.card.findMany({
+      include: { assignedTo: true, column: true },
+    });
+
+    const memberProductivity: Record<string, {
+      name: string;
+      cardsCreated: number;
+      cardsCompleted: number;
+      cardsInProgress: number;
+      averageTimeToComplete: number;
+    }> = {};
+
+    // Contar cards por membro
+    allCardsWithAssigned.forEach((card) => {
+      if (card.assignedToId) {
+        const memberId = card.assignedToId;
+        if (!memberProductivity[memberId]) {
+          memberProductivity[memberId] = {
+            name: card.assignedTo?.name || 'Desconhecido',
+            cardsCreated: 0,
+            cardsCompleted: 0,
+            cardsInProgress: 0,
+            averageTimeToComplete: 0,
+          };
+        }
+
+        if (card.column.name === 'Concluído') {
+          memberProductivity[memberId].cardsCompleted += 1;
+        } else if (card.column.name === 'Em Progresso') {
+          memberProductivity[memberId].cardsInProgress += 1;
+        }
+
+        memberProductivity[memberId].cardsCreated += 1;
+      }
+    });
+
+    // Calcular tempo médio para completar por membro
+    const cardsByMember: Record<string, any[]> = {};
+    allCardsWithAssigned.forEach((card) => {
+      if (card.assignedToId) {
+        if (!cardsByMember[card.assignedToId]) {
+          cardsByMember[card.assignedToId] = [];
+        }
+        cardsByMember[card.assignedToId].push(card);
+      }
+    });
+
+    Object.entries(cardsByMember).forEach(([memberId, cards]) => {
+      const completedCards = cards.filter((c) => c.column.name === 'Concluído');
+      if (completedCards.length > 0 && memberProductivity[memberId]) {
+        const historyForMember = history.filter((h) =>
+          completedCards.some((c) => c.id === h.cardId)
+        );
+
+        const timesPerCard = completedCards.map((card) => {
+          const cardHistory = historyForMember.filter((h) => h.cardId === card.id);
+          if (cardHistory.length < 2) return 0;
+
+          const sorted = cardHistory.sort(
+            (a, b) => new Date(a.movedAt).getTime() - new Date(b.movedAt).getTime()
+          );
+
+          const startTime = new Date(sorted[0].movedAt).getTime();
+          const endTime = new Date(sorted[sorted.length - 1].movedAt).getTime();
+          return (endTime - startTime) / (1000 * 60 * 60); // em horas
+        });
+
+        const avgTime = timesPerCard.length > 0
+          ? Math.round(timesPerCard.reduce((a, b) => a + b, 0) / timesPerCard.length)
+          : 0;
+
+        memberProductivity[memberId].averageTimeToComplete = avgTime;
+      }
+    });
+
+    const memberProductivityArray = Object.values(memberProductivity).sort(
+      (a, b) => b.cardsCompleted - a.cardsCompleted
+    );
+
     res.json({
       totalCards,
       cardsByColumn: cardsByColumn.map((col) => ({
@@ -125,6 +205,7 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
       completedCount: completedColumn?._count.cards || 0,
       avgTimeByColumn,
       completedByDay: completedByDayArray,
+      memberProductivity: memberProductivityArray,
     });
   } catch (error) {
     console.error('Erro ao buscar métricas:', error);
