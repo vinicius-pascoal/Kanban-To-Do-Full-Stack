@@ -44,8 +44,8 @@ model TeamMember {
 model Board {
   id        String   @id @default(cuid())
   name      String
-  teamId    String
-  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    String?
+  team      Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   columns   Column[]
 }
