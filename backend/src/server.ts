@@ -10,8 +10,38 @@ import metricsRoutes from './routes/metrics';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// CORS Configuration
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  process.env.FRONTEND_URL || '',
+  /\.vercel\.app$/, // Permite todos os subdomínios da Vercel
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Permite requisições sem origin (mobile apps, Postman, etc)
+    if (!origin) return callback(null, true);
+
+    // Verifica se a origin está na lista permitida
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') {
+        return allowed === origin;
+      }
+      // Se for regex, testa
+      return allowed.test(origin);
+    });
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
+
 // Middlewares
-app.use(cors());
 app.use(express.json());
 
 // Routes
