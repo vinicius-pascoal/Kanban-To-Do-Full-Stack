@@ -10,6 +10,7 @@ interface ColumnProps {
   onAddCard: (columnId: string) => void;
   onEditCard: (card: CardType) => void;
   onDeleteCard: (id: string) => void;
+  onViewCardDetails: (card: CardType) => void;
   onDeleteColumn?: (id: string) => void;
   onCardDrop: (cardId: string, targetColumnId: string) => void;
 }
@@ -19,6 +20,7 @@ export default function Column({
   onAddCard,
   onEditCard,
   onDeleteCard,
+  onViewCardDetails,
   onDeleteColumn,
   onCardDrop,
 }: ColumnProps) {
@@ -69,14 +71,14 @@ export default function Column({
 
   return (
     <div
-      className={`rounded-lg border-2 ${bgColor} p-4 min-w-[320px] flex flex-col transition-colors ${dragOverId === column.id ? 'bg-opacity-50 ring-2 ring-primary-400' : ''
+      className={`rounded-lg border-2 ${bgColor} p-4 min-w-[320px] flex flex-col h-[calc(100vh-250px)] transition-colors ${dragOverId === column.id ? 'bg-opacity-50 ring-2 ring-primary-400' : ''
         }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <div className="flex items-center gap-2 flex-1">
           <h2 className="font-bold text-lg text-gray-800">{column.name}</h2>
           <span className="bg-white px-2 py-0.5 rounded-full text-sm font-medium text-gray-600">
@@ -107,10 +109,10 @@ export default function Column({
         </div>
       </div>
 
-      {/* Cards */}
-      <div className="flex-1 space-y-3 overflow-y-auto max-h-[calc(100vh-250px)]">
+      {/* Cards Container */}
+      <div className="flex-1 overflow-y-auto space-y-3 pr-2">
         {column.cards.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 text-sm">
+          <div className="text-center py-8 text-gray-500 text-sm flex items-center justify-center h-full">
             Nenhum card nesta coluna
           </div>
         ) : (
@@ -120,12 +122,14 @@ export default function Column({
               draggable
               onDragStart={(e) => handleCardDragStart(e, card.id)}
               onDragEnd={handleCardDragEnd}
+              className="h-auto"
             >
               <Card
                 card={card}
                 columnName={column.name}
                 onEdit={onEditCard}
                 onDelete={onDeleteCard}
+                onViewDetails={onViewCardDetails}
                 isDragging={draggedCardId === card.id}
               />
             </div>

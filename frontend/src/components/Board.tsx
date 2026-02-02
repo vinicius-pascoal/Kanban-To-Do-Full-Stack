@@ -5,6 +5,7 @@ import { useKanbanStore } from '@/lib/store';
 import { useAuth } from '@/lib/auth-provider';
 import Column from './Column';
 import CardModal from './CardModal';
+import CardDetailModal from './CardDetailModal';
 import { Card as CardType } from '@/lib/types';
 import { Plus } from 'lucide-react';
 
@@ -16,6 +17,8 @@ export default function Board({ teamId }: { teamId?: string }) {
   const [editingCard, setEditingCard] = useState<CardType | null>(null);
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnName, setNewColumnName] = useState('');
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedDetailCard, setSelectedDetailCard] = useState<CardType | null>(null);
 
   useEffect(() => {
     if (token) {
@@ -39,6 +42,16 @@ export default function Board({ teamId }: { teamId?: string }) {
     setIsModalOpen(false);
     setSelectedColumnId(null);
     setEditingCard(null);
+  };
+
+  const handleViewCardDetails = (card: CardType) => {
+    setSelectedDetailCard(card);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedDetailCard(null);
   };
 
   const handleCardDrop = async (cardId: string, targetColumnId: string) => {
@@ -80,6 +93,7 @@ export default function Board({ teamId }: { teamId?: string }) {
               onAddCard={handleAddCard}
               onEditCard={handleEditCard}
               onDeleteCard={(id) => token && deleteCard(id, token)}
+              onViewCardDetails={handleViewCardDetails}
               onDeleteColumn={(id) => token && deleteColumn(id, token)}
               onCardDrop={handleCardDrop}
             />
@@ -139,6 +153,16 @@ export default function Board({ teamId }: { teamId?: string }) {
           onClose={handleCloseModal}
           columnId={selectedColumnId}
           editingCard={editingCard}
+        />
+      )}
+
+      {isDetailModalOpen && selectedDetailCard && (
+        <CardDetailModal
+          card={selectedDetailCard}
+          isOpen={isDetailModalOpen}
+          onClose={handleCloseDetailModal}
+          onEdit={handleEditCard}
+          onDelete={(id) => token && deleteCard(id, token)}
         />
       )}
     </>

@@ -37,3 +37,12 @@ export const getDaysUntilDue = (dueDate: Date | null): number | null => {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays;
 };
+
+/**
+ * Converte string de data no formato YYYY-MM-DD para Date
+ * Sem offset de timezone (sempre usa noon UTC)
+ */
+export const parseDateString = (dateString: string): Date => {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day, 12, 0, 0);
+};

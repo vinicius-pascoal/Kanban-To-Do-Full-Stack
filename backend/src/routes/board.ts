@@ -19,6 +19,9 @@ router.get('/', async (req: Request, res: Response) => {
                   orderBy: { movedAt: 'desc' },
                   take: 5,
                 },
+                assignedTo: {
+                  select: { id: true, name: true, email: true },
+                },
               },
             },
           },
@@ -45,6 +48,11 @@ router.get('/', async (req: Request, res: Response) => {
             include: {
               cards: {
                 orderBy: { order: 'asc' },
+                include: {
+                  assignedTo: {
+                    select: { id: true, name: true, email: true },
+                  },
+                },
               },
             },
           },

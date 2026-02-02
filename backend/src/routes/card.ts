@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { createCardSchema, updateCardSchema, moveCardSchema } from '../lib/validations';
+import { parseDateString } from '../lib/date-utils';
 
 const router = Router();
 
@@ -14,12 +15,18 @@ router.post('/', async (req: Request, res: Response) => {
       where: { columnId: validatedData.columnId },
     });
 
+    // Parse date string to avoid timezone offset issues
+    let dueDate: Date | null = null;
+    if (validatedData.dueDate) {
+      dueDate = parseDateString(validatedData.dueDate);
+    }
+
     const card = await prisma.card.create({
       data: {
         title: validatedData.title,
         description: validatedData.description || null,
         priority: validatedData.priority,
-        dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
+        dueDate: dueDate,
         columnId: validatedData.columnId,
         assignedToId: validatedData.assignedToId || null,
         order: cardsInColumn,
@@ -80,7 +87,11 @@ router.put('/:id', async (req: Request, res: Response) => {
     if (validatedData.description !== undefined) updateData.description = validatedData.description;
     if (validatedData.priority) updateData.priority = validatedData.priority;
     if (validatedData.dueDate !== undefined) {
-      updateData.dueDate = validatedData.dueDate ? new Date(validatedData.dueDate) : null;
+      if (validatedData.dueDate) {
+        updateData.dueDate = parseDateString(validatedData.dueDate);
+      } else {
+        updateData.dueDate = null;
+      }
     }
     if (validatedData.assignedToId !== undefined) {
       updateData.assignedToId = validatedData.assignedToId;
