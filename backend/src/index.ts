@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import authRoutes from '../routes/auth';
-import teamRoutes from '../routes/team';
-import boardRoutes from '../routes/board';
-import cardRoutes from '../routes/card';
-import columnRoutes from '../routes/column';
-import metricsRoutes from '../routes/metrics';
+import authRoutes from './routes/auth';
+import teamRoutes from './routes/team';
+import boardRoutes from './routes/board';
+import cardRoutes from './routes/card';
+import columnRoutes from './routes/column';
+import metricsRoutes from './routes/metrics';
 
 const app = express();
 
