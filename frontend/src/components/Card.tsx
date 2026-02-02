@@ -69,6 +69,13 @@ export default function Card({ card, columnName, onEdit, onDelete, isDragging }:
         <p className="text-sm text-gray-600 mb-3">{card.description}</p>
       )}
 
+      {/* Assigned User */}
+      {card.assignedTo && (
+        <div className="mb-3 inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
+          👤 {card.assignedTo.name}
+        </div>
+      )}
+
       {/* Footer */}
       <div className="flex items-center justify-between text-xs">
         {/* Priority */}

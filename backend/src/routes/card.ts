@@ -21,10 +21,14 @@ router.post('/', async (req: Request, res: Response) => {
         priority: validatedData.priority,
         dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
         columnId: validatedData.columnId,
+        assignedToId: validatedData.assignedToId || null,
         order: cardsInColumn,
       },
       include: {
         column: true,
+        assignedTo: {
+          select: { id: true, name: true, email: true },
+        },
       },
     });
 
@@ -44,6 +48,9 @@ router.get('/:id', async (req: Request, res: Response) => {
       where: { id },
       include: {
         column: true,
+        assignedTo: {
+          select: { id: true, name: true, email: true },
+        },
         history: {
           orderBy: { movedAt: 'desc' },
         },
@@ -75,12 +82,18 @@ router.put('/:id', async (req: Request, res: Response) => {
     if (validatedData.dueDate !== undefined) {
       updateData.dueDate = validatedData.dueDate ? new Date(validatedData.dueDate) : null;
     }
+    if (validatedData.assignedToId !== undefined) {
+      updateData.assignedToId = validatedData.assignedToId;
+    }
 
     const card = await prisma.card.update({
       where: { id },
       data: updateData,
       include: {
         column: true,
+        assignedTo: {
+          select: { id: true, name: true, email: true },
+        },
       },
     });
 
@@ -140,6 +153,9 @@ router.post('/move', async (req: Request, res: Response) => {
         },
         include: {
           column: true,
+          assignedTo: {
+            select: { id: true, name: true, email: true },
+          },
           history: {
             orderBy: { movedAt: 'desc' },
             take: 5,
@@ -175,6 +191,9 @@ router.post('/move', async (req: Request, res: Response) => {
         },
         include: {
           column: true,
+          assignedTo: {
+            select: { id: true, name: true, email: true },
+          },
           history: {
             orderBy: { movedAt: 'desc' },
             take: 5,

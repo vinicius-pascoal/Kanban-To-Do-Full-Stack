@@ -9,14 +9,14 @@ interface KanbanStore {
   error: string | null;
 
   // Actions
-  fetchBoard: () => Promise<void>;
-  fetchMetrics: () => Promise<void>;
-  createCard: (data: CreateCardData) => Promise<void>;
-  updateCard: (id: string, data: UpdateCardData) => Promise<void>;
-  deleteCard: (id: string) => Promise<void>;
-  moveCard: (data: MoveCardData) => Promise<void>;
-  createColumn: (name: string) => Promise<void>;
-  deleteColumn: (id: string) => Promise<void>;
+  fetchBoard: (token: string) => Promise<void>;
+  fetchMetrics: (token: string) => Promise<void>;
+  createCard: (data: CreateCardData, token: string) => Promise<void>;
+  updateCard: (id: string, data: UpdateCardData, token: string) => Promise<void>;
+  deleteCard: (id: string, token: string) => Promise<void>;
+  moveCard: (data: MoveCardData, token: string) => Promise<void>;
+  createColumn: (name: string, token: string) => Promise<void>;
+  deleteColumn: (id: string, token: string) => Promise<void>;
   setError: (error: string | null) => void;
 }
 
@@ -26,10 +26,10 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
   isLoading: false,
   error: null,
 
-  fetchBoard: async () => {
+  fetchBoard: async (token: string) => {
     set({ isLoading: true, error: null });
     try {
-      const board = await api.getBoard();
+      const board = await api.getBoard(token);
       set({ board, isLoading: false });
     } catch (error) {
       set({ error: 'Erro ao carregar board', isLoading: false });
@@ -37,16 +37,16 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
     }
   },
 
-  fetchMetrics: async () => {
+  fetchMetrics: async (token: string) => {
     try {
-      const metrics = await api.getMetrics();
+      const metrics = await api.getMetrics(token);
       set({ metrics });
     } catch (error) {
       console.error('Erro ao carregar métricas:', error);
     }
   },
 
-  createCard: async (data: CreateCardData) => {
+  createCard: async (data: CreateCardData, token: string) => {
     set({ isLoading: true, error: null });
     try {
       await api.createCard(data);

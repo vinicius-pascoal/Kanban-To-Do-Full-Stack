@@ -2,17 +2,21 @@
 
 import { useEffect } from 'react';
 import { useKanbanStore } from '@/lib/store';
+import { useAuth } from '@/lib/auth-provider';
 import { BarChart3, TrendingUp, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 
-export default function Metrics() {
+export default function Metrics({ teamId }: { teamId?: string }) {
   const { metrics, fetchMetrics } = useKanbanStore();
+  const { token } = useAuth();
 
   useEffect(() => {
-    fetchMetrics();
+    if (!token) return;
+
+    fetchMetrics(token);
     // Atualizar métricas a cada 30 segundos
-    const interval = setInterval(fetchMetrics, 30000);
+    const interval = setInterval(() => fetchMetrics(token), 30000);
     return () => clearInterval(interval);
-  }, [fetchMetrics]);
+  }, [token, fetchMetrics]);
 
   if (!metrics) {
     return (
@@ -95,10 +99,10 @@ export default function Metrics() {
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
                   className={`h-2 rounded-full ${col.name === 'A Fazer'
-                      ? 'bg-gray-500'
-                      : col.name === 'Em Progresso'
-                        ? 'bg-blue-500'
-                        : 'bg-green-500'
+                    ? 'bg-gray-500'
+                    : col.name === 'Em Progresso'
+                      ? 'bg-blue-500'
+                      : 'bg-green-500'
                     }`}
                   style={{
                     width: `${metrics.totalCards > 0 ? (col.count / metrics.totalCards) * 100 : 0}%`,

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useKanbanStore } from '@/lib/store';
+import { useAuth } from '@/lib/auth-provider';
 import { Card, Priority } from '@/lib/types';
 import { X } from 'lucide-react';
 
@@ -14,10 +15,12 @@ interface CardModalProps {
 
 export default function CardModal({ isOpen, onClose, columnId, editingCard }: CardModalProps) {
   const { createCard, updateCard } = useKanbanStore();
+  const { token, currentTeam } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Priority>('média');
   const [dueDate, setDueDate] = useState('');
+  const [assignedToId, setAssignedToId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -26,16 +29,20 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
       setDescription(editingCard.description || '');
       setPriority(editingCard.priority);
       setDueDate(editingCard.dueDate ? editingCard.dueDate.split('T')[0] : '');
+      setAssignedToId(editingCard.assignedToId || '');
     } else {
       setTitle('');
       setDescription('');
       setPriority('média');
       setDueDate('');
+      setAssignedToId('');
     }
   }, [editingCard]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!token) return;
+
     setIsSubmitting(true);
 
     try {
@@ -45,7 +52,8 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
           description: description || null,
           priority,
           dueDate: dueDate || null,
-        });
+          assignedToId: assignedToId || null,
+        }, token);
       } else {
         await createCard({
           title,
@@ -53,7 +61,8 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
           priority,
           dueDate,
           columnId,
-        });
+          assignedToId: assignedToId || null,
+        }, token);
       }
       onClose();
     } catch (error) {
@@ -94,7 +103,7 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Digite o título do card"
             />
           </div>
@@ -109,7 +118,7 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Digite a descrição (opcional)"
             />
           </div>
@@ -123,7 +132,7 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
               id="priority"
               value={priority}
               onChange={(e) => setPriority(e.target.value as Priority)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="baixa">Baixa</option>
               <option value="média">Média</option>
@@ -141,9 +150,31 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+          {/* Assigned To */}
+          {currentTeam && (
+            <div>
+              <label htmlFor="assignedTo" className="block text-sm font-medium text-gray-700 mb-1">
+                Atribuído a
+              </label>
+              <select
+                id="assignedTo"
+                value={assignedToId}
+                onChange={(e) => setAssignedToId(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Sem atribuição</option>
+                {currentTeam.members?.map((member) => (
+                  <option key={member.user?.id} value={member.user?.id || ''}>
+                    {member.user?.name} ({member.user?.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-4">
@@ -157,7 +188,7 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Salvando...' : editingCard ? 'Atualizar' : 'Criar'}
             </button>

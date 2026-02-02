@@ -2,6 +2,29 @@ export type Priority = 'baixa' | 'média' | 'alta';
 
 export type CardStatus = 'overdue' | 'today' | 'ontime' | 'completed';
 
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
+export interface TeamMember {
+  id: string;
+  userId: string;
+  teamId: string;
+  user: User;
+  createdAt: string;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  members: TeamMember[];
+  boards: Board[];
+}
+
 export interface CardHistory {
   id: string;
   cardId: string;
@@ -19,6 +42,8 @@ export interface Card {
   createdAt: string;
   updatedAt: string;
   columnId: string;
+  assignedToId?: string | null;
+  assignedTo?: User | null;
   order: number;
   history?: CardHistory[];
 }
@@ -34,6 +59,7 @@ export interface Column {
 export interface Board {
   id: string;
   name: string;
+  teamId: string;
   createdAt: string;
   columns: Column[];
 }
@@ -54,6 +80,7 @@ export interface CreateCardData {
   priority: Priority;
   dueDate?: string;
   columnId: string;
+  assignedToId?: string | null;
 }
 
 export interface UpdateCardData {
@@ -61,10 +88,17 @@ export interface UpdateCardData {
   description?: string | null;
   priority?: Priority;
   dueDate?: string | null;
+  assignedToId?: string | null;
 }
 
 export interface MoveCardData {
   cardId: string;
   targetColumnId: string;
   order?: number;
+}
+
+export interface AuthState {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
 }

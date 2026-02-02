@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useKanbanStore } from '@/lib/store';
+import { useAuth } from '@/lib/auth-provider';
 import Column from './Column';
 import CardModal from './CardModal';
 import { Card as CardType } from '@/lib/types';
 import { Plus } from 'lucide-react';
 
-export default function Board() {
+export default function Board({ teamId }: { teamId?: string }) {
   const { board, fetchBoard, deleteCard, moveCard, deleteColumn } = useKanbanStore();
+  const { token, currentTeam } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedColumnId, setSelectedColumnId] = useState<string | null>(null);
   const [editingCard, setEditingCard] = useState<CardType | null>(null);
@@ -16,8 +18,10 @@ export default function Board() {
   const [newColumnName, setNewColumnName] = useState('');
 
   useEffect(() => {
-    fetchBoard();
-  }, [fetchBoard]);
+    if (token) {
+      fetchBoard(token);
+    }
+  }, [token, teamId]);
 
   const handleAddCard = (columnId: string) => {
     setSelectedColumnId(columnId);
@@ -38,17 +42,17 @@ export default function Board() {
   };
 
   const handleCardDrop = async (cardId: string, targetColumnId: string) => {
-    if (!board) return;
+    if (!board || !token) return;
     await moveCard({
       cardId,
       targetColumnId,
-    });
+    }, token);
   };
 
   const handleAddColumn = async () => {
-    if (!newColumnName.trim()) return;
+    if (!newColumnName.trim() || !token) return;
     const { createColumn } = useKanbanStore.getState();
-    await createColumn(newColumnName);
+    await createColumn(newColumnName, token);
     setNewColumnName('');
     setIsAddingColumn(false);
   };
@@ -75,8 +79,8 @@ export default function Board() {
               column={column}
               onAddCard={handleAddCard}
               onEditCard={handleEditCard}
-              onDeleteCard={deleteCard}
-              onDeleteColumn={deleteColumn}
+              onDeleteCard={(id) => token && deleteCard(id, token)}
+              onDeleteColumn={(id) => token && deleteColumn(id, token)}
               onCardDrop={handleCardDrop}
             />
           ))}

@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import authRoutes from './routes/auth';
+import teamRoutes from './routes/team';
 import boardRoutes from './routes/board';
 import cardRoutes from './routes/card';
 import columnRoutes from './routes/column';
@@ -13,6 +15,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/team', teamRoutes);
 app.use('/api/board', boardRoutes);
 app.use('/api/card', cardRoutes);
 app.use('/api/column', columnRoutes);
