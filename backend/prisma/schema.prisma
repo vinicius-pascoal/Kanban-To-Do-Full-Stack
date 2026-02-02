@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Board {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  columns   Column[]
+}
+
+model Column {
+  id      String @id @default(cuid())
+  name    String
+  order   Int
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  cards   Card[]
+}
+
+model Card {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  priority    String
+  dueDate     DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  columnId    String
+  column      Column        @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  history     CardHistory[]
+  order       Int           @default(0)
+}
+
+model CardHistory {
+  id      String   @id @default(cuid())
+  cardId  String
+  card    Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  from    String
+  to      String
+  movedAt DateTime @default(now())
+}

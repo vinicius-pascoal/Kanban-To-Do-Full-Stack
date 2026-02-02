@@ -1,0 +1,174 @@
+import { Router, Request, Response } from 'express';
+import prisma from '../lib/prisma';
+import { createCardSchema, updateCardSchema, moveCardSchema } from '../lib/validations';
+
+const router = Router();
+
+// POST /api/card - Criar novo card
+router.post('/', async (req: Request, res: Response) => {
+  try {
+    const validatedData = createCardSchema.parse(req.body);
+
+    // Contar cards na coluna para definir a ordem
+    const cardsInColumn = await prisma.card.count({
+      where: { columnId: validatedData.columnId },
+    });
+
+    const card = await prisma.card.create({
+      data: {
+        title: validatedData.title,
+        description: validatedData.description || null,
+        priority: validatedData.priority,
+        dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
+        columnId: validatedData.columnId,
+        order: cardsInColumn,
+      },
+      include: {
+        column: true,
+      },
+    });
+
+    res.status(201).json(card);
+  } catch (error) {
+    console.error('Erro ao criar card:', error);
+    res.status(400).json({ error: 'Erro ao criar card' });
+  }
+});
+
+// GET /api/card/:id - Buscar card específico
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const card = await prisma.card.findUnique({
+      where: { id },
+      include: {
+        column: true,
+        history: {
+          orderBy: { movedAt: 'desc' },
+        },
+      },
+    });
+
+    if (!card) {
+      return res.status(404).json({ error: 'Card não encontrado' });
+    }
+
+    res.json(card);
+  } catch (error) {
+    console.error('Erro ao buscar card:', error);
+    res.status(500).json({ error: 'Erro ao buscar card' });
+  }
+});
+
+// PUT /api/card/:id - Atualizar card
+router.put('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const validatedData = updateCardSchema.parse(req.body);
+
+    const updateData: any = {};
+
+    if (validatedData.title) updateData.title = validatedData.title;
+    if (validatedData.description !== undefined) updateData.description = validatedData.description;
+    if (validatedData.priority) updateData.priority = validatedData.priority;
+    if (validatedData.dueDate !== undefined) {
+      updateData.dueDate = validatedData.dueDate ? new Date(validatedData.dueDate) : null;
+    }
+
+    const card = await prisma.card.update({
+      where: { id },
+      data: updateData,
+      include: {
+        column: true,
+      },
+    });
+
+    res.json(card);
+  } catch (error) {
+    console.error('Erro ao atualizar card:', error);
+    res.status(400).json({ error: 'Erro ao atualizar card' });
+  }
+});
+
+// DELETE /api/card/:id - Deletar card
+router.delete('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.card.delete({
+      where: { id },
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    console.error('Erro ao deletar card:', error);
+    res.status(500).json({ error: 'Erro ao deletar card' });
+  }
+});
+
+// POST /api/card/move - Mover card entre colunas
+router.post('/move', async (req: Request, res: Response) => {
+  try {
+    const validatedData = moveCardSchema.parse(req.body);
+
+    // Buscar card atual
+    const card = await prisma.card.findUnique({
+      where: { id: validatedData.cardId },
+      include: { column: true },
+    });
+
+    if (!card) {
+      return res.status(404).json({ error: 'Card não encontrado' });
+    }
+
+    // Buscar coluna de destino
+    const targetColumn = await prisma.column.findUnique({
+      where: { id: validatedData.targetColumnId },
+    });
+
+    if (!targetColumn) {
+      return res.status(404).json({ error: 'Coluna não encontrada' });
+    }
+
+    // Contar cards na coluna de destino
+    const cardsInTargetColumn = await prisma.card.count({
+      where: { columnId: validatedData.targetColumnId },
+    });
+
+    // Atualizar card e criar histórico
+    const updatedCard = await prisma.$transaction(async (tx) => {
+      // Criar registro no histórico
+      await tx.cardHistory.create({
+        data: {
+          cardId: card.id,
+          from: card.column.name,
+          to: targetColumn.name,
+        },
+      });
+
+      // Atualizar card
+      return tx.card.update({
+        where: { id: validatedData.cardId },
+        data: {
+          columnId: validatedData.targetColumnId,
+          order: validatedData.order ?? cardsInTargetColumn,
+        },
+        include: {
+          column: true,
+          history: {
+            orderBy: { movedAt: 'desc' },
+            take: 5,
+          },
+        },
+      });
+    });
+
+    res.json(updatedCard);
+  } catch (error) {
+    console.error('Erro ao mover card:', error);
+    res.status(400).json({ error: 'Erro ao mover card' });
+  }
+});
+
+export default router;
