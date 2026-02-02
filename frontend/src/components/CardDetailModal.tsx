@@ -22,7 +22,8 @@ export default function CardDetailModal({
   if (!isOpen || !card) return null;
 
   const daysUntil = getDaysUntilDue(card.dueDate);
-  const status = getCardStatus(card.dueDate, card.column?.name || '');
+  // Status é determinado apenas pela data, não precisa do nome da coluna
+  const status = getCardStatus(card.dueDate, '');
 
   const priorityColors: Record<string, string> = {
     baixa: 'bg-blue-100 text-blue-800 border border-blue-300',
@@ -148,7 +149,6 @@ export default function CardDetailModal({
                   <h4 className="font-semibold text-gray-800">Status</h4>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-600">Coluna: <span className="font-medium">{card.column?.name || 'Desconhecida'}</span></p>
                   <span
                     className={`inline-block px-4 py-2 rounded-lg font-medium text-sm ${statusColors[status] || 'bg-gray-100 text-gray-800 border border-gray-300'
                       }`}

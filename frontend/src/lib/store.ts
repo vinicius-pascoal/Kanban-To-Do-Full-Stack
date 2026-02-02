@@ -49,7 +49,7 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
   createCard: async (data: CreateCardData, token: string) => {
     set({ isLoading: true, error: null });
     try {
-      await api.createCard(data);
+      await api.createCard(data, token);
       await get().fetchBoard(token);
       await get().fetchMetrics(token);
       set({ isLoading: false });
@@ -62,7 +62,7 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
   updateCard: async (id: string, data: UpdateCardData, token: string) => {
     set({ isLoading: true, error: null });
     try {
-      await api.updateCard(id, data);
+      await api.updateCard(id, data, token);
       await get().fetchBoard(token);
       await get().fetchMetrics(token);
       set({ isLoading: false });
@@ -75,7 +75,7 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
   deleteCard: async (id: string, token: string) => {
     set({ isLoading: true, error: null });
     try {
-      await api.deleteCard(id);
+      await api.deleteCard(id, token);
       await get().fetchBoard(token);
       await get().fetchMetrics(token);
       set({ isLoading: false });
@@ -87,7 +87,7 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
 
   moveCard: async (data: MoveCardData, token: string) => {
     try {
-      await api.moveCard(data);
+      await api.moveCard(data, token);
       await get().fetchBoard(token);
       await get().fetchMetrics(token);
     } catch (error) {
@@ -102,7 +102,7 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
       const { board } = get();
       if (!board) throw new Error('Board não encontrado');
 
-      await api.createColumn(board.id, name);
+      await api.createColumn(board.id, name, token);
       await get().fetchBoard(token);
       set({ isLoading: false });
     } catch (error: any) {
@@ -114,7 +114,7 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
   deleteColumn: async (id: string, token: string) => {
     set({ isLoading: true, error: null });
     try {
-      await api.deleteColumn(id);
+      await api.deleteColumn(id, token);
       await get().fetchBoard(token);
       set({ isLoading: false });
     } catch (error: any) {
