@@ -135,33 +135,36 @@ export default function Metrics({ teamId }: { teamId?: string }) {
       )}
 
       {/* Cards Concluídos por Dia */}
-      {metrics.completedByDay.length > 0 && (
+      {metrics.completedByDay && metrics.completedByDay.length > 0 && (
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
             <TrendingUp className="w-5 h-5" />
             Cards Concluídos (Últimos 7 dias)
           </h3>
           <div className="space-y-2">
-            {metrics.completedByDay.map((item) => (
-              <div key={item.date} className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">
-                  {new Date(item.date).toLocaleDateString('pt-BR')}
-                </span>
-                <div className="flex items-center gap-2">
-                  <div className="w-32 bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-green-500 h-2 rounded-full"
-                      style={{
-                        width: `${(item.count / Math.max(...metrics.completedByDay.map((d) => d.count))) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <span className="text-sm font-bold text-gray-800 w-8 text-right">
-                    {item.count}
+            {metrics.completedByDay.map((item) => {
+              const maxCompletions = Math.max(...metrics.completedByDay.map((d) => d.count), 1);
+              return (
+                <div key={item.date} className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">
+                    {new Date(item.date).toLocaleDateString('pt-BR')}
                   </span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-32 bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-green-500 h-2 rounded-full"
+                        style={{
+                          width: `${(item.count / maxCompletions) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <span className="text-sm font-bold text-gray-800 w-8 text-right">
+                      {item.count}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

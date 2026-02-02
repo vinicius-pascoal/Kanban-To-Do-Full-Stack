@@ -1,11 +1,14 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import prisma from '../lib/prisma';
 import { isOverdue, isDueToday } from '../lib/date-utils';
+import { AuthenticatedRequest, authMiddleware } from '../lib/auth-middleware';
 
 const router = Router();
 
+router.use(authMiddleware);
+
 // GET /api/metrics - Buscar métricas do board
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (req: AuthenticatedRequest, res: Response) => {
   try {
     // Total de cards
     const totalCards = await prisma.card.count();
@@ -37,8 +40,8 @@ router.get('/', async (req: Request, res: Response) => {
     const completedColumn = await prisma.column.findFirst({
       where: { name: 'Concluído' },
       include: {
-        cards: {
-          orderBy: { updatedAt: 'desc' },
+        _count: {
+          select: { cards: true },
         },
       },
     });
@@ -87,9 +90,13 @@ router.get('/', async (req: Request, res: Response) => {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
+    const completedColumnForCards = await prisma.column.findFirst({
+      where: { name: 'Concluído' },
+    });
+
     const recentCompletedCards = await prisma.card.findMany({
       where: {
-        column: { name: 'Concluído' },
+        columnId: completedColumnForCards?.id || '',
         updatedAt: { gte: sevenDaysAgo },
       },
       orderBy: { updatedAt: 'asc' },
