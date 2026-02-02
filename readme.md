@@ -422,14 +422,6 @@ NEXT_PUBLIC_API_URL="http://localhost:3001/api"
 
 ---
 
-## 📚 Documentação Adicional
-
-* [SETUP_AUTH.md](SETUP_AUTH.md) - Guia detalhado de autenticação
-* [TEST_GUIDE.md](TEST_GUIDE.md) - Guia de testes das funcionalidades
-* [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) - Resumo de implementação
-
----
-
 ## 👨‍💻 Autor
 
 Desenvolvido como projeto Full Stack profissional, demonstrando expertise em:
