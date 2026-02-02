@@ -15,6 +15,8 @@ interface KanbanStore {
   updateCard: (id: string, data: UpdateCardData) => Promise<void>;
   deleteCard: (id: string) => Promise<void>;
   moveCard: (data: MoveCardData) => Promise<void>;
+  createColumn: (name: string) => Promise<void>;
+  deleteColumn: (id: string) => Promise<void>;
   setError: (error: string | null) => void;
 }
 
@@ -90,6 +92,33 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
       await get().fetchMetrics();
     } catch (error) {
       set({ error: 'Erro ao mover card' });
+      console.error(error);
+    }
+  },
+
+  createColumn: async (name: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { board } = get();
+      if (!board) throw new Error('Board não encontrado');
+
+      await api.createColumn(board.id, name);
+      await get().fetchBoard();
+      set({ isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message || 'Erro ao criar coluna', isLoading: false });
+      console.error(error);
+    }
+  },
+
+  deleteColumn: async (id: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      await api.deleteColumn(id);
+      await get().fetchBoard();
+      set({ isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message || 'Erro ao deletar coluna', isLoading: false });
       console.error(error);
     }
   },

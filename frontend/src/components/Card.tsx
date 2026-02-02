@@ -11,9 +11,10 @@ interface CardProps {
   columnName: string;
   onEdit: (card: CardType) => void;
   onDelete: (id: string) => void;
+  isDragging?: boolean;
 }
 
-export default function Card({ card, columnName, onEdit, onDelete }: CardProps) {
+export default function Card({ card, columnName, onEdit, onDelete, isDragging }: CardProps) {
   const status = getCardStatus(card.dueDate, columnName);
   const daysUntil = getDaysUntilDue(card.dueDate);
   const [isHovered, setIsHovered] = useState(false);
@@ -22,12 +23,15 @@ export default function Card({ card, columnName, onEdit, onDelete }: CardProps) 
     <motion.div
       layout
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      animate={{ opacity: isDragging ? 0.5 : 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       whileHover={{ scale: 1.02 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className={`p-4 rounded-lg border-2 bg-white shadow-sm cursor-move transition-all ${getStatusColor(status)}`}
+      className={`p-4 rounded-lg border-2 bg-white shadow-sm cursor-grab active:cursor-grabbing transition-all ${getStatusColor(
+        status
+      )} ${isDragging ? 'opacity-50' : ''}`}
+      draggable
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-2">

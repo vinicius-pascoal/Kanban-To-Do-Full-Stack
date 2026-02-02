@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import boardRoutes from './routes/board';
 import cardRoutes from './routes/card';
+import columnRoutes from './routes/column';
 import metricsRoutes from './routes/metrics';
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.json());
 // Routes
 app.use('/api/board', boardRoutes);
 app.use('/api/card', cardRoutes);
+app.use('/api/column', columnRoutes);
 app.use('/api/metrics', metricsRoutes);
 
 // Health check

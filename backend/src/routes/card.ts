@@ -131,7 +131,26 @@ router.post('/move', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Coluna não encontrada' });
     }
 
-    // Contar cards na coluna de destino
+    // Se movendo para a mesma coluna, apenas reordenar
+    if (card.columnId === validatedData.targetColumnId) {
+      const updatedCard = await prisma.card.update({
+        where: { id: validatedData.cardId },
+        data: {
+          order: validatedData.order ?? card.order,
+        },
+        include: {
+          column: true,
+          history: {
+            orderBy: { movedAt: 'desc' },
+            take: 5,
+          },
+        },
+      });
+
+      return res.json(updatedCard);
+    }
+
+    // Se movendo para coluna diferente, contar cards na coluna de destino
     const cardsInTargetColumn = await prisma.card.count({
       where: { columnId: validatedData.targetColumnId },
     });

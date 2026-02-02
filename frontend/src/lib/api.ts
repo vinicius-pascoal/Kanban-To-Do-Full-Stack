@@ -18,6 +18,43 @@ export const api = {
     return res.json();
   },
 
+  // Columns
+  async getColumns() {
+    const res = await fetch(`${API_URL}/api/column`);
+    if (!res.ok) throw new Error('Erro ao buscar colunas');
+    return res.json();
+  },
+
+  async createColumn(boardId: string, name: string) {
+    const res = await fetch(`${API_URL}/api/column`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ boardId, name }),
+    });
+    if (!res.ok) throw new Error('Erro ao criar coluna');
+    return res.json();
+  },
+
+  async deleteColumn(id: string) {
+    const res = await fetch(`${API_URL}/api/column/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || 'Erro ao deletar coluna');
+    }
+  },
+
+  async updateColumn(id: string, name: string) {
+    const res = await fetch(`${API_URL}/api/column/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+    if (!res.ok) throw new Error('Erro ao atualizar coluna');
+    return res.json();
+  },
+
   // Cards
   async createCard(data: any) {
     const res = await fetch(`${API_URL}/api/card`, {
