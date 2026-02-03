@@ -42,8 +42,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cover bg-center bg-fixed flex items-center justify-center p-4" style={{ backgroundImage: "url('/imgs/fundo.svg')" }}>
-      <div className="backdrop-blur-md bg-white/10 rounded-2xl shadow-2xl p-8 w-full max-w-md border border-white/20">
+    <div className="min-h-screen bg-cover bg-center bg-fixed flex items-center justify-center p-4" style={{ backgroundImage: 'var(--login-bg)' }}>
+      <div className="backdrop-blur-md bg-white/10 dark:bg-slate-900/40 rounded-2xl shadow-2xl p-8 w-full max-w-md border border-white/20 dark:border-white/10">
         <h1 className="text-4xl font-bold text-white mb-6 text-center drop-shadow-lg">
           Cadastre-se
         </h1>
@@ -57,7 +57,7 @@ export default function RegisterPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border border-white/20 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 text-white placeholder-white/50 backdrop-blur-sm transition-all"
+              className="w-full px-4 py-2 border border-white/20 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 dark:bg-slate-800/60 text-white placeholder-white/50 backdrop-blur-sm transition-all"
               placeholder="Seu nome"
             />
           </div>
@@ -70,7 +70,7 @@ export default function RegisterPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-white/20 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 text-white placeholder-white/50 backdrop-blur-sm transition-all"
+              className="w-full px-4 py-2 border border-white/20 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 dark:bg-slate-800/60 text-white placeholder-white/50 backdrop-blur-sm transition-all"
               placeholder="seu@email.com"
             />
           </div>
@@ -83,7 +83,7 @@ export default function RegisterPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-white/20 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 text-white placeholder-white/50 backdrop-blur-sm transition-all"
+              className="w-full px-4 py-2 border border-white/20 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 dark:bg-slate-800/60 text-white placeholder-white/50 backdrop-blur-sm transition-all"
               placeholder="••••••••"
             />
           </div>
@@ -96,7 +96,7 @@ export default function RegisterPage() {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-white/20 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 text-white placeholder-white/50 backdrop-blur-sm transition-all"
+              className="w-full px-4 py-2 border border-white/20 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 dark:bg-slate-800/60 text-white placeholder-white/50 backdrop-blur-sm transition-all"
               placeholder="••••••••"
             />
           </div>

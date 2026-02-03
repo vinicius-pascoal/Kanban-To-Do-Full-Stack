@@ -5,6 +5,13 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --login-bg: url('/imgs/fundo.svg');
+}
+
+.dark {
+  --background: #0f1115;
+  --foreground: #e5e7eb;
+  --login-bg: url('/imgs/fundo-dark.svg');
 }
 
 @media (prefers-color-scheme: dark) {
