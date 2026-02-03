@@ -42,67 +42,67 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+    <div className="min-h-screen bg-cover bg-center bg-fixed flex items-center justify-center p-4" style={{ backgroundImage: "url('/imgs/fundo.svg')" }}>
+      <div className="backdrop-blur-md bg-white/10 rounded-2xl shadow-2xl p-8 w-full max-w-md border border-white/20">
+        <h1 className="text-4xl font-bold text-white mb-6 text-center drop-shadow-lg">
           Cadastre-se
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-white/90 mb-1">
               Nome
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none bg-white text-gray-900"
+              className="w-full px-4 py-2 border border-white/20 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 text-white placeholder-white/50 backdrop-blur-sm transition-all"
               placeholder="Seu nome"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-white/90 mb-1">
               Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none bg-white text-gray-900"
+              className="w-full px-4 py-2 border border-white/20 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 text-white placeholder-white/50 backdrop-blur-sm transition-all"
               placeholder="seu@email.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-white/90 mb-1">
               Senha
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none bg-white text-gray-900"
+              className="w-full px-4 py-2 border border-white/20 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 text-white placeholder-white/50 backdrop-blur-sm transition-all"
               placeholder="••••••••"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-white/90 mb-1">
               Confirmar Senha
             </label>
             <input
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none bg-white text-gray-900"
+              className="w-full px-4 py-2 border border-white/20 rounded-lg focus:ring-2 focus:ring-cyan-400 focus:border-white/30 outline-none bg-white/5 text-white placeholder-white/50 backdrop-blur-sm transition-all"
               placeholder="••••••••"
             />
           </div>
 
           {(error || localError) && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-red-500/30 border border-red-400/50 text-red-50 px-4 py-3 rounded-lg text-sm backdrop-blur-sm">
               {error || localError}
             </div>
           )}
@@ -110,15 +110,15 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg transition-colors"
+            className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-500 hover:to-blue-600 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-2 rounded-lg transition-all shadow-lg hover:shadow-xl backdrop-blur-sm"
           >
             {isLoading ? 'Cadastrando...' : 'Cadastrar'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-gray-600">
+        <p className="mt-6 text-center text-white/70">
           Já tem conta?{' '}
-          <Link href="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+          <Link href="/login" className="text-cyan-300 hover:text-cyan-200 font-semibold transition-colors">
             Faça login
           </Link>
         </p>
