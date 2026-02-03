@@ -52,6 +52,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const { user, token } = await api.register(email, password, name);
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('token', token);
+      document.cookie = `token=${token}; path=/; max-age=604800`;
       set({ user, token, isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
@@ -64,6 +65,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const { user, token } = await api.login(email, password);
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('token', token);
+      document.cookie = `token=${token}; path=/; max-age=604800`;
       set({ user, token, isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });

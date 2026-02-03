@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Board from '@/components/Board';
 import Metrics from '@/components/Metrics';
 import { LayoutDashboard, BarChart3, Settings, LogOut } from 'lucide-react';
-import { useAuth, ProtectedRoute } from '@/lib/auth-provider';
+import { useAuth } from '@/lib/auth-provider';
 import Link from 'next/link';
 
 function DashboardContent() {
@@ -24,6 +24,7 @@ function DashboardContent() {
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    document.cookie = 'token=; Max-Age=0; path=/;';
     router.push('/login');
   };
 
@@ -62,8 +63,8 @@ function DashboardContent() {
             <button
               onClick={() => setActiveTab('board')}
               className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${activeTab === 'board'
-                  ? 'border-blue-600 text-blue-600 font-medium'
-                  : 'border-transparent text-gray-600 hover:text-gray-800'
+                ? 'border-blue-600 text-blue-600 font-medium'
+                : 'border-transparent text-gray-600 hover:text-gray-800'
                 }`}
             >
               <LayoutDashboard className="w-5 h-5" />
@@ -72,8 +73,8 @@ function DashboardContent() {
             <button
               onClick={() => setActiveTab('metrics')}
               className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${activeTab === 'metrics'
-                  ? 'border-blue-600 text-blue-600 font-medium'
-                  : 'border-transparent text-gray-600 hover:text-gray-800'
+                ? 'border-blue-600 text-blue-600 font-medium'
+                : 'border-transparent text-gray-600 hover:text-gray-800'
                 }`}
             >
               <BarChart3 className="w-5 h-5" />
@@ -106,9 +107,5 @@ function DashboardContent() {
 }
 
 export default function DashboardPage() {
-  return (
-    <ProtectedRoute>
-      <DashboardContent />
-    </ProtectedRoute>
-  );
+  return <DashboardContent />;
 }

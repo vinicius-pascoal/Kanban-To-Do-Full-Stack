@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, ProtectedRoute } from '@/lib/auth-provider';
+import { useAuth } from '@/lib/auth-provider';
 
 function DashboardRedirect() {
   const router = useRouter();
@@ -25,9 +25,5 @@ function DashboardRedirect() {
 }
 
 export default function Dashboard() {
-  return (
-    <ProtectedRoute>
-      <DashboardRedirect />
-    </ProtectedRoute>
-  );
+  return <DashboardRedirect />;
 }
