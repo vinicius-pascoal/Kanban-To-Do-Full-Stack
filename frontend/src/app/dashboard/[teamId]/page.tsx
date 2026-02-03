@@ -11,15 +11,29 @@ import Link from 'next/link';
 function DashboardContent() {
   const params = useParams();
   const router = useRouter();
+  const { user, token, currentTeam, fetchTeam, isLoading } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const teamId = params.teamId as string;
-  const { user, currentTeam, fetchTeam, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<'board' | 'metrics'>('board');
 
+  // Verificar autenticação apenas no cliente
   useEffect(() => {
-    if (teamId) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (!user || !token) {
+      router.push('/login');
+      return;
+    }
+  }, [mounted, user, token, router]);
+
+  useEffect(() => {
+    if (teamId && token) {
       fetchTeam(teamId);
     }
-  }, [teamId]);
+  }, [teamId, token, fetchTeam]);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -27,6 +41,18 @@ function DashboardContent() {
     document.cookie = 'token=; Max-Age=0; path=/;';
     router.push('/login');
   };
+
+  // Mostrar loading enquanto verifica autenticação
+  if (!mounted || !user || !token) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-2">Carregando...</h1>
+          <p className="text-gray-600">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
