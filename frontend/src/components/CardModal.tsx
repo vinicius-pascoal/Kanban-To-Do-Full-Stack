@@ -103,7 +103,7 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
               placeholder="Digite o título do card"
             />
           </div>
@@ -118,7 +118,7 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
               placeholder="Digite a descrição (opcional)"
             />
           </div>
@@ -132,7 +132,7 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
               id="priority"
               value={priority}
               onChange={(e) => setPriority(e.target.value as Priority)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
             >
               <option value="baixa">Baixa</option>
               <option value="média">Média</option>
@@ -150,7 +150,7 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
             />
           </div>
 
@@ -164,7 +164,7 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard }: Ca
                 id="assignedTo"
                 value={assignedToId}
                 onChange={(e) => setAssignedToId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
               >
                 <option value="">Sem atribuição</option>
                 {currentTeam.members?.map((member) => (
