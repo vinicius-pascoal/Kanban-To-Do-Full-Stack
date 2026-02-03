@@ -79,9 +79,8 @@ export default function Column({
 
   return (
     <div
-      className={`rounded-lg border-2 ${bgColor} p-4 min-w-[320px] flex flex-col h-[calc(100vh-250px)] transition-all ${
-        isDraggingColumn ? 'opacity-50' : ''
-      } ${dragOverId === column.id ? 'bg-opacity-50 ring-2 ring-primary-400' : ''}`}
+      className={`rounded-lg border-2 ${bgColor} p-4 min-w-[320px] flex flex-col h-[calc(100vh-250px)] transition-all ${isDraggingColumn ? 'opacity-50' : ''
+        } ${dragOverId === column.id ? 'bg-opacity-50 ring-2 ring-primary-400' : ''}`}
       draggable
       onDragStart={(e) => onColumnDragStart?.(e, column.id)}
       onDragOver={(e) => {
