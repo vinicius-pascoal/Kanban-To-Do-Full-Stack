@@ -8,11 +8,13 @@ import columnRoutes from './routes/column';
 import metricsRoutes from './routes/metrics';
 
 const app = express();
+const PORT = process.env.PORT || 3001;
 
 // CORS Configuration
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
+  'https://kanban-to-do-full-stack.vercel.app',
   process.env.FRONTEND_URL || '',
   /\.vercel\.app$/, // Permite todos os subdomínios da Vercel
 ];
@@ -24,11 +26,11 @@ app.use(cors({
 
     // Verifica se a origin está na lista permitida
     const isAllowed = allowedOrigins.some(allowed => {
-      if (typeof allowed === 'string') {
+      if (typeof allowed === 'string' && allowed) {
         return allowed === origin;
       }
       // Se for regex, testa
-      return allowed.test(origin);
+      return typeof allowed === 'object' && allowed.test(origin);
     });
 
     if (isAllowed) {
@@ -66,5 +68,12 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   console.error('Erro no servidor:', err);
   res.status(500).json({ error: 'Erro interno do servidor' });
 });
+
+// Para desenvolvimento local
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+  });
+}
 
 export default app;
