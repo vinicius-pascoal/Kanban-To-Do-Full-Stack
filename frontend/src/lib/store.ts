@@ -7,10 +7,11 @@ interface KanbanStore {
   metrics: Metrics | null;
   isLoading: boolean;
   error: string | null;
+  teamId: string | null;
 
   // Actions
-  fetchBoard: (token: string) => Promise<void>;
-  fetchMetrics: (token: string) => Promise<void>;
+  fetchBoard: (teamId: string, token: string) => Promise<void>;
+  fetchMetrics: (teamId: string, token: string) => Promise<void>;
   createCard: (data: CreateCardData, token: string) => Promise<void>;
   updateCard: (id: string, data: UpdateCardData, token: string) => Promise<void>;
   deleteCard: (id: string, token: string) => Promise<void>;
@@ -25,11 +26,12 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
   metrics: null,
   isLoading: false,
   error: null,
+  teamId: null,
 
-  fetchBoard: async (token: string) => {
-    set({ isLoading: true, error: null });
+  fetchBoard: async (teamId: string, token: string) => {
+    set({ isLoading: true, error: null, teamId });
     try {
-      const board = await api.getBoard(token);
+      const board = await api.getBoard(teamId, token);
       set({ board, isLoading: false });
     } catch (error) {
       set({ error: 'Erro ao carregar board', isLoading: false });
@@ -37,9 +39,9 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
     }
   },
 
-  fetchMetrics: async (token: string) => {
+  fetchMetrics: async (teamId: string, token: string) => {
     try {
-      const metrics = await api.getMetrics(token);
+      const metrics = await api.getMetrics(teamId, token);
       set({ metrics });
     } catch (error) {
       console.error('Erro ao carregar métricas:', error);
@@ -50,8 +52,11 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       await api.createCard(data, token);
-      await get().fetchBoard(token);
-      await get().fetchMetrics(token);
+      const { teamId } = get();
+      if (teamId) {
+        await get().fetchBoard(teamId, token);
+        await get().fetchMetrics(teamId, token);
+      }
       set({ isLoading: false });
     } catch (error) {
       set({ error: 'Erro ao criar card', isLoading: false });
@@ -63,8 +68,11 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       await api.updateCard(id, data, token);
-      await get().fetchBoard(token);
-      await get().fetchMetrics(token);
+      const { teamId } = get();
+      if (teamId) {
+        await get().fetchBoard(teamId, token);
+        await get().fetchMetrics(teamId, token);
+      }
       set({ isLoading: false });
     } catch (error) {
       set({ error: 'Erro ao atualizar card', isLoading: false });
@@ -76,8 +84,11 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       await api.deleteCard(id, token);
-      await get().fetchBoard(token);
-      await get().fetchMetrics(token);
+      const { teamId } = get();
+      if (teamId) {
+        await get().fetchBoard(teamId, token);
+        await get().fetchMetrics(teamId, token);
+      }
       set({ isLoading: false });
     } catch (error) {
       set({ error: 'Erro ao deletar card', isLoading: false });
@@ -88,8 +99,11 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
   moveCard: async (data: MoveCardData, token: string) => {
     try {
       await api.moveCard(data, token);
-      await get().fetchBoard(token);
-      await get().fetchMetrics(token);
+      const { teamId } = get();
+      if (teamId) {
+        await get().fetchBoard(teamId, token);
+        await get().fetchMetrics(teamId, token);
+      }
     } catch (error) {
       set({ error: 'Erro ao mover card' });
       console.error(error);
@@ -99,11 +113,13 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
   createColumn: async (name: string, token: string) => {
     set({ isLoading: true, error: null });
     try {
-      const { board } = get();
+      const { board, teamId } = get();
       if (!board) throw new Error('Board não encontrado');
 
       await api.createColumn(board.id, name, token);
-      await get().fetchBoard(token);
+      if (teamId) {
+        await get().fetchBoard(teamId, token);
+      }
       set({ isLoading: false });
     } catch (error: any) {
       set({ error: error.message || 'Erro ao criar coluna', isLoading: false });
@@ -115,7 +131,10 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       await api.deleteColumn(id, token);
-      await get().fetchBoard(token);
+      const { teamId } = get();
+      if (teamId) {
+        await get().fetchBoard(teamId, token);
+      }
       set({ isLoading: false });
     } catch (error: any) {
       set({ error: error.message || 'Erro ao deletar coluna', isLoading: false });

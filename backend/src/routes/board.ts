@@ -7,7 +7,16 @@ const router = Router();
 // GET /api/board - Buscar board com colunas e cards
 router.get('/', async (req: Request, res: Response) => {
   try {
+    const { teamId } = req.query;
+
+    if (!teamId || typeof teamId !== 'string') {
+      return res.status(400).json({ error: 'teamId é obrigatório' });
+    }
+
     let board = await prisma.board.findFirst({
+      where: {
+        teamId,
+      },
       include: {
         columns: {
           orderBy: { order: 'asc' },
@@ -34,6 +43,7 @@ router.get('/', async (req: Request, res: Response) => {
       board = await prisma.board.create({
         data: {
           name: 'Meu Kanban',
+          teamId,
           columns: {
             create: [
               { name: 'A Fazer', order: 0 },

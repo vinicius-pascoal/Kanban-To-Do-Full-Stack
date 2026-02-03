@@ -21,10 +21,10 @@ export default function Board({ teamId }: { teamId?: string }) {
   const [selectedDetailCard, setSelectedDetailCard] = useState<CardType | null>(null);
 
   useEffect(() => {
-    if (token) {
-      fetchBoard(token);
+    if (token && teamId) {
+      fetchBoard(teamId, token);
     }
-  }, [token, teamId]);
+  }, [token, teamId, fetchBoard]);
 
   const handleAddCard = (columnId: string) => {
     setSelectedColumnId(columnId);

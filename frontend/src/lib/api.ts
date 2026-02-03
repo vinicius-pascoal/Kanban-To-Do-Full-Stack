@@ -85,8 +85,8 @@ export const api = {
   },
 
   // Board
-  async getBoard(token: string) {
-    const res = await fetch(`${API_URL}/api/board`, {
+  async getBoard(teamId: string, token: string) {
+    const res = await fetch(`${API_URL}/api/board?teamId=${teamId}`, {
       headers: getHeaders(token),
     });
     if (!res.ok) throw new Error('Erro ao buscar board');
@@ -191,8 +191,8 @@ export const api = {
   },
 
   // Metrics
-  async getMetrics(token: string) {
-    const res = await fetch(`${API_URL}/api/metrics`, {
+  async getMetrics(teamId: string, token: string) {
+    const res = await fetch(`${API_URL}/api/metrics?teamId=${teamId}`, {
       headers: getHeaders(token),
     });
     if (!res.ok) throw new Error('Erro ao buscar métricas');

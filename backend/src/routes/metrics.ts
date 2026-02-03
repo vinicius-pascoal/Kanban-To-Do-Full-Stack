@@ -10,11 +10,43 @@ router.use(authMiddleware);
 // GET /api/metrics - Buscar métricas do board
 router.get('/', async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const { teamId } = req.query;
+
+    if (!teamId || typeof teamId !== 'string') {
+      return res.status(400).json({ error: 'teamId é obrigatório' });
+    }
+
+    // Encontrar o board do time
+    const board = await prisma.board.findFirst({
+      where: { teamId },
+      include: { columns: true },
+    });
+
+    if (!board) {
+      return res.json({
+        totalCards: 0,
+        cardsByColumn: [],
+        overdueCount: 0,
+        dueTodayCount: 0,
+        completedCount: 0,
+        avgTimeByColumn: [],
+        completedByDay: [],
+        memberProductivity: [],
+      });
+    }
+
     // Total de cards
-    const totalCards = await prisma.card.count();
+    const totalCards = await prisma.card.count({
+      where: {
+        column: {
+          boardId: board.id,
+        },
+      },
+    });
 
     // Cards por coluna
     const cardsByColumn = await prisma.column.findMany({
+      where: { boardId: board.id },
       include: {
         _count: {
           select: { cards: true },
@@ -25,6 +57,11 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
 
     // Cards atrasados (não concluídos com data vencida)
     const allCards = await prisma.card.findMany({
+      where: {
+        column: {
+          boardId: board.id,
+        },
+      },
       include: { column: true },
     });
 
@@ -38,7 +75,7 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
 
     // Cards concluídos
     const completedColumn = await prisma.column.findFirst({
-      where: { name: 'Concluído' },
+      where: { name: 'Concluído', boardId: board.id },
       include: {
         _count: {
           select: { cards: true },
@@ -48,6 +85,13 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
 
     // Calcular tempo médio por coluna (baseado no histórico)
     const history = await prisma.cardHistory.findMany({
+      where: {
+        card: {
+          column: {
+            boardId: board.id,
+          },
+        },
+      },
       include: { card: true },
     });
 
@@ -90,13 +134,9 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const completedColumnForCards = await prisma.column.findFirst({
-      where: { name: 'Concluído' },
-    });
-
     const recentCompletedCards = await prisma.card.findMany({
       where: {
-        columnId: completedColumnForCards?.id || '',
+        columnId: completedColumn?.id || '',
         updatedAt: { gte: sevenDaysAgo },
       },
       orderBy: { updatedAt: 'asc' },
@@ -116,6 +156,11 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
 
     // Produtividade dos membros
     const allCardsWithAssigned = await prisma.card.findMany({
+      where: {
+        column: {
+          boardId: board.id,
+        },
+      },
       include: { assignedTo: true, column: true },
     });
 

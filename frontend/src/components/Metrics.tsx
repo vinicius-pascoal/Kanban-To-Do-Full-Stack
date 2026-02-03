@@ -35,12 +35,12 @@ export default function Metrics({ teamId }: { teamId?: string }) {
   const { token } = useAuth();
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || !teamId) return;
 
-    fetchMetrics(token);
-    const interval = setInterval(() => fetchMetrics(token), 30000);
+    fetchMetrics(teamId, token);
+    const interval = setInterval(() => fetchMetrics(teamId, token), 30000);
     return () => clearInterval(interval);
-  }, [token, fetchMetrics]);
+  }, [token, teamId, fetchMetrics]);
 
   if (!metrics) {
     return (
