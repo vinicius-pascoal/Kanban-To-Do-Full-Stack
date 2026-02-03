@@ -79,21 +79,20 @@ export default function Column({
 
   return (
     <div
-      className={`rounded-lg border-2 ${bgColor} p-4 min-w-[320px] flex flex-col h-[calc(100vh-250px)] transition-colors ${dragOverId === column.id ? 'bg-opacity-50 ring-2 ring-primary-400' : ''
-        }`}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
+      className={`rounded-lg border-2 ${bgColor} p-4 min-w-[320px] flex flex-col h-[calc(100vh-250px)] transition-all ${
+        isDraggingColumn ? 'opacity-50' : ''
+      } ${dragOverId === column.id ? 'bg-opacity-50 ring-2 ring-primary-400' : ''}`}
       draggable
       onDragStart={(e) => onColumnDragStart?.(e, column.id)}
-      onDragOver={onColumnDragOver}
+      onDragOver={(e) => {
+        handleDragOver(e);
+        onColumnDragOver?.(e);
+      }}
+      onDragLeave={handleDragLeave}
       onDrop={(e) => {
         handleDrop(e);
         onColumnDrop?.(e, column.id);
       }}
-      className={`rounded-lg border-2 ${bgColor} p-4 min-w-[320px] flex flex-col h-[calc(100vh-250px)] transition-all ${
-        isDraggingColumn ? 'opacity-50' : ''
-      } ${dragOverId === column.id ? 'bg-opacity-50 ring-2 ring-primary-400' : ''}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
