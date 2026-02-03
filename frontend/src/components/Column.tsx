@@ -13,6 +13,10 @@ interface ColumnProps {
   onViewCardDetails: (card: CardType) => void;
   onDeleteColumn?: (id: string) => void;
   onCardDrop: (cardId: string, targetColumnId: string) => void;
+  onColumnDragStart?: (e: React.DragEvent, columnId: string) => void;
+  onColumnDragOver?: (e: React.DragEvent) => void;
+  onColumnDrop?: (e: React.DragEvent, columnId: string) => void;
+  isDraggingColumn?: boolean;
 }
 
 export default function Column({
@@ -23,6 +27,10 @@ export default function Column({
   onViewCardDetails,
   onDeleteColumn,
   onCardDrop,
+  onColumnDragStart,
+  onColumnDragOver,
+  onColumnDrop,
+  isDraggingColumn,
 }: ColumnProps) {
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [draggedCardId, setDraggedCardId] = useState<string | null>(null);
@@ -76,6 +84,16 @@ export default function Column({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      draggable
+      onDragStart={(e) => onColumnDragStart?.(e, column.id)}
+      onDragOver={onColumnDragOver}
+      onDrop={(e) => {
+        handleDrop(e);
+        onColumnDrop?.(e, column.id);
+      }}
+      className={`rounded-lg border-2 ${bgColor} p-4 min-w-[320px] flex flex-col h-[calc(100vh-250px)] transition-all ${
+        isDraggingColumn ? 'opacity-50' : ''
+      } ${dragOverId === column.id ? 'bg-opacity-50 ring-2 ring-primary-400' : ''}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4 flex-shrink-0">

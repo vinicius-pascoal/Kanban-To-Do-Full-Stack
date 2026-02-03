@@ -10,7 +10,7 @@ import { Card as CardType } from '@/lib/types';
 import { Plus } from 'lucide-react';
 
 export default function Board({ teamId }: { teamId?: string }) {
-  const { board, fetchBoard, deleteCard, moveCard, deleteColumn } = useKanbanStore();
+  const { board, fetchBoard, deleteCard, moveCard, deleteColumn, clearBoard, reorderColumns } = useKanbanStore();
   const { token, currentTeam } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedColumnId, setSelectedColumnId] = useState<string | null>(null);
@@ -19,12 +19,20 @@ export default function Board({ teamId }: { teamId?: string }) {
   const [newColumnName, setNewColumnName] = useState('');
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedDetailCard, setSelectedDetailCard] = useState<CardType | null>(null);
+  const [draggedColumnId, setDraggedColumnId] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('🔄 Board useEffect triggered - teamId:', teamId);
     if (token && teamId) {
+      // Limpar board anterior antes de carregar novo
+      clearBoard();
       fetchBoard(teamId, token);
     }
-  }, [token, teamId, fetchBoard]);
+
+    return () => {
+      console.log('🧹 Board component unmounting');
+    };
+  }, [token, teamId]);
 
   const handleAddCard = (columnId: string) => {
     setSelectedColumnId(columnId);
@@ -70,6 +78,34 @@ export default function Board({ teamId }: { teamId?: string }) {
     setIsAddingColumn(false);
   };
 
+  const handleColumnDragStart = (e: React.DragEvent, columnId: string) => {
+    setDraggedColumnId(columnId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleColumnDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleColumnDrop = async (e: React.DragEvent, targetColumnId: string) => {
+    e.preventDefault();
+    if (!draggedColumnId || !board || draggedColumnId === targetColumnId || !token) return;
+
+    const columns = board.columns.slice();
+    const draggedIndex = columns.findIndex((c) => c.id === draggedColumnId);
+    const targetIndex = columns.findIndex((c) => c.id === targetColumnId);
+
+    if (draggedIndex === -1 || targetIndex === -1) return;
+
+    const [draggedColumn] = columns.splice(draggedIndex, 1);
+    columns.splice(targetIndex, 0, draggedColumn);
+
+    const newColumnIds = columns.map((c) => c.id);
+    await reorderColumns(newColumnIds, token);
+    setDraggedColumnId(null);
+  };
+
   if (!board) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -80,7 +116,6 @@ export default function Board({ teamId }: { teamId?: string }) {
       </div>
     );
   }
-
   return (
     <>
       <div className="flex gap-6 overflow-x-auto pb-6">
@@ -96,6 +131,10 @@ export default function Board({ teamId }: { teamId?: string }) {
               onViewCardDetails={handleViewCardDetails}
               onDeleteColumn={(id) => token && deleteColumn(id, token)}
               onCardDrop={handleCardDrop}
+              onColumnDragStart={handleColumnDragStart}
+              onColumnDragOver={handleColumnDragOver}
+              onColumnDrop={handleColumnDrop}
+              isDraggingColumn={draggedColumnId === column.id}
             />
           ))}
 

@@ -31,16 +31,22 @@ import {
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 export default function Metrics({ teamId }: { teamId?: string }) {
-  const { metrics, fetchMetrics } = useKanbanStore();
+  const { metrics, fetchMetrics, clearBoard } = useKanbanStore();
   const { token } = useAuth();
 
   useEffect(() => {
+    console.log('🔄 Metrics useEffect triggered - teamId:', teamId);
     if (!token || !teamId) return;
 
+    // Limpar métricas anteriores
+    clearBoard();
     fetchMetrics(teamId, token);
     const interval = setInterval(() => fetchMetrics(teamId, token), 30000);
-    return () => clearInterval(interval);
-  }, [token, teamId, fetchMetrics]);
+    return () => {
+      console.log('🧹 Metrics cleanup');
+      clearInterval(interval);
+    };
+  }, [token, teamId]);
 
   if (!metrics) {
     return (

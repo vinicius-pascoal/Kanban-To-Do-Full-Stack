@@ -9,7 +9,10 @@ router.get('/', async (req: Request, res: Response) => {
   try {
     const { teamId } = req.query;
 
+    console.log('🔍 GET /api/board - teamId:', teamId);
+
     if (!teamId || typeof teamId !== 'string') {
+      console.log('❌ teamId inválido ou ausente');
       return res.status(400).json({ error: 'teamId é obrigatório' });
     }
 
@@ -37,6 +40,12 @@ router.get('/', async (req: Request, res: Response) => {
         },
       },
     });
+
+    if (board) {
+      console.log('✅ Board encontrado:', board.id, 'para team:', teamId);
+    } else {
+      console.log('⚠️ Board não encontrado, criando novo para team:', teamId);
+    }
 
     // Se não existir board, cria um com colunas padrão
     if (!board) {
@@ -68,11 +77,12 @@ router.get('/', async (req: Request, res: Response) => {
           },
         },
       });
+      console.log('✅ Novo board criado:', board.id);
     }
 
     res.json(board);
   } catch (error) {
-    console.error('Erro ao buscar board:', error);
+    console.error('❌ Erro ao buscar board:', error);
     res.status(500).json({ error: 'Erro ao buscar board' });
   }
 });

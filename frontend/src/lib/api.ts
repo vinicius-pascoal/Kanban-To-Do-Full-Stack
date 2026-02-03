@@ -143,6 +143,16 @@ export const api = {
     return res.json();
   },
 
+  async reorderColumns(boardId: string, columnIds: string[], token: string) {
+    const res = await fetch(`${API_URL}/api/column/reorder/${boardId}`, {
+      method: 'PATCH',
+      headers: getHeaders(token),
+      body: JSON.stringify({ columnIds }),
+    });
+    if (!res.ok) throw new Error('Erro ao reordenar colunas');
+    return res.json();
+  },
+
   // Cards
   async createCard(data: any, token: string) {
     const res = await fetch(`${API_URL}/api/card`, {

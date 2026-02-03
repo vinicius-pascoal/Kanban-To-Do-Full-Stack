@@ -18,6 +18,8 @@ interface KanbanStore {
   moveCard: (data: MoveCardData, token: string) => Promise<void>;
   createColumn: (name: string, token: string) => Promise<void>;
   deleteColumn: (id: string, token: string) => Promise<void>;
+  reorderColumns: (columnIds: string[], token: string) => Promise<void>;
+  clearBoard: () => void;
   setError: (error: string | null) => void;
 }
 
@@ -30,10 +32,13 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
 
   fetchBoard: async (teamId: string, token: string) => {
     set({ isLoading: true, error: null, teamId });
+    console.log('🔍 Fetching board for teamId:', teamId);
     try {
       const board = await api.getBoard(teamId, token);
+      console.log('✅ Board loaded:', board.id, 'for team:', teamId);
       set({ board, isLoading: false });
     } catch (error) {
+      console.error('❌ Error loading board:', error);
       set({ error: 'Erro ao carregar board', isLoading: false });
       console.error(error);
     }
@@ -142,7 +147,27 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
     }
   },
 
+  reorderColumns: async (columnIds: string[], token: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { board } = get();
+      if (!board) throw new Error('Board não encontrado');
+
+      await api.reorderColumns(board.id, columnIds, token);
+      await get().fetchBoard(board.teamId || '', token);
+      set({ isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message || 'Erro ao reordenar colunas', isLoading: false });
+      console.error(error);
+    }
+  },
+
   setError: (error: string | null) => {
     set({ error });
+  },
+
+  clearBoard: () => {
+    console.log('🧹 Clearing board state');
+    set({ board: null, metrics: null, teamId: null });
   },
 }));

@@ -110,4 +110,43 @@ router.put('/:id', async (req: Request, res: Response) => {
   }
 });
 
+
+// PATCH /api/column/reorder - Reordenar colunas
+router.patch('/reorder/:boardId', async (req: Request, res: Response) => {
+  try {
+    const { boardId } = req.params;
+    const { columnIds } = req.body;
+
+    if (!columnIds || !Array.isArray(columnIds)) {
+      return res.status(400).json({ error: 'columnIds array é obrigatório' });
+    }
+
+    // Atualizar a ordem de cada coluna
+    await Promise.all(
+      columnIds.map((columnId, index) =>
+        prisma.column.update({
+          where: { id: columnId },
+          data: { order: index },
+        })
+      )
+    );
+
+    // Buscar e retornar as colunas atualizadas
+    const columns = await prisma.column.findMany({
+      where: { boardId },
+      orderBy: { order: 'asc' },
+      include: {
+        cards: {
+          orderBy: { order: 'asc' },
+        },
+      },
+    });
+
+    res.json(columns);
+  } catch (error) {
+    console.error('Erro ao reordenar colunas:', error);
+    res.status(500).json({ error: 'Erro ao reordenar colunas' });
+  }
+});
+
 export default router;
