@@ -31,6 +31,7 @@ export default function DashboardHome() {
   const [myCards, setMyCards] = useState<CardWithTeam[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -151,7 +152,10 @@ export default function DashboardHome() {
                   ←
                 </button>
                 <button
-                  onClick={() => setCurrentDate(new Date())}
+                  onClick={() => {
+                    setCurrentDate(new Date());
+                    setSelectedDay(null);
+                  }}
                   className="px-3 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded transition-colors"
                 >
                   Hoje
@@ -162,6 +166,14 @@ export default function DashboardHome() {
                 >
                   →
                 </button>
+                {selectedDay && (
+                  <button
+                    onClick={() => setSelectedDay(null)}
+                    className="px-3 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded transition-colors ml-2"
+                  >
+                    Limpar
+                  </button>
+                )}
               </div>
             </div>
 
@@ -178,21 +190,29 @@ export default function DashboardHome() {
             <div className="grid grid-cols-7 gap-2">
               {days.map((day, index) => {
                 const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                const isSelected = day === selectedDay;
                 const dayCards = day ? cardsByDay[day] || [] : [];
 
                 return (
-                  <div
+                  <button
                     key={index}
-                    className={`min-h-[80px] p-2 rounded-lg border ${day
-                      ? isToday
-                        ? 'bg-blue-50 border-blue-300'
-                        : 'bg-gray-50 border-gray-200'
-                      : 'bg-transparent border-transparent'
+                    onClick={() => {
+                      if (day) {
+                        setSelectedDay(isSelected ? null : day);
+                      }
+                    }}
+                    className={`min-h-[80px] p-2 rounded-lg border transition-all cursor-pointer ${day
+                      ? isSelected
+                        ? 'bg-blue-200 border-blue-500 ring-2 ring-blue-400'
+                        : isToday
+                          ? 'bg-blue-50 border-blue-300 hover:bg-blue-100'
+                          : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                      : 'bg-transparent border-transparent cursor-default'
                       }`}
                   >
                     {day && (
                       <>
-                        <div className={`text-sm font-semibold mb-1 ${isToday ? 'text-blue-700' : 'text-gray-700'}`}>
+                        <div className={`text-sm font-semibold mb-1 ${isSelected ? 'text-blue-900' : isToday ? 'text-blue-700' : 'text-gray-700'}`}>
                           {day}
                         </div>
                         {dayCards.length > 0 && (
@@ -215,7 +235,7 @@ export default function DashboardHome() {
                         )}
                       </>
                     )}
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -225,38 +245,74 @@ export default function DashboardHome() {
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
               <Clock className="w-6 h-6" />
-              Cards de Hoje
+              {selectedDay ? `Cards - ${selectedDay} de ${monthNames[month]}` : 'Cards de Hoje'}
             </h2>
-            {todayCards.length > 0 ? (
+            {selectedDay ? (
               <div className="space-y-3">
-                {todayCards.map((card) => (
-                  <div
-                    key={card.id}
-                    className={`p-3 rounded-lg border-2 ${getPriorityColor(card.priority)}`}
-                  >
-                    <h3 className="font-semibold mb-1">{card.title}</h3>
-                    {card.description && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{card.description}</p>
-                    )}
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium">{card.column.name}</span>
-                        {card.column.board.team && (
-                          <>
-                            <span>•</span>
-                            <span>{card.column.board.team.name}</span>
-                          </>
-                        )}
+                {cardsByDay[selectedDay]?.length > 0 ? (
+                  cardsByDay[selectedDay].map((card) => (
+                    <div
+                      key={card.id}
+                      className={`p-3 rounded-lg border-2 ${getPriorityColor(card.priority)}`}
+                    >
+                      <h3 className="font-semibold mb-1">{card.title}</h3>
+                      {card.description && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{card.description}</p>
+                      )}
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium">{card.column.name}</span>
+                          {card.column.board.team && (
+                            <>
+                              <span>•</span>
+                              <span>{card.column.board.team.name}</span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <AlertCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                    <p>Nenhum card neste dia</p>
                   </div>
-                ))}
+                )}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <AlertCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p>Nenhum card para hoje</p>
-              </div>
+              <>
+                {todayCards.length > 0 ? (
+                  <div className="space-y-3">
+                    {todayCards.map((card) => (
+                      <div
+                        key={card.id}
+                        className={`p-3 rounded-lg border-2 ${getPriorityColor(card.priority)}`}
+                      >
+                        <h3 className="font-semibold mb-1">{card.title}</h3>
+                        {card.description && (
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{card.description}</p>
+                        )}
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="flex items-center gap-1">
+                            <span className="font-medium">{card.column.name}</span>
+                            {card.column.board.team && (
+                              <>
+                                <span>•</span>
+                                <span>{card.column.board.team.name}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <AlertCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                    <p>Nenhum card para hoje</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
