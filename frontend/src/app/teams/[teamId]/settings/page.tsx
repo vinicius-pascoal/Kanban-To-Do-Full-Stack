@@ -56,9 +56,9 @@ function TeamSettingsContent() {
 
   const handleDeleteTeam = async () => {
     setLocalError('');
-    
+
     if (!currentTeam) return;
-    
+
     if (deleteConfirmation !== currentTeam.name) {
       setLocalError(`Digite o nome exato do time: ${currentTeam.name}`);
       return;

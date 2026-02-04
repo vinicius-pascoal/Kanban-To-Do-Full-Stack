@@ -96,12 +96,6 @@ function DashboardContent() {
         {activeTab === 'board' ? <Board teamId={teamId} /> : <Metrics teamId={teamId} />}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm border-t dark:border-slate-700 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
-          Desenvolvido com Next.js, TypeScript, Tailwind CSS e SQLite
-        </div>
-      </footer>
     </div>
   );
 }
