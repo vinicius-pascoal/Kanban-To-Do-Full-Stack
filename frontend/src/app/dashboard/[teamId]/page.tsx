@@ -55,16 +55,16 @@ function DashboardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col">
       {/* Tabs */}
-      <div className="bg-white dark:bg-slate-800 border-b dark:border-slate-700">
+      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b dark:border-slate-700 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-4">
             <button
               onClick={() => setActiveTab('board')}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${activeTab === 'board'
-                  ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-medium'
-                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+              className={`flex items-center gap-2 px-5 py-4 border-b-2 transition-all ${activeTab === 'board'
+                  ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-semibold'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800/50'
                 }`}
             >
               <LayoutDashboard className="w-5 h-5" />
@@ -72,9 +72,9 @@ function DashboardContent() {
             </button>
             <button
               onClick={() => setActiveTab('metrics')}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${activeTab === 'metrics'
-                  ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-medium'
-                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+              className={`flex items-center gap-2 px-5 py-4 border-b-2 transition-all ${activeTab === 'metrics'
+                  ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-semibold'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800/50'
                 }`}
             >
               <BarChart3 className="w-5 h-5" />
@@ -82,7 +82,7 @@ function DashboardContent() {
             </button>
             <button
               onClick={() => router.push(`/teams/${teamId}/settings`)}
-              className="flex items-center gap-2 px-4 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 border-transparent border-b-2"
+              className="flex items-center gap-2 px-5 py-4 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 border-transparent border-b-2 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-all"
             >
               <Settings className="w-5 h-5" />
               Configurações
@@ -92,12 +92,12 @@ function DashboardContent() {
       </div>
 
       {/* Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6 flex-1">
+      <main className="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
         {activeTab === 'board' ? <Board teamId={teamId} /> : <Metrics teamId={teamId} />}
       </main>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-slate-800 border-t dark:border-slate-700 mt-auto">
+      <footer className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm border-t dark:border-slate-700 mt-auto">
         <div className="max-w-7xl mx-auto px-4 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
           Desenvolvido com Next.js, TypeScript, Tailwind CSS e SQLite
         </div>

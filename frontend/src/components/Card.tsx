@@ -24,31 +24,31 @@ export default function Card({ card, columnName, onEdit, onDelete, onViewDetails
     <motion.div
       layout
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: isDragging ? 0.5 : 1, y: 0 }}
+      animate={{ opacity: isDragging ? 0.4 : 1, y: 0, scale: isDragging ? 0.95 : 1 }}
       exit={{ opacity: 0, y: -20 }}
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.03, y: -2 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       onClick={() => onViewDetails(card)}
-      className={`p-4 rounded-lg border-2 bg-white dark:bg-slate-700 shadow-sm cursor-pointer hover:shadow-md transition-all flex flex-col h-full ${getStatusColor(
+      className={`p-4 rounded-xl border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-md cursor-pointer hover:shadow-xl transition-all flex flex-col h-full ${getStatusColor(
         status
-      )} ${isDragging ? 'opacity-50' : ''}`}
+      )} ${isDragging ? 'opacity-40 cursor-grabbing' : 'cursor-grab'}`}
       draggable
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-2 flex-shrink-0">
-        <h3 className="font-semibold text-gray-800 dark:text-white flex-1 line-clamp-2">{card.title}</h3>
+      <div className="flex items-start justify-between mb-3 flex-shrink-0">
+        <h3 className="font-bold text-base text-gray-900 dark:text-white flex-1 line-clamp-2 leading-tight">{card.title}</h3>
         {isHovered && (
-          <div className="flex gap-1 ml-2 flex-shrink-0">
+          <div className="flex gap-1.5 ml-2 flex-shrink-0">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit(card);
               }}
-              className="p-1 hover:bg-gray-200 dark:hover:bg-slate-600 rounded transition-colors"
+              className="p-1.5 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-all hover:scale-110"
               title="Editar"
             >
-              <Edit className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <Edit className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </button>
             <button
               onClick={(e) => {
@@ -57,7 +57,7 @@ export default function Card({ card, columnName, onEdit, onDelete, onViewDetails
                   onDelete(card.id);
                 }
               }}
-              className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+              className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"
               title="Deletar"
             >
               <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
@@ -73,8 +73,9 @@ export default function Card({ card, columnName, onEdit, onDelete, onViewDetails
 
       {/* Assigned User */}
       {card.assignedTo && (
-        <div className="mb-3 inline-flex items-center px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs rounded-full flex-shrink-0 w-fit">
-          👤 <span className="line-clamp-1">{card.assignedTo.name}</span>
+        <div className="mb-3 inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full flex-shrink-0 w-fit border border-blue-200 dark:border-blue-800">
+          <span className="text-sm">👤</span>
+          <span className="line-clamp-1">{card.assignedTo.name}</span>
         </div>
       )}
 
@@ -84,7 +85,7 @@ export default function Card({ card, columnName, onEdit, onDelete, onViewDetails
       {/* Footer */}
       <div className="flex items-center justify-between text-xs flex-shrink-0 mb-2 gap-2 flex-wrap">
         {/* Priority */}
-        <span className={`px-2 py-1 rounded-full font-medium flex-shrink-0 ${getPriorityColor(card.priority)}`}>
+        <span className={`px-3 py-1.5 rounded-full font-semibold flex-shrink-0 shadow-sm ${getPriorityColor(card.priority)}`}>
           {card.priority}
         </span>
 

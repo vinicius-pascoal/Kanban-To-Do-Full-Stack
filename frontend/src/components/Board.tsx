@@ -10,7 +10,7 @@ import { Card as CardType } from '@/lib/types';
 import { Plus } from 'lucide-react';
 
 export default function Board({ teamId }: { teamId?: string }) {
-  const { board, fetchBoard, deleteCard, moveCard, deleteColumn, clearBoard, reorderColumns } = useKanbanStore();
+  const { board, fetchBoard, deleteCard, moveCard, deleteColumn, clearBoard } = useKanbanStore();
   const { token, currentTeam } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedColumnId, setSelectedColumnId] = useState<string | null>(null);
@@ -19,7 +19,6 @@ export default function Board({ teamId }: { teamId?: string }) {
   const [newColumnName, setNewColumnName] = useState('');
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedDetailCard, setSelectedDetailCard] = useState<CardType | null>(null);
-  const [draggedColumnId, setDraggedColumnId] = useState<string | null>(null);
 
   useEffect(() => {
     console.log('🔄 Board useEffect triggered - teamId:', teamId);
@@ -78,34 +77,6 @@ export default function Board({ teamId }: { teamId?: string }) {
     setIsAddingColumn(false);
   };
 
-  const handleColumnDragStart = (e: React.DragEvent, columnId: string) => {
-    setDraggedColumnId(columnId);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleColumnDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
-
-  const handleColumnDrop = async (e: React.DragEvent, targetColumnId: string) => {
-    e.preventDefault();
-    if (!draggedColumnId || !board || draggedColumnId === targetColumnId || !token) return;
-
-    const columns = board.columns.slice();
-    const draggedIndex = columns.findIndex((c) => c.id === draggedColumnId);
-    const targetIndex = columns.findIndex((c) => c.id === targetColumnId);
-
-    if (draggedIndex === -1 || targetIndex === -1) return;
-
-    const [draggedColumn] = columns.splice(draggedIndex, 1);
-    columns.splice(targetIndex, 0, draggedColumn);
-
-    const newColumnIds = columns.map((c) => c.id);
-    await reorderColumns(newColumnIds, token);
-    setDraggedColumnId(null);
-  };
-
   if (!board) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -118,7 +89,7 @@ export default function Board({ teamId }: { teamId?: string }) {
   }
   return (
     <>
-      <div className="flex gap-6 overflow-x-auto pb-6">
+      <div className="flex gap-6 overflow-x-auto pb-8 px-2">
         {board.columns
           .sort((a, b) => a.order - b.order)
           .map((column) => (
@@ -131,17 +102,13 @@ export default function Board({ teamId }: { teamId?: string }) {
               onViewCardDetails={handleViewCardDetails}
               onDeleteColumn={(id) => token && deleteColumn(id, token)}
               onCardDrop={handleCardDrop}
-              onColumnDragStart={handleColumnDragStart}
-              onColumnDragOver={handleColumnDragOver}
-              onColumnDrop={handleColumnDrop}
-              isDraggingColumn={draggedColumnId === column.id}
             />
           ))}
 
         {/* Add Column Button */}
         {isAddingColumn ? (
-          <div className="bg-white rounded-lg border-2 border-dashed border-gray-300 p-4 min-w-[320px] flex flex-col gap-3">
-            <h3 className="font-bold text-gray-800">Nova Coluna</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-6 min-w-[340px] max-w-[340px] flex flex-col gap-4">
+            <h3 className="font-bold text-lg text-gray-800 dark:text-white">Nova Coluna</h3>
             <input
               type="text"
               value={newColumnName}
@@ -155,12 +122,12 @@ export default function Board({ teamId }: { teamId?: string }) {
               }}
               placeholder="Nome da coluna"
               autoFocus
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 onClick={handleAddColumn}
-                className="flex-1 px-3 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg"
               >
                 Adicionar
               </button>
@@ -169,7 +136,7 @@ export default function Board({ teamId }: { teamId?: string }) {
                   setIsAddingColumn(false);
                   setNewColumnName('');
                 }}
-                className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-all"
               >
                 Cancelar
               </button>
@@ -178,10 +145,14 @@ export default function Board({ teamId }: { teamId?: string }) {
         ) : (
           <button
             onClick={() => setIsAddingColumn(true)}
-            className="bg-white rounded-lg border-2 border-dashed border-gray-300 p-4 min-w-[320px] flex items-center justify-center gap-2 hover:border-primary-400 hover:bg-primary-50 transition-colors"
+            className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900 rounded-xl shadow-lg border-2 border-dashed border-gray-300 dark:border-slate-600 p-6 min-w-[340px] max-w-[340px] flex flex-col items-center justify-center gap-3 hover:border-blue-400 dark:hover:border-blue-500 hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/20 dark:hover:to-blue-900/10 transition-all group"
           >
-            <Plus className="w-6 h-6 text-gray-600" />
-            <span className="font-medium text-gray-700">Adicionar Coluna</span>
+            <div className="w-16 h-16 rounded-full bg-white dark:bg-slate-800 shadow-md flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Plus className="w-8 h-8 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
+            </div>
+            <span className="font-semibold text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-400">
+              Adicionar Coluna
+            </span>
           </button>
         )}
       </div>

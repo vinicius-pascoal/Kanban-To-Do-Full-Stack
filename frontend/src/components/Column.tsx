@@ -13,9 +13,6 @@ interface ColumnProps {
   onViewCardDetails: (card: CardType) => void;
   onDeleteColumn?: (id: string) => void;
   onCardDrop: (cardId: string, targetColumnId: string) => void;
-  onColumnDragStart?: (e: React.DragEvent, columnId: string) => void;
-  onColumnDragOver?: (e: React.DragEvent) => void;
-  onColumnDrop?: (e: React.DragEvent, columnId: string) => void;
   isDraggingColumn?: boolean;
 }
 
@@ -27,21 +24,18 @@ export default function Column({
   onViewCardDetails,
   onDeleteColumn,
   onCardDrop,
-  onColumnDragStart,
-  onColumnDragOver,
-  onColumnDrop,
   isDraggingColumn,
 }: ColumnProps) {
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [draggedCardId, setDraggedCardId] = useState<string | null>(null);
 
   const columnColors: Record<string, string> = {
-    'A Fazer': 'bg-gray-100 dark:bg-slate-700 border-gray-300 dark:border-slate-600',
-    'Em Progresso': 'bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-700',
-    'Concluído': 'bg-green-100 dark:bg-green-900/40 border-green-300 dark:border-green-700',
+    'A Fazer': 'bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-800 dark:to-slate-900',
+    'Em Progresso': 'bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/20',
+    'Concluído': 'bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/20',
   };
 
-  const bgColor = columnColors[column.name] || 'bg-gray-100';
+  const bgColor = columnColors[column.name] || 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900';
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -79,35 +73,25 @@ export default function Column({
 
   return (
     <div
-      className={`rounded-lg border-2 ${bgColor} p-4 min-w-[320px] flex flex-col h-[calc(100vh-250px)] transition-all ${isDraggingColumn ? 'opacity-50' : ''
-        } ${dragOverId === column.id ? 'bg-opacity-50 ring-2 ring-primary-400' : ''}`}
-      draggable
-      onDragStart={(e) => onColumnDragStart?.(e, column.id)}
-      onDragOver={(e) => {
-        handleDragOver(e);
-        onColumnDragOver?.(e);
-      }}
-      onDragLeave={handleDragLeave}
-      onDrop={(e) => {
-        handleDrop(e);
-        onColumnDrop?.(e, column.id);
-      }}
+      className={`rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 ${bgColor} p-5 min-w-[340px] max-w-[340px] flex flex-col h-[calc(100vh-220px)] transition-all backdrop-blur-sm ${
+        dragOverId === column.id ? 'ring-2 ring-blue-400 dark:ring-blue-500 shadow-xl' : ''
+      }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <div className="flex items-center gap-2 flex-1">
-          <h2 className="font-bold text-lg text-gray-800 dark:text-white">{column.name}</h2>
-          <span className="bg-white dark:bg-slate-600 px-2 py-0.5 rounded-full text-sm font-medium text-gray-600 dark:text-gray-300">
+      <div className="flex items-center justify-between mb-5 flex-shrink-0 pb-4 border-b border-gray-200 dark:border-slate-600">
+        <div className="flex items-center gap-3 flex-1">
+          <h2 className="font-bold text-xl text-gray-800 dark:text-white">{column.name}</h2>
+          <span className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
             {column.cards.length}
           </span>
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-2">
           <button
             onClick={() => onAddCard(column.id)}
-            className="p-1 hover:bg-white/50 dark:hover:bg-slate-600 rounded transition-colors"
+            className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-all hover:scale-110"
             title="Adicionar card"
           >
-            <Plus className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+            <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </button>
           {onDeleteColumn && column.cards.length === 0 && (
             <button
@@ -126,10 +110,20 @@ export default function Column({
       </div>
 
       {/* Cards Container */}
-      <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+      <div 
+        className={`flex-1 overflow-y-auto space-y-3 pr-2 rounded-lg transition-all ${
+          dragOverId === column.id ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
         {column.cards.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm flex items-center justify-center h-full">
-            Nenhum card nesta coluna
+          <div className="text-center py-12 text-gray-400 dark:text-gray-500 text-sm flex flex-col items-center justify-center h-full">
+            <div className="w-16 h-16 mb-3 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center">
+              <Plus className="w-8 h-8 text-gray-300 dark:text-gray-600" />
+            </div>
+            <p>Arraste cards aqui</p>
           </div>
         ) : (
           column.cards.map((card) => (
