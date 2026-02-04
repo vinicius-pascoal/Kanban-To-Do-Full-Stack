@@ -132,29 +132,7 @@ export default function DashboardHome() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">📌 Kanban To-Do</h1>
-              <p className="text-sm text-gray-600 mt-1">Bem-vindo, {user?.name}!</p>
-            </div>
-            <button
-              onClick={() => {
-                localStorage.removeItem('user');
-                localStorage.removeItem('token');
-                router.push('/login');
-              }}
-              className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              Sair
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Seção de Calendário e Cards do Dia */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -206,10 +184,10 @@ export default function DashboardHome() {
                   <div
                     key={index}
                     className={`min-h-[80px] p-2 rounded-lg border ${day
-                        ? isToday
-                          ? 'bg-blue-50 border-blue-300'
-                          : 'bg-gray-50 border-gray-200'
-                        : 'bg-transparent border-transparent'
+                      ? isToday
+                        ? 'bg-blue-50 border-blue-300'
+                        : 'bg-gray-50 border-gray-200'
+                      : 'bg-transparent border-transparent'
                       }`}
                   >
                     {day && (
@@ -229,7 +207,7 @@ export default function DashboardHome() {
                               </div>
                             ))}
                             {dayCards.length > 2 && (
-                              <div className="text-xs text-gray-500 font-medium">
+                              <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 +{dayCards.length - 2} mais
                               </div>
                             )}
@@ -244,8 +222,8 @@ export default function DashboardHome() {
           </div>
 
           {/* Cards do Dia */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
               <Clock className="w-6 h-6" />
               Cards de Hoje
             </h2>
@@ -258,9 +236,9 @@ export default function DashboardHome() {
                   >
                     <h3 className="font-semibold mb-1">{card.title}</h3>
                     {card.description && (
-                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">{card.description}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{card.description}</p>
                     )}
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
                       <div className="flex items-center gap-1">
                         <span className="font-medium">{card.column.name}</span>
                         {card.column.board.team && (
@@ -275,7 +253,7 @@ export default function DashboardHome() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <AlertCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
                 <p>Nenhum card para hoje</p>
               </div>
@@ -284,33 +262,33 @@ export default function DashboardHome() {
         </div>
 
         {/* Meus Times */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Meus Times</h2>
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Meus Times</h2>
           {teams && teams.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {teams.map((team) => (
                 <Link
                   key={team.id}
                   href={`/dashboard/${team.id}`}
-                  className="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all group"
+                  className="p-4 border-2 border-gray-200 dark:border-slate-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-semibold text-gray-800 group-hover:text-blue-700">
+                      <h3 className="font-semibold text-gray-800 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-400">
                         {team.name}
                       </h3>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         {team.members?.length || 0} membros
                       </p>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600" />
+                    <ChevronRight className="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-gray-500 mb-4">Você ainda não faz parte de nenhum time</p>
+              <p className="text-gray-500 dark:text-gray-400 mb-4">Você ainda não faz parte de nenhum time</p>
               <Link
                 href="/teams"
                 className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

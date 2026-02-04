@@ -1,0 +1,26 @@
+{
+  "name": "kanban-to-do-full-stack",
+  "version": "1.0.0",
+  "description": "Sistema Kanban completo para gerenciamento de tarefas",
+  "private": true,
+  "scripts": {
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm run dev\"",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "start": "concurrently \"cd frontend && npm run start\" \"cd backend && npm run start\"",
+    "start:frontend": "cd frontend && npm run start",
+    "start:backend": "cd backend && npm run start"
+  },
+  "keywords": [
+    "kanban",
+    "todo",
+    "full-stack"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
