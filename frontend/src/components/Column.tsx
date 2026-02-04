@@ -73,9 +73,8 @@ export default function Column({
 
   return (
     <div
-      className={`rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 ${bgColor} p-5 min-w-[340px] max-w-[340px] flex flex-col h-[calc(100vh-220px)] transition-all backdrop-blur-sm ${
-        dragOverId === column.id ? 'ring-2 ring-blue-400 dark:ring-blue-500 shadow-xl' : ''
-      }`}
+      className={`rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 ${bgColor} p-5 min-w-[340px] max-w-[340px] flex flex-col h-[calc(100vh-220px)] transition-all backdrop-blur-sm ${dragOverId === column.id ? 'ring-2 ring-blue-400 dark:ring-blue-500 shadow-xl' : ''
+        }`}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-5 flex-shrink-0 pb-4 border-b border-gray-200 dark:border-slate-600">
@@ -110,10 +109,9 @@ export default function Column({
       </div>
 
       {/* Cards Container */}
-      <div 
-        className={`flex-1 overflow-y-auto space-y-3 pr-2 rounded-lg transition-all ${
-          dragOverId === column.id ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''
-        }`}
+      <div
+        className={`flex-1 overflow-y-auto space-y-3 pr-2 rounded-lg transition-all ${dragOverId === column.id ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''
+          }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
