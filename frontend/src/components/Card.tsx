@@ -30,14 +30,14 @@ export default function Card({ card, columnName, onEdit, onDelete, onViewDetails
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       onClick={() => onViewDetails(card)}
-      className={`p-4 rounded-lg border-2 bg-white shadow-sm cursor-pointer hover:shadow-md transition-all flex flex-col h-full ${getStatusColor(
+      className={`p-4 rounded-lg border-2 bg-white dark:bg-slate-700 shadow-sm cursor-pointer hover:shadow-md transition-all flex flex-col h-full ${getStatusColor(
         status
       )} ${isDragging ? 'opacity-50' : ''}`}
       draggable
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-2 flex-shrink-0">
-        <h3 className="font-semibold text-gray-800 flex-1 line-clamp-2">{card.title}</h3>
+        <h3 className="font-semibold text-gray-800 dark:text-white flex-1 line-clamp-2">{card.title}</h3>
         {isHovered && (
           <div className="flex gap-1 ml-2 flex-shrink-0">
             <button
@@ -45,10 +45,10 @@ export default function Card({ card, columnName, onEdit, onDelete, onViewDetails
                 e.stopPropagation();
                 onEdit(card);
               }}
-              className="p-1 hover:bg-gray-200 rounded transition-colors"
+              className="p-1 hover:bg-gray-200 dark:hover:bg-slate-600 rounded transition-colors"
               title="Editar"
             >
-              <Edit className="w-4 h-4 text-gray-600" />
+              <Edit className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             </button>
             <button
               onClick={(e) => {
@@ -57,10 +57,10 @@ export default function Card({ card, columnName, onEdit, onDelete, onViewDetails
                   onDelete(card.id);
                 }
               }}
-              className="p-1 hover:bg-red-100 rounded transition-colors"
+              className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
               title="Deletar"
             >
-              <Trash2 className="w-4 h-4 text-red-600" />
+              <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
             </button>
           </div>
         )}
@@ -68,12 +68,12 @@ export default function Card({ card, columnName, onEdit, onDelete, onViewDetails
 
       {/* Description */}
       {card.description && (
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2 flex-shrink-0">{card.description}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2 flex-shrink-0">{card.description}</p>
       )}
 
       {/* Assigned User */}
       {card.assignedTo && (
-        <div className="mb-3 inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex-shrink-0 w-fit">
+        <div className="mb-3 inline-flex items-center px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs rounded-full flex-shrink-0 w-fit">
           👤 <span className="line-clamp-1">{card.assignedTo.name}</span>
         </div>
       )}

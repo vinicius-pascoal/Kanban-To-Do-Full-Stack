@@ -50,8 +50,8 @@ export default function Metrics({ teamId }: { teamId?: string }) {
 
   if (!metrics) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <p className="text-gray-600">Carregando métricas...</p>
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <p className="text-gray-600 dark:text-gray-400">Carregando métricas...</p>
       </div>
     );
   }
@@ -67,61 +67,61 @@ export default function Metrics({ teamId }: { teamId?: string }) {
       {/* Cards de Resumo KPI */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total de Cards */}
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg shadow-md p-6 border-l-4 border-blue-600">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg shadow-md p-6 border-l-4 border-blue-600 dark:border-blue-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-blue-700 mb-2">Total de Cards</p>
-              <p className="text-4xl font-bold text-blue-900">{metrics.totalCards}</p>
-              <p className="text-xs text-blue-600 mt-2">Todos os tasks do projeto</p>
+              <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">Total de Cards</p>
+              <p className="text-4xl font-bold text-blue-900 dark:text-blue-100">{metrics.totalCards}</p>
+              <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">Todos os tasks do projeto</p>
             </div>
-            <div className="p-3 bg-blue-200 rounded-lg">
-              <BarChart3 className="w-8 h-8 text-blue-600" />
+            <div className="p-3 bg-blue-200 dark:bg-blue-800/50 rounded-lg">
+              <BarChart3 className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
         </div>
 
         {/* Cards Concluídos */}
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg shadow-md p-6 border-l-4 border-green-600">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-lg shadow-md p-6 border-l-4 border-green-600 dark:border-green-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-green-700 mb-2">Concluídos</p>
-              <p className="text-4xl font-bold text-green-900">{metrics.completedCount}</p>
-              <p className="text-xs text-green-600 mt-2">
+              <p className="text-sm font-semibold text-green-700 dark:text-green-300 mb-2">Concluídos</p>
+              <p className="text-4xl font-bold text-green-900 dark:text-green-100">{metrics.completedCount}</p>
+              <p className="text-xs text-green-600 dark:text-green-400 mt-2">
                 {metrics.totalCards > 0
                   ? `${Math.round((metrics.completedCount / metrics.totalCards) * 100)}% do total`
                   : '0%'}
               </p>
             </div>
-            <div className="p-3 bg-green-200 rounded-lg">
-              <CheckCircle2 className="w-8 h-8 text-green-600" />
+            <div className="p-3 bg-green-200 dark:bg-green-800/50 rounded-lg">
+              <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
             </div>
           </div>
         </div>
 
         {/* Cards Atrasados */}
-        <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg shadow-md p-6 border-l-4 border-red-600">
+        <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 rounded-lg shadow-md p-6 border-l-4 border-red-600 dark:border-red-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-red-700 mb-2">Atrasados</p>
-              <p className="text-4xl font-bold text-red-900">{metrics.overdueCount}</p>
-              <p className="text-xs text-red-600 mt-2">Exigem atenção imediata</p>
+              <p className="text-sm font-semibold text-red-700 dark:text-red-300 mb-2">Atrasados</p>
+              <p className="text-4xl font-bold text-red-900 dark:text-red-100">{metrics.overdueCount}</p>
+              <p className="text-xs text-red-600 dark:text-red-400 mt-2">Exigem atenção imediata</p>
             </div>
-            <div className="p-3 bg-red-200 rounded-lg">
-              <AlertCircle className="w-8 h-8 text-red-600" />
+            <div className="p-3 bg-red-200 dark:bg-red-800/50 rounded-lg">
+              <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
             </div>
           </div>
         </div>
 
         {/* Vencem Hoje */}
-        <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg shadow-md p-6 border-l-4 border-yellow-600">
+        <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30 rounded-lg shadow-md p-6 border-l-4 border-yellow-600 dark:border-yellow-500">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-yellow-700 mb-2">Vencem Hoje</p>
-              <p className="text-4xl font-bold text-yellow-900">{metrics.dueTodayCount}</p>
-              <p className="text-xs text-yellow-600 mt-2">Urgentes para hoje</p>
+              <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-300 mb-2">Vencem Hoje</p>
+              <p className="text-4xl font-bold text-yellow-900 dark:text-yellow-100">{metrics.dueTodayCount}</p>
+              <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">Urgentes para hoje</p>
             </div>
-            <div className="p-3 bg-yellow-200 rounded-lg">
-              <Clock className="w-8 h-8 text-yellow-600" />
+            <div className="p-3 bg-yellow-200 dark:bg-yellow-800/50 rounded-lg">
+              <Clock className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
             </div>
           </div>
         </div>
@@ -130,8 +130,8 @@ export default function Metrics({ teamId }: { teamId?: string }) {
       {/* Gráficos em Grid - Estilo Power BI */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gráfico de Pizza - Cards por Coluna */}
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+          <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-blue-600" />
             Distribuição de Cards por Coluna
           </h3>
@@ -157,8 +157,8 @@ export default function Metrics({ teamId }: { teamId?: string }) {
         </div>
 
         {/* Gráfico de Barras - Cards Concluídos por Dia */}
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+          <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-green-600" />
             Cards Concluídos (Últimos 7 dias)
           </h3>
@@ -187,15 +187,15 @@ export default function Metrics({ teamId }: { teamId?: string }) {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-gray-500 text-center py-12">
+            <p className="text-gray-500 dark:text-gray-400 text-center py-12">
               Nenhum card concluído nos últimos 7 dias
             </p>
           )}
         </div>
 
         {/* Gráfico de Linha - Tempo Médio por Coluna */}
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+          <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5 text-orange-600" />
             Tempo Médio por Coluna
           </h3>
@@ -222,15 +222,15 @@ export default function Metrics({ teamId }: { teamId?: string }) {
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-gray-500 text-center py-12">
+            <p className="text-gray-500 dark:text-gray-400 text-center py-12">
               Sem histórico de movimentação de cards
             </p>
           )}
         </div>
 
         {/* Gráfico de Barras - Status de Cards */}
-        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+          <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-purple-600" />
             Status dos Cards
           </h3>

@@ -36,9 +36,9 @@ export default function Column({
   const [draggedCardId, setDraggedCardId] = useState<string | null>(null);
 
   const columnColors: Record<string, string> = {
-    'A Fazer': 'bg-gray-100 border-gray-300',
-    'Em Progresso': 'bg-blue-100 border-blue-300',
-    'Concluído': 'bg-green-100 border-green-300',
+    'A Fazer': 'bg-gray-100 dark:bg-slate-700 border-gray-300 dark:border-slate-600',
+    'Em Progresso': 'bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-700',
+    'Concluído': 'bg-green-100 dark:bg-green-900/40 border-green-300 dark:border-green-700',
   };
 
   const bgColor = columnColors[column.name] || 'bg-gray-100';
@@ -96,18 +96,18 @@ export default function Column({
       {/* Header */}
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <div className="flex items-center gap-2 flex-1">
-          <h2 className="font-bold text-lg text-gray-800">{column.name}</h2>
-          <span className="bg-white px-2 py-0.5 rounded-full text-sm font-medium text-gray-600">
+          <h2 className="font-bold text-lg text-gray-800 dark:text-white">{column.name}</h2>
+          <span className="bg-white dark:bg-slate-600 px-2 py-0.5 rounded-full text-sm font-medium text-gray-600 dark:text-gray-300">
             {column.cards.length}
           </span>
         </div>
         <div className="flex gap-1">
           <button
             onClick={() => onAddCard(column.id)}
-            className="p-1 hover:bg-white/50 rounded transition-colors"
+            className="p-1 hover:bg-white/50 dark:hover:bg-slate-600 rounded transition-colors"
             title="Adicionar card"
           >
-            <Plus className="w-5 h-5 text-gray-700" />
+            <Plus className="w-5 h-5 text-gray-700 dark:text-gray-300" />
           </button>
           {onDeleteColumn && column.cards.length === 0 && (
             <button
@@ -116,10 +116,10 @@ export default function Column({
                   onDeleteColumn(column.id);
                 }
               }}
-              className="p-1 hover:bg-red-100 rounded transition-colors"
+              className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
               title="Deletar coluna"
             >
-              <Trash2 className="w-4 h-4 text-red-600" />
+              <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
             </button>
           )}
         </div>
@@ -128,7 +128,7 @@ export default function Column({
       {/* Cards Container */}
       <div className="flex-1 overflow-y-auto space-y-3 pr-2">
         {column.cards.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 text-sm flex items-center justify-center h-full">
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm flex items-center justify-center h-full">
             Nenhum card nesta coluna
           </div>
         ) : (

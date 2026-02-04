@@ -138,16 +138,16 @@ export default function DashboardHome() {
         {/* Seção de Calendário e Cards do Dia */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Calendário */}
-          <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
+          <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                 <Calendar className="w-6 h-6" />
                 Meus Cards - {monthNames[month]} {year}
               </h2>
               <div className="flex gap-2">
                 <button
                   onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
-                  className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                  className="px-3 py-1 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-800 dark:text-gray-200 rounded transition-colors"
                 >
                   ←
                 </button>
@@ -156,20 +156,20 @@ export default function DashboardHome() {
                     setCurrentDate(new Date());
                     setSelectedDay(null);
                   }}
-                  className="px-3 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded transition-colors"
+                  className="px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800/70 rounded transition-colors"
                 >
                   Hoje
                 </button>
                 <button
                   onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
-                  className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                  className="px-3 py-1 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-800 dark:text-gray-200 rounded transition-colors"
                 >
                   →
                 </button>
                 {selectedDay && (
                   <button
                     onClick={() => setSelectedDay(null)}
-                    className="px-3 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded transition-colors ml-2"
+                    className="px-3 py-1 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800/70 rounded transition-colors ml-2"
                   >
                     Limpar
                   </button>
@@ -180,7 +180,7 @@ export default function DashboardHome() {
             {/* Dias da semana */}
             <div className="grid grid-cols-7 gap-2 mb-2">
               {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((day) => (
-                <div key={day} className="text-center font-semibold text-gray-600 text-sm">
+                <div key={day} className="text-center font-semibold text-gray-600 dark:text-gray-400 text-sm">
                   {day}
                 </div>
               ))}
@@ -203,16 +203,16 @@ export default function DashboardHome() {
                     }}
                     className={`min-h-[80px] p-2 rounded-lg border transition-all cursor-pointer ${day
                       ? isSelected
-                        ? 'bg-blue-200 border-blue-500 ring-2 ring-blue-400'
+                        ? 'bg-blue-200 dark:bg-blue-700 border-blue-500 dark:border-blue-400 ring-2 ring-blue-400 dark:ring-blue-300'
                         : isToday
-                          ? 'bg-blue-50 border-blue-300 hover:bg-blue-100'
-                          : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                          ? 'bg-blue-50 dark:bg-blue-950 border-blue-300 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900'
+                          : 'bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-600'
                       : 'bg-transparent border-transparent cursor-default'
                       }`}
                   >
                     {day && (
                       <>
-                        <div className={`text-sm font-semibold mb-1 ${isSelected ? 'text-blue-900' : isToday ? 'text-blue-700' : 'text-gray-700'}`}>
+                        <div className={`text-sm font-semibold mb-1 ${isSelected ? 'text-blue-900 dark:text-white' : isToday ? 'text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-200'}`}>
                           {day}
                         </div>
                         {dayCards.length > 0 && (
