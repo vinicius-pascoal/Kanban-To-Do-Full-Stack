@@ -200,6 +200,14 @@ export const api = {
     return res.json();
   },
 
+  async getMyCards(token: string) {
+    const res = await fetch(`${API_URL}/api/card/user/my-cards`, {
+      headers: getHeaders(token),
+    });
+    if (!res.ok) throw new Error('Erro ao buscar meus cards');
+    return res.json();
+  },
+
   // Metrics
   async getMetrics(teamId: string, token: string) {
     const res = await fetch(`${API_URL}/api/metrics?teamId=${teamId}`, {

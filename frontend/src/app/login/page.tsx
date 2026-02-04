@@ -23,7 +23,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      router.push('/teams');
+      router.push('/dashboard');
     } catch (err: any) {
       setLocalError(err.message);
     }

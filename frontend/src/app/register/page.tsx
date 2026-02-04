@@ -35,7 +35,7 @@ export default function RegisterPage() {
 
     try {
       await register(email, password, name);
-      router.push('/teams');
+      router.push('/dashboard');
     } catch (err: any) {
       setLocalError(err.message);
     }

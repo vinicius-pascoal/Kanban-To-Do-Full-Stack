@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { createCardSchema, updateCardSchema, moveCardSchema } from '../lib/validations';
 import { parseDateString } from '../lib/date-utils';
+import { AuthenticatedRequest, authMiddleware } from '../lib/auth-middleware';
 
 const router = Router();
 
@@ -217,6 +218,50 @@ router.post('/move', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Erro ao mover card:', error);
     res.status(400).json({ error: 'Erro ao mover card' });
+  }
+});
+
+// GET /api/card/user/my-cards - Buscar cards do usuário autenticado
+router.get('/user/my-cards', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Não autorizado' });
+    }
+
+    const cards = await prisma.card.findMany({
+      where: {
+        assignedToId: userId,
+      },
+      include: {
+        column: {
+          include: {
+            board: {
+              include: {
+                team: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        assignedTo: {
+          select: { id: true, name: true, email: true },
+        },
+      },
+      orderBy: {
+        dueDate: 'asc',
+      },
+    });
+
+    res.json(cards);
+  } catch (error) {
+    console.error('Erro ao buscar cards do usuário:', error);
+    res.status(500).json({ error: 'Erro ao buscar cards do usuário' });
   }
 });
 
