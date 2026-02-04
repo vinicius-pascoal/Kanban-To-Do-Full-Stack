@@ -32,9 +32,19 @@ export default function DashboardHome() {
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [recentTeams, setRecentTeams] = useState<typeof teams>([]);
 
   useEffect(() => {
     setMounted(true);
+    // Carregar times recentes do localStorage
+    const storedRecentTeams = localStorage.getItem('recentTeams');
+    if (storedRecentTeams) {
+      try {
+        setRecentTeams(JSON.parse(storedRecentTeams));
+      } catch (error) {
+        console.error('Erro ao carregar times recentes:', error);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -319,13 +329,36 @@ export default function DashboardHome() {
 
         {/* Meus Times */}
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Meus Times</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Meus Times</h2>
+            {teams && teams.length > 3 && (
+              <Link href="/teams" className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
+                Ver todos →
+              </Link>
+            )}
+          </div>
           {teams && teams.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {teams.map((team) => (
+              {teams.slice(0, 3).map((team) => (
                 <Link
                   key={team.id}
                   href={`/dashboard/${team.id}`}
+                  onClick={() => {
+                    // Atualizar lista de times recentes
+                    const storedRecentTeams = localStorage.getItem('recentTeams');
+                    let recentList = storedRecentTeams ? JSON.parse(storedRecentTeams) : [];
+
+                    // Remover o time se já existir
+                    recentList = recentList.filter((t: any) => t.id !== team.id);
+
+                    // Adicionar no começo
+                    recentList.unshift(team);
+
+                    // Manter apenas os 3 últimos
+                    recentList = recentList.slice(0, 3);
+
+                    localStorage.setItem('recentTeams', JSON.stringify(recentList));
+                  }}
                   className="p-4 border-2 border-gray-200 dark:border-slate-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group"
                 >
                   <div className="flex items-center justify-between">
