@@ -7,6 +7,66 @@ const router = Router();
 
 router.use(authMiddleware);
 
+/**
+ * @swagger
+ * /api/metrics:
+ *   get:
+ *     summary: Buscar métricas do board
+ *     tags: [Metrics]
+ *     parameters:
+ *       - in: query
+ *         name: teamId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID do time
+ *     responses:
+ *       200:
+ *         description: Métricas retornadas com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalCards:
+ *                   type: integer
+ *                   description: Total de cards no board
+ *                 cardsByColumn:
+ *                   type: array
+ *                   description: Distribuição de cards por coluna
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                       count:
+ *                         type: integer
+ *                 overdueCount:
+ *                   type: integer
+ *                   description: Cards atrasados
+ *                 dueTodayCount:
+ *                   type: integer
+ *                   description: Cards com prazo para hoje
+ *                 completedCount:
+ *                   type: integer
+ *                   description: Cards concluídos
+ *                 avgTimeByColumn:
+ *                   type: array
+ *                   description: Tempo médio por coluna em horas
+ *                 completedByDay:
+ *                   type: array
+ *                   description: Cards concluídos por dia
+ *                 memberProductivity:
+ *                   type: array
+ *                   description: Produtividade dos membros
+ *       400:
+ *         description: teamId não fornecido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // GET /api/metrics - Buscar métricas do board
 router.get('/', async (req: AuthenticatedRequest, res: Response) => {
   try {

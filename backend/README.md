@@ -22,7 +22,16 @@ npm run dev
 
 O servidor estará disponível em `http://localhost:3001`
 
-## 📁 Estrutura de Rotas
+## � Documentação da API (Swagger)
+
+A documentação completa da API está disponível através do Swagger UI:
+
+- **Interface Interativa**: http://localhost:3001/api-docs
+- **JSON Spec**: http://localhost:3001/api-docs.json
+
+Para mais detalhes sobre como usar o Swagger, consulte [SWAGGER.md](./SWAGGER.md)
+
+## �📁 Estrutura de Rotas
 
 ### Board
 - `GET /api/board` - Buscar board com colunas e cards

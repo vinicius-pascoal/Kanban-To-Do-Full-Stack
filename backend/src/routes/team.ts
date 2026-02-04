@@ -8,6 +8,28 @@ const router = Router();
 // Aplicar middleware de autenticação em todas as rotas
 router.use(authMiddleware);
 
+/**
+ * @swagger
+ * /api/team:
+ *   get:
+ *     summary: Listar times do usuário
+ *     tags: [Team]
+ *     responses:
+ *       200:
+ *         description: Lista de times retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Team'
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // GET /api/team - Listar times do usuário
 router.get('/', async (req: AuthenticatedRequest, res: Response) => {
   try {

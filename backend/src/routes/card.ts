@@ -6,6 +6,55 @@ import { AuthenticatedRequest, authMiddleware } from '../lib/auth-middleware';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/card:
+ *   post:
+ *     summary: Criar novo card
+ *     tags: [Card]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - columnId
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Implementar autenticação
+ *               description:
+ *                 type: string
+ *                 example: Adicionar JWT e middleware de autenticação
+ *               columnId:
+ *                 type: string
+ *                 format: uuid
+ *               priority:
+ *                 type: string
+ *                 enum: [LOW, MEDIUM, HIGH]
+ *                 example: HIGH
+ *               dueDate:
+ *                 type: string
+ *                 format: date-time
+ *               assignedToId:
+ *                 type: string
+ *                 format: uuid
+ *     responses:
+ *       201:
+ *         description: Card criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Card'
+ *       400:
+ *         description: Dados inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // POST /api/card - Criar novo card
 router.post('/', async (req: Request, res: Response) => {
   try {
@@ -47,6 +96,34 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/card/{id}:
+ *   get:
+ *     summary: Buscar card específico
+ *     tags: [Card]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID do card
+ *     responses:
+ *       200:
+ *         description: Card retornado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Card'
+ *       404:
+ *         description: Card não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // GET /api/card/:id - Buscar card específico
 router.get('/:id', async (req: Request, res: Response) => {
   try {

@@ -6,6 +6,7 @@ import boardRoutes from './routes/board';
 import cardRoutes from './routes/card';
 import columnRoutes from './routes/column';
 import metricsRoutes from './routes/metrics';
+import { setupSwagger } from './lib/swagger';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -43,6 +44,9 @@ app.use(cors({
 
 // Middlewares
 app.use(express.json());
+
+// Swagger Documentation
+setupSwagger(app);
 
 // Routes
 app.use('/api/auth', authRoutes);

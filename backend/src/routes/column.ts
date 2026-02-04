@@ -3,6 +3,28 @@ import prisma from '../lib/prisma';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/column:
+ *   get:
+ *     summary: Buscar todas as colunas
+ *     tags: [Column]
+ *     responses:
+ *       200:
+ *         description: Lista de colunas retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Column'
+ *       500:
+ *         description: Erro ao buscar colunas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // GET /api/column - Buscar todas as colunas
 router.get('/', async (req: Request, res: Response) => {
   try {
@@ -22,6 +44,42 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/column:
+ *   post:
+ *     summary: Criar nova coluna
+ *     tags: [Column]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - boardId
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Em Revisão
+ *               boardId:
+ *                 type: string
+ *                 format: uuid
+ *     responses:
+ *       201:
+ *         description: Coluna criada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Column'
+ *       400:
+ *         description: Dados inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // POST /api/column - Criar nova coluna
 router.post('/', async (req: Request, res: Response) => {
   try {

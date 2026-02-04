@@ -4,6 +4,34 @@ import { createBoardSchema } from '../lib/validations';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/board:
+ *   get:
+ *     summary: Buscar board com colunas e cards
+ *     tags: [Board]
+ *     parameters:
+ *       - in: query
+ *         name: teamId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID do time
+ *     responses:
+ *       200:
+ *         description: Board retornado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Board'
+ *       400:
+ *         description: teamId não fornecido ou inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // GET /api/board - Buscar board com colunas e cards
 router.get('/', async (req: Request, res: Response) => {
   try {

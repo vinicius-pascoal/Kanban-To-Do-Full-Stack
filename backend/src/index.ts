@@ -6,6 +6,7 @@ import boardRoutes from './routes/board';
 import cardRoutes from './routes/card';
 import columnRoutes from './routes/column';
 import metricsRoutes from './routes/metrics';
+import { setupSwagger } from './lib/swagger';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -45,6 +46,9 @@ app.use(cors({
 // Middlewares
 app.use(express.json());
 
+// Swagger Documentation
+setupSwagger(app);
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/team', teamRoutes);
@@ -72,7 +76,9 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 // Para desenvolvimento local
 if (require.main === module) {
   app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+    console.log(`📊 Health check: http://localhost:${PORT}/health`);
+    console.log(`📚 Documentação Swagger: http://localhost:${PORT}/api-docs`);
   });
 }
 
