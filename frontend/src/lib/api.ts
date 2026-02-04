@@ -84,6 +84,14 @@ export const api = {
     if (!res.ok) throw new Error('Erro ao remover membro');
   },
 
+  async deleteTeam(teamId: string, token: string) {
+    const res = await fetch(`${API_URL}/api/team/${teamId}`, {
+      method: 'DELETE',
+      headers: getHeaders(token),
+    });
+    if (!res.ok) throw new Error('Erro ao deletar time');
+  },
+
   // Board
   async getBoard(teamId: string, token: string) {
     const res = await fetch(`${API_URL}/api/board?teamId=${teamId}`, {

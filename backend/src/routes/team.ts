@@ -256,4 +256,35 @@ router.delete('/:id/members/:userId', async (req: AuthenticatedRequest, res: Res
   }
 });
 
+// DELETE /api/team/:id - Deletar time
+router.delete('/:id', async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Verificar se usuário logado é membro do time
+    const isMember = await prisma.teamMember.findUnique({
+      where: {
+        userId_teamId: {
+          userId: req.user?.userId || '',
+          teamId: id,
+        },
+      },
+    });
+
+    if (!isMember) {
+      return res.status(403).json({ error: 'Acesso negado' });
+    }
+
+    // Deletar o time (cascata vai deletar todos os relacionados)
+    await prisma.team.delete({
+      where: { id },
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    console.error('Erro ao deletar time:', error);
+    res.status(500).json({ error: 'Erro ao deletar time' });
+  }
+});
+
 export default router;

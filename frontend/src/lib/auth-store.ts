@@ -21,6 +21,7 @@ interface AuthStoreActions {
   createTeam: (name: string) => Promise<void>;
   addTeamMember: (email: string) => Promise<void>;
   removeTeamMember: (userId: string) => Promise<void>;
+  deleteTeam: (teamId: string) => Promise<void>;
   setError: (error: string | null) => void;
 }
 
@@ -140,6 +141,20 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       await api.removeTeamMember(currentTeam.id, userId, token);
       await get().fetchTeam(currentTeam.id);
+      set({ isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+
+  deleteTeam: async (teamId: string) => {
+    const { token } = get();
+    if (!token) return;
+
+    set({ isLoading: true, error: null });
+    try {
+      await api.deleteTeam(teamId, token);
+      await get().fetchTeams();
       set({ isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
