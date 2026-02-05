@@ -56,7 +56,6 @@ export default function Navbar() {
           {/* Logo e Nome */}
           <div className="flex items-center gap-8">
             <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <span className="text-2xl">📌</span>
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-gray-800 dark:text-white">
                   Kanban To-Do
@@ -74,8 +73,8 @@ export default function Navbar() {
               <Link
                 href="/dashboard"
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${pathname === '/dashboard'
-                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
                   }`}
               >
                 <Home className="w-4 h-4" />
@@ -85,8 +84,8 @@ export default function Navbar() {
               <Link
                 href="/teams"
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${pathname === '/teams'
-                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
                   }`}
               >
                 <Users className="w-4 h-4" />

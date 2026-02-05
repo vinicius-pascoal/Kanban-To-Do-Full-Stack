@@ -74,22 +74,22 @@ function TeamSettingsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
         <div className="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
           <div>
             <button
               onClick={() => router.back()}
-              className="text-blue-600 hover:text-blue-700 mb-2"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 mb-2"
             >
               ← Voltar
             </button>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               Configurações do Time
             </h1>
             {currentTeam && (
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 dark:text-slate-400 mt-1">
                 {currentTeam.name}
               </p>
             )}
@@ -101,20 +101,20 @@ function TeamSettingsContent() {
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Messages */}
         {(error || localError) && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="mb-6 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg">
             {error || localError}
           </div>
         )}
 
         {successMessage && (
-          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+          <div className="mb-6 bg-green-50 dark:bg-emerald-900/30 border border-green-200 dark:border-emerald-800 text-green-700 dark:text-emerald-300 px-4 py-3 rounded-lg">
             {successMessage}
           </div>
         )}
 
         {/* Add Member Section */}
-        <div className="bg-white rounded-lg shadow border border-gray-200 p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-slate-900 rounded-lg shadow border border-gray-200 dark:border-slate-800 p-6 mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
             Adicionar Membro
           </h2>
           <form onSubmit={handleAddMember} className="flex gap-3">
@@ -123,7 +123,7 @@ function TeamSettingsContent() {
               value={newMemberEmail}
               onChange={(e) => setNewMemberEmail(e.target.value)}
               placeholder="email@exemplo.com"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none bg-white text-gray-900"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
             />
             <button
               type="submit"
@@ -137,31 +137,31 @@ function TeamSettingsContent() {
         </div>
 
         {/* Members List */}
-        <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">
+        <div className="bg-white dark:bg-slate-900 rounded-lg shadow border border-gray-200 dark:border-slate-800 overflow-hidden">
+          <div className="p-6 border-b border-gray-200 dark:border-slate-800">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               Membros ({currentTeam?.members?.length || 0})
             </h2>
           </div>
 
           {currentTeam?.members && currentTeam.members.length > 0 ? (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-gray-200 dark:divide-slate-800">
               {currentTeam.members.map((member) => (
                 <div
                   key={member.id}
-                  className="px-6 py-4 flex justify-between items-center hover:bg-gray-50"
+                  className="px-6 py-4 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-slate-800/60"
                 >
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 dark:text-white">
                       {member.user?.name}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-slate-400">
                       {member.user?.email}
                     </p>
                   </div>
                   <button
                     onClick={() => member.user && handleRemoveMember(member.user.id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
+                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 px-3 py-2 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -169,7 +169,7 @@ function TeamSettingsContent() {
               ))}
             </div>
           ) : (
-            <div className="px-6 py-12 text-center text-gray-600">
+            <div className="px-6 py-12 text-center text-gray-600 dark:text-slate-400">
               Nenhum membro adicionado ainda
             </div>
           )}
