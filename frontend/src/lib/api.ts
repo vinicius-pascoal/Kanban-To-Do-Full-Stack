@@ -120,13 +120,16 @@ export const api = {
     return res.json();
   },
 
-  async createColumn(boardId: string, name: string, token: string) {
+  async createColumn(boardId: string, name: string, token: string, color?: string | null) {
     const res = await fetch(`${API_URL}/api/column`, {
       method: 'POST',
       headers: getHeaders(token),
-      body: JSON.stringify({ boardId, name }),
+      body: JSON.stringify({ boardId, name, color }),
     });
-    if (!res.ok) throw new Error('Erro ao criar coluna');
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({ error: 'Erro ao criar coluna' }));
+      throw new Error(error.error || 'Erro ao criar coluna');
+    }
     return res.json();
   },
 
@@ -141,11 +144,11 @@ export const api = {
     }
   },
 
-  async updateColumn(id: string, name: string, token: string) {
+  async updateColumn(id: string, name: string, token: string, color?: string | null) {
     const res = await fetch(`${API_URL}/api/column/${id}`, {
       method: 'PUT',
       headers: getHeaders(token),
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, color }),
     });
     if (!res.ok) throw new Error('Erro ao atualizar coluna');
     return res.json();

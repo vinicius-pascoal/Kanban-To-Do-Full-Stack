@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth-provider';
 import Column from './Column';
 import CardModal from './CardModal';
 import CardDetailModal from './CardDetailModal';
-import { Card as CardType } from '@/lib/types';
+import { Card as CardType, ColumnInsertPosition } from '@/lib/types';
 import { Plus } from 'lucide-react';
 
 export default function Board({ teamId }: { teamId?: string }) {
@@ -17,6 +17,9 @@ export default function Board({ teamId }: { teamId?: string }) {
   const [editingCard, setEditingCard] = useState<CardType | null>(null);
   const [isAddingColumn, setIsAddingColumn] = useState(false);
   const [newColumnName, setNewColumnName] = useState('');
+  const [newColumnPosition, setNewColumnPosition] = useState<ColumnInsertPosition>('end');
+  const [newColumnAnchorId, setNewColumnAnchorId] = useState('');
+  const [newColumnColor, setNewColumnColor] = useState('#F8FAFC');
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedDetailCard, setSelectedDetailCard] = useState<CardType | null>(null);
 
@@ -69,12 +72,39 @@ export default function Board({ teamId }: { teamId?: string }) {
     }, token);
   };
 
+  const isColumnAnchorRequired = newColumnPosition === 'before' || newColumnPosition === 'after';
+  const isAddColumnDisabled = !newColumnName.trim() || (isColumnAnchorRequired && !newColumnAnchorId) || !token;
+
   const handleAddColumn = async () => {
-    if (!newColumnName.trim() || !token) return;
+    if (isAddColumnDisabled) return;
     const { createColumn } = useKanbanStore.getState();
-    await createColumn(newColumnName, token);
+    await createColumn(newColumnName, token, {
+      position: newColumnPosition,
+      anchorColumnId: newColumnAnchorId || null,
+      color: newColumnColor || null,
+    });
     setNewColumnName('');
+    setNewColumnPosition('end');
+    setNewColumnAnchorId('');
+    setNewColumnColor('#F8FAFC');
     setIsAddingColumn(false);
+  };
+
+  const handleMoveColumn = async (columnId: string, direction: 'left' | 'right') => {
+    if (!board || !token) return;
+
+    const orderedColumns = [...board.columns].sort((a, b) => a.order - b.order);
+    const currentIndex = orderedColumns.findIndex((column) => column.id === columnId);
+
+    if (currentIndex === -1) return;
+
+    const targetIndex = direction === 'left' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= orderedColumns.length) return;
+
+    const columnIds = orderedColumns.map((column) => column.id);
+    [columnIds[currentIndex], columnIds[targetIndex]] = [columnIds[targetIndex], columnIds[currentIndex]];
+
+    await useKanbanStore.getState().reorderColumns(columnIds, token);
   };
 
   if (!board) {
@@ -92,7 +122,7 @@ export default function Board({ teamId }: { teamId?: string }) {
       <div className="flex gap-6 overflow-x-auto pb-8 px-2">
         {board.columns
           .sort((a, b) => a.order - b.order)
-          .map((column) => (
+          .map((column, index, columns) => (
             <Column
               key={column.id}
               column={column}
@@ -102,6 +132,9 @@ export default function Board({ teamId }: { teamId?: string }) {
               onViewCardDetails={handleViewCardDetails}
               onDeleteColumn={(id) => token && deleteColumn(id, token)}
               onCardDrop={handleCardDrop}
+              onMoveColumn={handleMoveColumn}
+              canMoveLeft={index > 0}
+              canMoveRight={index < columns.length - 1}
             />
           ))}
 
@@ -124,10 +157,62 @@ export default function Board({ teamId }: { teamId?: string }) {
               autoFocus
               className="px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Posição</label>
+              <select
+                value={newColumnPosition}
+                onChange={(e) => setNewColumnPosition(e.target.value as ColumnInsertPosition)}
+                className="px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="end">No final</option>
+                <option value="start">No início</option>
+                <option value="before">Antes de...</option>
+                <option value="after">Depois de...</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Cor</label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={newColumnColor}
+                  onChange={(e) => setNewColumnColor(e.target.value)}
+                  className="h-12 w-12 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-1"
+                  aria-label="Selecionar cor da coluna"
+                />
+                <input
+                  type="text"
+                  value={newColumnColor}
+                  onChange={(e) => setNewColumnColor(e.target.value)}
+                  placeholder="#F8FAFC"
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            {(newColumnPosition === 'before' || newColumnPosition === 'after') && (
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Referência</label>
+                <select
+                  value={newColumnAnchorId}
+                  onChange={(e) => setNewColumnAnchorId(e.target.value)}
+                  className="px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Selecione uma coluna</option>
+                  {board.columns
+                    .sort((a, b) => a.order - b.order)
+                    .map((column) => (
+                      <option key={column.id} value={column.id}>
+                        {column.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
             <div className="flex gap-3">
               <button
                 onClick={handleAddColumn}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg"
+                disabled={isAddColumnDisabled}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 Adicionar
               </button>

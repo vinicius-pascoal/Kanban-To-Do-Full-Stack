@@ -2,7 +2,7 @@
 
 import { Column as ColumnType, Card as CardType } from '@/lib/types';
 import Card from './Card';
-import { Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 interface ColumnProps {
@@ -13,6 +13,9 @@ interface ColumnProps {
   onViewCardDetails: (card: CardType) => void;
   onDeleteColumn?: (id: string) => void;
   onCardDrop: (cardId: string, targetColumnId: string) => void;
+  onMoveColumn?: (columnId: string, direction: 'left' | 'right') => void;
+  canMoveLeft?: boolean;
+  canMoveRight?: boolean;
   isDraggingColumn?: boolean;
 }
 
@@ -24,6 +27,9 @@ export default function Column({
   onViewCardDetails,
   onDeleteColumn,
   onCardDrop,
+  onMoveColumn,
+  canMoveLeft,
+  canMoveRight,
   isDraggingColumn,
 }: ColumnProps) {
   const [dragOverId, setDragOverId] = useState<string | null>(null);
@@ -35,7 +41,9 @@ export default function Column({
     'Concluído': 'bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/20',
   };
 
+  const columnColorValue = column.color?.trim();
   const bgColor = columnColors[column.name] || 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900';
+  const columnStyle = columnColorValue ? { backgroundColor: columnColorValue } : undefined;
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -73,7 +81,8 @@ export default function Column({
 
   return (
     <div
-      className={`rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 ${bgColor} p-5 min-w-[340px] max-w-[340px] flex flex-col h-[calc(100vh-220px)] transition-all backdrop-blur-sm ${dragOverId === column.id ? 'ring-2 ring-blue-400 dark:ring-blue-500 shadow-xl' : ''
+      style={columnStyle}
+      className={`rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 ${columnColorValue ? '' : bgColor} p-5 min-w-[340px] max-w-[340px] flex flex-col h-[calc(100vh-220px)] transition-all backdrop-blur-sm ${dragOverId === column.id ? 'ring-2 ring-blue-400 dark:ring-blue-500 shadow-xl' : ''
         }`}
     >
       {/* Header */}
@@ -144,6 +153,29 @@ export default function Column({
           ))
         )}
       </div>
+
+      {onMoveColumn && (canMoveLeft || canMoveRight) && (
+        <div className="mt-4 pt-3 border-t border-gray-200 dark:border-slate-600 flex items-center justify-between">
+          <button
+            onClick={() => canMoveLeft && onMoveColumn(column.id, 'left')}
+            disabled={!canMoveLeft}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-all border border-gray-300 dark:border-slate-600 bg-white/90 dark:bg-slate-900/80 text-gray-800 dark:text-gray-200 shadow-sm hover:bg-white dark:hover:bg-slate-900 disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Mover coluna para a esquerda"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Esquerda
+          </button>
+          <button
+            onClick={() => canMoveRight && onMoveColumn(column.id, 'right')}
+            disabled={!canMoveRight}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg transition-all border border-gray-300 dark:border-slate-600 bg-white/90 dark:bg-slate-900/80 text-gray-800 dark:text-gray-200 shadow-sm hover:bg-white dark:hover:bg-slate-900 disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Mover coluna para a direita"
+          >
+            Direita
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

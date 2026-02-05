@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Board, Card, CreateCardData, UpdateCardData, MoveCardData, Metrics } from './types';
+import { Board, Card, CreateCardData, UpdateCardData, MoveCardData, Metrics, CreateColumnOptions } from './types';
 import { api } from './api';
 
 interface KanbanStore {
@@ -16,7 +16,7 @@ interface KanbanStore {
   updateCard: (id: string, data: UpdateCardData, token: string) => Promise<void>;
   deleteCard: (id: string, token: string) => Promise<void>;
   moveCard: (data: MoveCardData, token: string) => Promise<void>;
-  createColumn: (name: string, token: string) => Promise<void>;
+  createColumn: (name: string, token: string, options?: CreateColumnOptions) => Promise<void>;
   deleteColumn: (id: string, token: string) => Promise<void>;
   reorderColumns: (columnIds: string[], token: string) => Promise<void>;
   clearBoard: () => void;
@@ -115,13 +115,41 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
     }
   },
 
-  createColumn: async (name: string, token: string) => {
+  createColumn: async (name: string, token: string, options?: CreateColumnOptions) => {
     set({ isLoading: true, error: null });
     try {
       const { board, teamId } = get();
       if (!board) throw new Error('Board não encontrado');
 
-      await api.createColumn(board.id, name, token);
+      const createdColumn = await api.createColumn(board.id, name, token, options?.color ?? null);
+
+      if (options && options.position !== 'end') {
+        const orderedIds = [...board.columns]
+          .sort((a, b) => a.order - b.order)
+          .map((column) => column.id)
+          .filter((id) => id !== createdColumn.id);
+
+        let insertIndex = orderedIds.length;
+
+        if (options.position === 'start') {
+          insertIndex = 0;
+        }
+
+        if (options.position === 'before' || options.position === 'after') {
+          const anchorIndex = options.anchorColumnId
+            ? orderedIds.indexOf(options.anchorColumnId)
+            : -1;
+
+          if (anchorIndex >= 0) {
+            insertIndex = options.position === 'before' ? anchorIndex : anchorIndex + 1;
+          }
+        }
+
+        const nextOrder = [...orderedIds];
+        nextOrder.splice(insertIndex, 0, createdColumn.id);
+        await api.reorderColumns(board.id, nextOrder, token);
+      }
+
       if (teamId) {
         await get().fetchBoard(teamId, token);
       }

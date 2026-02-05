@@ -51,11 +51,12 @@ model Board {
 }
 
 model Column {
-  id      String @id @default(cuid())
+  id      String  @id @default(cuid())
   name    String
   order   Int
   boardId String
-  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  board   Board   @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  color   String?
   cards   Card[]
 }
 

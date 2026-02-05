@@ -83,7 +83,7 @@ router.get('/', async (req: Request, res: Response) => {
 // POST /api/column - Criar nova coluna
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, boardId } = req.body;
+    const { name, boardId, color } = req.body;
 
     if (!name || !boardId) {
       return res.status(400).json({ error: 'Nome e boardId são obrigatórios' });
@@ -99,6 +99,7 @@ router.post('/', async (req: Request, res: Response) => {
         name,
         boardId,
         order: columnCount,
+        color: color || null,
       },
       include: {
         cards: {
@@ -145,7 +146,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
 router.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name } = req.body;
+    const { name, color } = req.body;
 
     if (!name) {
       return res.status(400).json({ error: 'Nome é obrigatório' });
@@ -153,7 +154,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 
     const column = await prisma.column.update({
       where: { id },
-      data: { name },
+      data: { name, color: color || null },
       include: {
         cards: {
           orderBy: { order: 'asc' },

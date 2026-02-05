@@ -53,7 +53,16 @@ export interface Column {
   name: string;
   order: number;
   boardId: string;
+  color?: string | null;
   cards: Card[];
+}
+
+export type ColumnInsertPosition = 'start' | 'end' | 'before' | 'after';
+
+export interface CreateColumnOptions {
+  position: ColumnInsertPosition;
+  anchorColumnId?: string | null;
+  color?: string | null;
 }
 
 export interface Board {
