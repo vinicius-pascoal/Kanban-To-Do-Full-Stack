@@ -261,15 +261,15 @@ export default function Metrics({ teamId }: { teamId?: string }) {
       {/* Seção de Produtividade dos Membros */}
       {memberData.length > 0 && (
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <Users className="w-6 h-6 text-purple-600" />
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+            <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             Produtividade dos Membros
           </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Gráfico de Cards Completados por Membro */}
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">
                 Cards Concluídos por Membro
               </h3>
               {memberData.length > 0 ? (
@@ -283,15 +283,15 @@ export default function Metrics({ teamId }: { teamId?: string }) {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-gray-500 text-center py-12">
+                <p className="text-gray-500 dark:text-gray-400 text-center py-12">
                   Nenhum membro com cards atribuídos
                 </p>
               )}
             </div>
 
             {/* Gráfico de Produtividade Total */}
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">
                 Produtividade por Membro
               </h3>
               {memberData.length > 0 ? (
@@ -314,7 +314,7 @@ export default function Metrics({ teamId }: { teamId?: string }) {
                   </ComposedChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-gray-500 text-center py-12">
+                <p className="text-gray-500 dark:text-gray-400 text-center py-12">
                   Nenhum membro com cards atribuídos
                 </p>
               )}
@@ -322,30 +322,30 @@ export default function Metrics({ teamId }: { teamId?: string }) {
           </div>
 
           {/* Tabela de Produtividade Detalhada */}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-            <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
-              <h3 className="text-lg font-bold text-gray-800">Detalhes de Produtividade</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-slate-700">
+            <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-700 border-b border-gray-200 dark:border-slate-700">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white">Detalhes de Produtividade</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-100 border-b border-gray-200">
+                <thead className="bg-gray-100 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
                   <tr>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">
                       Membro
                     </th>
-                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
+                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-200">
                       Concluídos
                     </th>
-                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
+                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-200">
                       Em Progresso
                     </th>
-                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
+                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-200">
                       Total de Cards
                     </th>
-                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
+                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-200">
                       Taxa de Conclusão
                     </th>
-                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">
+                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-200">
                       Tempo Médio (h)
                     </th>
                   </tr>
@@ -359,42 +359,42 @@ export default function Metrics({ teamId }: { teamId?: string }) {
                     return (
                       <tr
                         key={member.name}
-                        className={`border-b border-gray-100 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                          } hover:bg-blue-50`}
+                        className={`border-b border-gray-100 dark:border-slate-700 transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-gray-50 dark:bg-slate-700/50'
+                          } hover:bg-blue-50 dark:hover:bg-slate-700`}
                       >
                         <td className="px-6 py-4">
-                          <span className="font-medium text-gray-800">{member.name}</span>
+                          <span className="font-medium text-gray-800 dark:text-gray-100">{member.name}</span>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="inline-flex items-center justify-center w-8 h-8 bg-green-100 text-green-700 rounded-full font-semibold">
+                          <span className="inline-flex items-center justify-center w-8 h-8 bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-200 rounded-full font-semibold">
                             {member.cardsCompleted}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-700 rounded-full font-semibold">
+                          <span className="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200 rounded-full font-semibold">
                             {member.cardsInProgress}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="font-semibold text-gray-700">
+                          <span className="font-semibold text-gray-700 dark:text-gray-200">
                             {member.totalCards}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center">
                           <div className="flex items-center justify-center gap-2">
-                            <div className="w-24 bg-gray-200 rounded-full h-2">
+                            <div className="w-24 bg-gray-200 dark:bg-slate-600 rounded-full h-2">
                               <div
                                 className="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full transition-all"
                                 style={{ width: `${taxaConclusao}%` }}
                               />
                             </div>
-                            <span className="text-sm font-semibold text-gray-700 w-10">
+                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-200 w-10">
                               {taxaConclusao}%
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 rounded-full font-semibold text-sm">
+                          <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-200 rounded-full font-semibold text-sm">
                             {member.averageTimeToComplete}h
                           </span>
                         </td>
