@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useKanbanStore } from '@/lib/store';
 import { useAuth } from '@/lib/auth-provider';
 import Column from './Column';
 import CardModal from './CardModal';
 import CardDetailModal from './CardDetailModal';
+import Toast from './Toast';
 import { Card as CardType, ColumnInsertPosition } from '@/lib/types';
 import { Plus } from 'lucide-react';
 
@@ -22,6 +23,8 @@ export default function Board({ teamId }: { teamId?: string }) {
   const [newColumnColor, setNewColumnColor] = useState('#F8FAFC');
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedDetailCard, setSelectedDetailCard] = useState<CardType | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     console.log('🔄 Board useEffect triggered - teamId:', teamId);
@@ -35,6 +38,26 @@ export default function Board({ teamId }: { teamId?: string }) {
       console.log('🧹 Board component unmounting');
     };
   }, [token, teamId]);
+
+  useEffect(() => {
+    if (!toast) return;
+
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+
+    toastTimerRef.current = setTimeout(() => {
+      setToast(null);
+      toastTimerRef.current = null;
+    }, 3000);
+
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+        toastTimerRef.current = null;
+      }
+    };
+  }, [toast]);
 
   const handleAddCard = (columnId: string) => {
     setSelectedColumnId(columnId);
@@ -66,10 +89,15 @@ export default function Board({ teamId }: { teamId?: string }) {
 
   const handleCardDrop = async (cardId: string, targetColumnId: string) => {
     if (!board || !token) return;
-    await moveCard({
-      cardId,
-      targetColumnId,
-    }, token);
+    try {
+      await moveCard({
+        cardId,
+        targetColumnId,
+      }, token);
+      setToast({ message: 'Alterações salvas.', type: 'success' });
+    } catch (error) {
+      setToast({ message: 'Falha ao salvar alterações.', type: 'error' });
+    }
   };
 
   const isColumnAnchorRequired = newColumnPosition === 'before' || newColumnPosition === 'after';
@@ -117,6 +145,15 @@ export default function Board({ teamId }: { teamId?: string }) {
       </div>
     );
   }
+
+  const closeToast = () => {
+    setToast(null);
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
+  };
+
   return (
     <>
       <div className="flex gap-6 overflow-x-auto pb-8 px-2">
@@ -259,6 +296,12 @@ export default function Board({ teamId }: { teamId?: string }) {
           onEdit={handleEditCard}
           onDelete={(id) => token && deleteCard(id, token)}
         />
+      )}
+
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <Toast message={toast.message} type={toast.type} onClose={closeToast} />
+        </div>
       )}
     </>
   );

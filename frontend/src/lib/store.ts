@@ -102,16 +102,46 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
   },
 
   moveCard: async (data: MoveCardData, token: string) => {
+    const { board, teamId } = get();
+    if (!board) return;
+
+    const previousBoard = JSON.parse(JSON.stringify(board)) as Board;
+    const updatedBoard = JSON.parse(JSON.stringify(board)) as Board;
+
+    const sourceColumn = updatedBoard.columns.find((column) =>
+      column.cards.some((card) => card.id === data.cardId)
+    );
+    const targetColumn = updatedBoard.columns.find((column) => column.id === data.targetColumnId);
+
+    if (sourceColumn && targetColumn) {
+      const cardIndex = sourceColumn.cards.findIndex((card) => card.id === data.cardId);
+      if (cardIndex >= 0) {
+        const [card] = sourceColumn.cards.splice(cardIndex, 1);
+        card.columnId = targetColumn.id;
+        card.order = data.order ?? targetColumn.cards.length;
+        targetColumn.cards.push(card);
+
+        sourceColumn.cards.forEach((cardItem, index) => {
+          cardItem.order = index;
+        });
+        targetColumn.cards.forEach((cardItem, index) => {
+          cardItem.order = index;
+        });
+
+        set({ board: updatedBoard });
+      }
+    }
+
     try {
       await api.moveCard(data, token);
-      const { teamId } = get();
       if (teamId) {
         await get().fetchBoard(teamId, token);
         await get().fetchMetrics(teamId, token);
       }
     } catch (error) {
-      set({ error: 'Erro ao mover card' });
+      set({ board: previousBoard, error: 'Erro ao mover card' });
       console.error(error);
+      throw error;
     }
   },
 
