@@ -8,8 +8,8 @@ import Footer from '@/components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Kanban To-Do Full Stack',
-  description: 'Sistema Kanban completo para gerenciamento de tarefas',
+  title: 'Planify',
+  description: 'Sistema completo para gerenciamento de tarefas',
 };
 
 export default function RootLayout({

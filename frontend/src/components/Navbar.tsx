@@ -58,7 +58,7 @@ export default function Navbar() {
             <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-gray-800 dark:text-white">
-                  Kanban To-Do
+                  Planify
                 </span>
                 {currentTeam && (
                   <span className="text-xs text-gray-600 dark:text-gray-400">

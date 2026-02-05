@@ -68,7 +68,7 @@ function DashboardContent() {
                 }`}
             >
               <LayoutDashboard className="w-5 h-5" />
-              Board Kanban
+              Board Planify
             </button>
             <button
               onClick={() => setActiveTab('metrics')}
