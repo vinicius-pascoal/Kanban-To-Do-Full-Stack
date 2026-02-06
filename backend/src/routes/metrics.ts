@@ -91,6 +91,7 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
         completedCount: 0,
         avgTimeByColumn: [],
         completedByDay: [],
+        completedCards: [],
         memberProductivity: [],
       });
     }
@@ -214,6 +215,11 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
       count,
     }));
 
+    const completedCards = recentCompletedCards.map((card) => ({
+      date: card.updatedAt.toISOString().split('T')[0],
+      title: card.title,
+    }));
+
     // Produtividade dos membros
     const allCardsWithAssigned = await prisma.card.findMany({
       where: {
@@ -310,6 +316,7 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
       completedCount: completedColumn?._count.cards || 0,
       avgTimeByColumn,
       completedByDay: completedByDayArray,
+      completedCards,
       memberProductivity: memberProductivityArray,
     });
   } catch (error) {

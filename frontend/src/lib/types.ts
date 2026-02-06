@@ -81,6 +81,7 @@ export interface Metrics {
   completedCount: number;
   avgTimeByColumn: { columnName: string; avgTimeInHours: number }[];
   completedByDay: { date: string; count: number }[];
+  completedCards: { date: string; title: string }[];
   memberProductivity: {
     name: string;
     cardsCreated: number;

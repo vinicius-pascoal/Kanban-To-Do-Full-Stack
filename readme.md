@@ -389,6 +389,7 @@ NEXT_PUBLIC_API_URL="http://localhost:3001/api"
 * ✅ Middleware de autenticação nas rotas
 * ✅ CORS configurado
 * ✅ Sanitização de dados
+* ✅ Exportar dados (CSV, PDF)
 
 ---
 
@@ -396,16 +397,12 @@ NEXT_PUBLIC_API_URL="http://localhost:3001/api"
 
 * 🔲 Filtros por data (próximos dias, atrasados, etc)
 * 🔲 Busca por título/descrição
-* 🔲 Exportar dados (CSV, PDF)
-* 🔲 Dark mode
 * 🔲 Notificações (email, browser)
-* 🔲 Arquivos/anexos nos cards
-* 🔲 Comentários nos cards
 * 🔲 Labels/tags customizáveis
 * 🔲 Integração com calendário
-* 🔲 Deploy (Vercel + Railway)
-* 🔲 Backup automático
-* 🔲 Relatórios avançados
+* 🔲 Melhorias na análise de produtividade
+* 🔲 Sistema de notificações
+* 🔲 Suporte a múltiplos idiomas
 
 ---
 

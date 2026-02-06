@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useKanbanStore } from '@/lib/store';
 import { useAuth } from '@/lib/auth-provider';
 import {
@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Users,
+  Download,
 } from 'lucide-react';
 import {
   BarChart,
@@ -32,7 +33,9 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
 
 export default function Metrics({ teamId }: { teamId?: string }) {
   const { metrics, fetchMetrics, clearBoard } = useKanbanStore();
-  const { token } = useAuth();
+  const { token, currentTeam } = useAuth();
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     console.log('🔄 Metrics useEffect triggered - teamId:', teamId);
@@ -57,13 +60,343 @@ export default function Metrics({ teamId }: { teamId?: string }) {
   }
 
   const completedByDayData = metrics.completedByDay || [];
+  const completedCardsData = metrics.completedCards || [];
   const memberData = (metrics.memberProductivity || []).map((member) => ({
     ...member,
     totalCards: member.cardsCompleted + member.cardsInProgress,
   }));
 
+  const teamName = currentTeam?.name ?? 'Time';
+
+  const normalizeFileName = (value: string) =>
+    value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9-_]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/(^-|-$)/g, '')
+      .toLowerCase();
+
+  const isWithinRange = (dateValue: string) => {
+    if (!startDate && !endDate) return true;
+    const current = new Date(dateValue);
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+
+    if (start) {
+      start.setHours(0, 0, 0, 0);
+    }
+    if (end) {
+      end.setHours(23, 59, 59, 999);
+    }
+
+    if (start && current < start) return false;
+    if (end && current > end) return false;
+    return true;
+  };
+
+  const filteredCompletedByDayData = completedByDayData.filter((item) =>
+    isWithinRange(item.date)
+  );
+
+  const filteredCompletedCards = completedCardsData.filter((card) =>
+    isWithinRange(card.date)
+  );
+
+  const escapeCsv = (value: string | number) =>
+    `"${String(value).replace(/"/g, '""')}"`;
+
+  const buildCsv = () => {
+    const lines: string[] = [];
+    const periodLabel = !startDate && !endDate
+      ? 'Sem filtro'
+      : `${startDate ? new Date(startDate).toLocaleDateString('pt-BR') : 'Início'} até ${endDate ? new Date(endDate).toLocaleDateString('pt-BR') : 'Hoje'}`;
+
+    lines.push('Time');
+    lines.push([teamName].map(escapeCsv).join(','));
+    lines.push('Período');
+    lines.push([periodLabel].map(escapeCsv).join(','));
+    lines.push('');
+
+    lines.push('Resumo');
+    lines.push(
+      [
+        'Total de Cards',
+        'Concluídos',
+        'Atrasados',
+        'Vencem Hoje',
+      ]
+        .map(escapeCsv)
+        .join(',')
+    );
+    lines.push(
+      [
+        metrics.totalCards,
+        metrics.completedCount,
+        metrics.overdueCount,
+        metrics.dueTodayCount,
+      ]
+        .map(escapeCsv)
+        .join(',')
+    );
+    lines.push('');
+
+    lines.push('Cards por Coluna');
+    lines.push(['Coluna', 'Quantidade'].map(escapeCsv).join(','));
+    metrics.cardsByColumn.forEach((item) => {
+      lines.push([item.name, item.count].map(escapeCsv).join(','));
+    });
+    lines.push('');
+
+    lines.push('Cards Concluídos por Dia');
+    lines.push(['Data', 'Quantidade'].map(escapeCsv).join(','));
+    filteredCompletedByDayData.forEach((item) => {
+      const date = new Date(item.date).toLocaleDateString('pt-BR');
+      lines.push([date, item.count].map(escapeCsv).join(','));
+    });
+    lines.push('');
+
+    lines.push('Cards Concluídos (nomes)');
+    lines.push(['Data', 'Card'].map(escapeCsv).join(','));
+    (filteredCompletedCards.length > 0 ? filteredCompletedCards : [{ date: '-', title: '-' }])
+      .forEach((item) => {
+        const date = item.date === '-' ? '-' : new Date(item.date).toLocaleDateString('pt-BR');
+        lines.push([date, item.title].map(escapeCsv).join(','));
+      });
+    lines.push('');
+
+    lines.push('Tempo Médio por Coluna (horas)');
+    lines.push(['Coluna', 'Horas'].map(escapeCsv).join(','));
+    metrics.avgTimeByColumn.forEach((item) => {
+      lines.push([item.columnName, item.avgTimeInHours].map(escapeCsv).join(','));
+    });
+    lines.push('');
+
+    lines.push('Produtividade por Membro');
+    lines.push(
+      [
+        'Membro',
+        'Cards Criados',
+        'Cards Concluídos',
+        'Cards em Progresso',
+        'Total de Cards',
+        'Taxa de Conclusão (%)',
+        'Tempo Médio (h)',
+      ]
+        .map(escapeCsv)
+        .join(',')
+    );
+    memberData.forEach((member) => {
+      const taxaConclusao = member.totalCards > 0
+        ? Math.round((member.cardsCompleted / member.totalCards) * 100)
+        : 0;
+      lines.push(
+        [
+          member.name,
+          member.cardsCreated,
+          member.cardsCompleted,
+          member.cardsInProgress,
+          member.totalCards,
+          taxaConclusao,
+          member.averageTimeToComplete,
+        ]
+          .map(escapeCsv)
+          .join(',')
+      );
+    });
+
+    return lines.join('\n');
+  };
+
+  const downloadFile = (content: string, fileName: string, type: string) => {
+    const blob = new Blob([content], { type });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportCsv = () => {
+    const csv = buildCsv();
+    const suffix = normalizeFileName(teamName || 'time');
+    const date = new Date().toISOString().slice(0, 10);
+    downloadFile(csv, `metricas-${suffix}-${date}.csv`, 'text/csv;charset=utf-8;');
+  };
+
+  const handleExportPdf = async () => {
+    const { jsPDF } = await import('jspdf');
+    const autoTable = (await import('jspdf-autotable')).default as any;
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    const marginX = 40;
+    const periodLabel = !startDate && !endDate
+      ? 'Sem filtro'
+      : `${startDate ? new Date(startDate).toLocaleDateString('pt-BR') : 'Início'} até ${endDate ? new Date(endDate).toLocaleDateString('pt-BR') : 'Hoje'}`;
+    let y = 42;
+
+    doc.setFontSize(16);
+    doc.text('Relatório de Métricas - Kanban', marginX, y);
+    y += 22;
+
+    doc.setFontSize(10);
+    doc.text(`Time: ${teamName}`, marginX, y);
+    y += 14;
+    doc.text(`Período: ${periodLabel}`, marginX, y);
+    y += 14;
+    doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, marginX, y);
+    y += 18;
+
+    const addTable = (title: string, head: string[][], body: (string | number)[][]) => {
+      doc.setFontSize(12);
+      doc.text(title, marginX, y);
+      y += 8;
+      autoTable(doc, {
+        startY: y,
+        head,
+        body,
+        theme: 'grid',
+        margin: { left: marginX, right: marginX },
+        styles: { fontSize: 9, cellPadding: 4 },
+        headStyles: { fillColor: [59, 130, 246], textColor: [255, 255, 255] },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
+      });
+      y = (doc as any).lastAutoTable.finalY + 18;
+    };
+
+    addTable('Resumo', [['Indicador', 'Valor']], [
+      ['Total de Cards', metrics.totalCards],
+      ['Concluídos', metrics.completedCount],
+      ['Atrasados', metrics.overdueCount],
+      ['Vencem Hoje', metrics.dueTodayCount],
+    ]);
+
+    addTable(
+      'Cards por Coluna',
+      [['Coluna', 'Quantidade']],
+      metrics.cardsByColumn.map((item) => [item.name, item.count])
+    );
+
+    addTable(
+      'Cards Concluídos por Dia',
+      [['Data', 'Quantidade']],
+      (filteredCompletedByDayData.length > 0
+        ? filteredCompletedByDayData
+        : [{ date: '-', count: 0 }]
+      ).map((item) => [
+        item.date === '-' ? '-' : new Date(item.date).toLocaleDateString('pt-BR'),
+        item.count,
+      ])
+    );
+
+    addTable(
+      'Cards Concluídos (nomes)',
+      [['Data', 'Card']],
+      (filteredCompletedCards.length > 0
+        ? filteredCompletedCards
+        : [{ date: '-', title: '-' }]
+      ).map((item) => [
+        item.date === '-' ? '-' : new Date(item.date).toLocaleDateString('pt-BR'),
+        item.title,
+      ])
+    );
+
+    addTable(
+      'Tempo Médio por Coluna (h)',
+      [['Coluna', 'Horas']],
+      metrics.avgTimeByColumn.map((item) => [item.columnName, item.avgTimeInHours])
+    );
+
+    addTable(
+      'Produtividade por Membro',
+      [[
+        'Membro',
+        'Criados',
+        'Concluídos',
+        'Em Progresso',
+        'Total',
+        'Conclusão (%)',
+        'Tempo Médio (h)',
+      ]],
+      memberData.map((member) => {
+        const taxaConclusao = member.totalCards > 0
+          ? Math.round((member.cardsCompleted / member.totalCards) * 100)
+          : 0;
+        return [
+          member.name,
+          member.cardsCreated,
+          member.cardsCompleted,
+          member.cardsInProgress,
+          member.totalCards,
+          taxaConclusao,
+          member.averageTimeToComplete,
+        ];
+      })
+    );
+
+    const suffix = normalizeFileName(teamName || 'time');
+    const date = new Date().toISOString().slice(0, 10);
+    doc.save(`metricas-${suffix}-${date}.pdf`);
+  };
+
   return (
     <div className="space-y-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Métricas</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Exporte os dados para análise externa.
+          </p>
+          <div className="mt-3 flex flex-wrap items-end gap-3">
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">De</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(event) => setStartDate(event.target.value)}
+                className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Até</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(event) => setEndDate(event.target.value)}
+                className="rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-100"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setStartDate('');
+                setEndDate('');
+              }}
+              className="rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-900 dark:text-gray-200 dark:hover:bg-slate-800"
+            >
+              Limpar filtro
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+          >
+            <Download className="h-4 w-4" />
+            Exportar CSV
+          </button>
+          <button
+            type="button"
+            onClick={handleExportPdf}
+            className="inline-flex items-center gap-2 rounded-md bg-slate-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-900"
+          >
+            <Download className="h-4 w-4" />
+            Exportar PDF
+          </button>
+        </div>
+      </div>
       {/* Cards de Resumo KPI */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total de Cards */}
@@ -162,9 +495,9 @@ export default function Metrics({ teamId }: { teamId?: string }) {
             <TrendingUp className="w-5 h-5 text-green-600" />
             Cards Concluídos (Últimos 7 dias)
           </h3>
-          {completedByDayData.length > 0 ? (
+          {filteredCompletedByDayData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={completedByDayData}>
+              <BarChart data={filteredCompletedByDayData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="date"
