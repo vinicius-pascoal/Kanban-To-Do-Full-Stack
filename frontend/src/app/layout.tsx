@@ -24,9 +24,13 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={inter.className}>
         <AuthProvider>
-          <Navbar />
-          {children}
-          <Footer />
+          <div className="app-shell flex flex-col">
+            <Navbar />
+            <main className="app-main">
+              {children}
+            </main>
+            <Footer />
+          </div>
         </AuthProvider>
       </body>
     </html>

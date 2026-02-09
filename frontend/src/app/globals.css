@@ -25,6 +25,29 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.app-shell {
+  height: 100vh;
+  min-height: 100vh;
+}
+
+.app-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+@media (min-width: 1024px) {
+  body {
+    overflow-y: hidden;
+  }
 }
 
 @layer utilities {

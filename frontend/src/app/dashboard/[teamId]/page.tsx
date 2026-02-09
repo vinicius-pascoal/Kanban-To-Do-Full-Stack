@@ -45,7 +45,7 @@ function DashboardContent() {
   // Mostrar loading enquanto verifica autenticação
   if (!mounted || !user || !token) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Carregando...</h1>
           <p className="text-gray-600">Verificando autenticação...</p>
@@ -55,7 +55,7 @@ function DashboardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col">
+    <div className="h-full min-h-0 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col">
       {/* Tabs */}
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b dark:border-slate-700 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
@@ -92,7 +92,7 @@ function DashboardContent() {
       </div>
 
       {/* Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+      <main className="max-w-7xl mx-auto px-4 py-8 flex-1 w-full min-h-0">
         {activeTab === 'board' ? <Board teamId={teamId} /> : <Metrics teamId={teamId} />}
       </main>
 

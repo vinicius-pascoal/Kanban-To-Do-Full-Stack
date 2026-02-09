@@ -82,7 +82,7 @@ export default function Column({
   return (
     <div
       style={columnStyle}
-      className={`rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 ${columnColorValue ? '' : bgColor} p-5 min-w-[340px] max-w-[340px] flex flex-col h-[calc(100vh-220px)] transition-all backdrop-blur-sm ${dragOverId === column.id ? 'ring-2 ring-blue-400 dark:ring-blue-500 shadow-xl' : ''
+      className={`rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 ${columnColorValue ? '' : bgColor} p-5 min-w-[340px] max-w-[340px] flex flex-col h-full min-h-0 transition-all backdrop-blur-sm ${dragOverId === column.id ? 'ring-2 ring-blue-400 dark:ring-blue-500 shadow-xl' : ''
         }`}
     >
       {/* Header */}
@@ -119,7 +119,7 @@ export default function Column({
 
       {/* Cards Container */}
       <div
-        className={`flex-1 overflow-y-auto space-y-3 pr-2 rounded-lg transition-all ${dragOverId === column.id ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''
+        className={`flex-1 min-h-0 overflow-y-auto space-y-3 pr-2 rounded-lg transition-all ${dragOverId === column.id ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''
           }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}

@@ -39,7 +39,7 @@ function TeamsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="h-full min-h-0 bg-gray-50 dark:bg-slate-900">
       {/* Content */}
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Error */}
