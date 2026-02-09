@@ -340,7 +340,7 @@ export default function Metrics({ teamId }: { teamId?: string }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="page-scroll space-y-6 pr-1">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Métricas</h2>
@@ -400,7 +400,7 @@ export default function Metrics({ teamId }: { teamId?: string }) {
       {/* Cards de Resumo KPI */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total de Cards */}
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg shadow-md p-6 border-l-4 border-blue-600 dark:border-blue-500">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg shadow-md p-4 sm:p-6 border-l-4 border-blue-600 dark:border-blue-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">Total de Cards</p>
@@ -414,7 +414,7 @@ export default function Metrics({ teamId }: { teamId?: string }) {
         </div>
 
         {/* Cards Concluídos */}
-        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-lg shadow-md p-6 border-l-4 border-green-600 dark:border-green-500">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-lg shadow-md p-4 sm:p-6 border-l-4 border-green-600 dark:border-green-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-green-700 dark:text-green-300 mb-2">Concluídos</p>
@@ -432,7 +432,7 @@ export default function Metrics({ teamId }: { teamId?: string }) {
         </div>
 
         {/* Cards Atrasados */}
-        <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 rounded-lg shadow-md p-6 border-l-4 border-red-600 dark:border-red-500">
+        <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 rounded-lg shadow-md p-4 sm:p-6 border-l-4 border-red-600 dark:border-red-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-red-700 dark:text-red-300 mb-2">Atrasados</p>
@@ -446,7 +446,7 @@ export default function Metrics({ teamId }: { teamId?: string }) {
         </div>
 
         {/* Vencem Hoje */}
-        <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30 rounded-lg shadow-md p-6 border-l-4 border-yellow-600 dark:border-yellow-500">
+        <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30 rounded-lg shadow-md p-4 sm:p-6 border-l-4 border-yellow-600 dark:border-yellow-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold text-yellow-700 dark:text-yellow-300 mb-2">Vencem Hoje</p>
@@ -463,13 +463,14 @@ export default function Metrics({ teamId }: { teamId?: string }) {
       {/* Gráficos em Grid - Estilo Power BI */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gráfico de Pizza - Cards por Coluna */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
           <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-blue-600" />
             Distribuição de Cards por Coluna
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
+          <div className="h-64 sm:h-72 lg:h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
               <Pie
                 data={metrics.cardsByColumn}
                 cx="50%"
@@ -485,40 +486,43 @@ export default function Metrics({ teamId }: { teamId?: string }) {
                 ))}
               </Pie>
               <Tooltip formatter={(value) => `${value} cards`} />
-            </PieChart>
-          </ResponsiveContainer>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
         {/* Gráfico de Barras - Cards Concluídos por Dia */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
           <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-green-600" />
             Cards Concluídos (Últimos 7 dias)
           </h3>
           {filteredCompletedByDayData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={filteredCompletedByDayData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 12 }}
-                  tickFormatter={(date) =>
-                    new Date(date).toLocaleDateString('pt-BR', {
-                      month: '2-digit',
-                      day: '2-digit',
-                    })
-                  }
-                />
-                <YAxis />
-                <Tooltip
-                  formatter={(value) => `${value} cards`}
-                  labelFormatter={(label) =>
-                    new Date(label).toLocaleDateString('pt-BR')
-                  }
-                />
-                <Bar dataKey="count" fill="#10b981" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="h-64 sm:h-72 lg:h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={filteredCompletedByDayData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(date) =>
+                      new Date(date).toLocaleDateString('pt-BR', {
+                        month: '2-digit',
+                        day: '2-digit',
+                      })
+                    }
+                  />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value) => `${value} cards`}
+                    labelFormatter={(label) =>
+                      new Date(label).toLocaleDateString('pt-BR')
+                    }
+                  />
+                  <Bar dataKey="count" fill="#10b981" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           ) : (
             <p className="text-gray-500 dark:text-gray-400 text-center py-12">
               Nenhum card concluído nos últimos 7 dias
@@ -527,33 +531,35 @@ export default function Metrics({ teamId }: { teamId?: string }) {
         </div>
 
         {/* Gráfico de Linha - Tempo Médio por Coluna */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
           <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5 text-orange-600" />
             Tempo Médio por Coluna
           </h3>
           {metrics.avgTimeByColumn.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={metrics.avgTimeByColumn}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="columnName" tick={{ fontSize: 12 }} />
-                <YAxis label={{ value: 'Horas', angle: -90, position: 'insideLeft' }} />
-                <Tooltip
-                  formatter={(value) => `${value}h`}
-                  contentStyle={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb' }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="avgTimeInHours"
-                  stroke="#f59e0b"
-                  name="Tempo Médio"
-                  strokeWidth={3}
-                  dot={{ fill: '#f59e0b', r: 6 }}
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <div className="h-64 sm:h-72 lg:h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={metrics.avgTimeByColumn}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="columnName" tick={{ fontSize: 12 }} />
+                  <YAxis label={{ value: 'Horas', angle: -90, position: 'insideLeft' }} />
+                  <Tooltip
+                    formatter={(value) => `${value}h`}
+                    contentStyle={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb' }}
+                  />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="avgTimeInHours"
+                    stroke="#f59e0b"
+                    name="Tempo Médio"
+                    strokeWidth={3}
+                    dot={{ fill: '#f59e0b', r: 6 }}
+                    activeDot={{ r: 8 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           ) : (
             <p className="text-gray-500 dark:text-gray-400 text-center py-12">
               Sem histórico de movimentação de cards
@@ -562,32 +568,34 @@ export default function Metrics({ teamId }: { teamId?: string }) {
         </div>
 
         {/* Gráfico de Barras - Status de Cards */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
           <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-purple-600" />
             Status dos Cards
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={[
-                {
-                  status: 'Cards',
-                  Concluídos: metrics.completedCount,
-                  Pendentes: metrics.totalCards - metrics.completedCount,
-                  Atrasados: metrics.overdueCount,
-                },
-              ]}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="status" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="Concluídos" fill="#10b981" />
-              <Bar dataKey="Pendentes" fill="#3b82f6" />
-              <Bar dataKey="Atrasados" fill="#ef4444" />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="h-64 sm:h-72 lg:h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={[
+                  {
+                    status: 'Cards',
+                    Concluídos: metrics.completedCount,
+                    Pendentes: metrics.totalCards - metrics.completedCount,
+                    Atrasados: metrics.overdueCount,
+                  },
+                ]}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="status" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="Concluídos" fill="#10b981" />
+                <Bar dataKey="Pendentes" fill="#3b82f6" />
+                <Bar dataKey="Atrasados" fill="#ef4444" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
@@ -601,20 +609,22 @@ export default function Metrics({ teamId }: { teamId?: string }) {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Gráfico de Cards Completados por Membro */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
               <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">
                 Cards Concluídos por Membro
               </h3>
               {memberData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={memberData} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" />
-                    <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 12 }} />
-                    <Tooltip formatter={(value) => `${value} cards`} />
-                    <Bar dataKey="cardsCompleted" fill="#10b981" name="Concluídos" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="h-64 sm:h-72 lg:h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={memberData} layout="vertical">
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis type="number" />
+                      <YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 12 }} />
+                      <Tooltip formatter={(value) => `${value} cards`} />
+                      <Bar dataKey="cardsCompleted" fill="#10b981" name="Concluídos" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               ) : (
                 <p className="text-gray-500 dark:text-gray-400 text-center py-12">
                   Nenhum membro com cards atribuídos
@@ -623,29 +633,31 @@ export default function Metrics({ teamId }: { teamId?: string }) {
             </div>
 
             {/* Gráfico de Produtividade Total */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-slate-700">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6 border border-gray-200 dark:border-slate-700">
               <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">
                 Produtividade por Membro
               </h3>
               {memberData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <ComposedChart data={memberData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="name"
-                      tick={{ fontSize: 11 }}
-                      angle={-45}
-                      textAnchor="end"
-                      height={80}
-                    />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="cardsCompleted" fill="#10b981" name="Concluídos" />
-                    <Bar dataKey="cardsInProgress" fill="#3b82f6" name="Em Progresso" />
-                    <Line type="monotone" dataKey="averageTimeToComplete" stroke="#f59e0b" name="Tempo Médio (h)" />
-                  </ComposedChart>
-                </ResponsiveContainer>
+                <div className="h-64 sm:h-72 lg:h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart data={memberData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis
+                        dataKey="name"
+                        tick={{ fontSize: 11 }}
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                      />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="cardsCompleted" fill="#10b981" name="Concluídos" />
+                      <Bar dataKey="cardsInProgress" fill="#3b82f6" name="Em Progresso" />
+                      <Line type="monotone" dataKey="averageTimeToComplete" stroke="#f59e0b" name="Tempo Médio (h)" />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
               ) : (
                 <p className="text-gray-500 dark:text-gray-400 text-center py-12">
                   Nenhum membro com cards atribuídos
