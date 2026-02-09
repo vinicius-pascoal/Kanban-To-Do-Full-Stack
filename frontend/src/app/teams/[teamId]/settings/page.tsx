@@ -74,7 +74,7 @@ function TeamSettingsContent() {
   };
 
   return (
-    <div className="h-full min-h-0 bg-gray-50 dark:bg-slate-950">
+    <div className="page-scroll bg-gray-50 dark:bg-slate-950">
       {/* Header */}
       <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
         <div className="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">

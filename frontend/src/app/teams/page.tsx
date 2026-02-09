@@ -11,6 +11,7 @@ function TeamsContent() {
   const [newTeamName, setNewTeamName] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [localError, setLocalError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchTeams();
@@ -38,8 +39,13 @@ function TeamsContent() {
     router.push(`/dashboard/${teamId}`);
   };
 
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const filteredTeams = (teams || []).filter((team) =>
+    team.name.toLowerCase().includes(normalizedQuery)
+  );
+
   return (
-    <div className="h-full min-h-0 bg-gray-50 dark:bg-slate-900">
+    <div className="page-scroll bg-gray-50 dark:bg-slate-900">
       {/* Content */}
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Error */}
@@ -49,51 +55,73 @@ function TeamsContent() {
           </div>
         )}
 
+        {/* Search */}
+        {teams && teams.length > 0 && (
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Buscar time
+            </label>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Digite o nome do time"
+              className="w-full max-w-md px-4 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none"
+            />
+          </div>
+        )}
+
         {/* Teams Grid */}
         {teams && teams.length > 0 ? (
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Times ({teams.length})
+              Times ({filteredTeams.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {teams.map((team) => (
-                <div
-                  key={team.id}
-                  onClick={() => handleSelectTeam(team.id)}
-                  className="bg-white dark:bg-slate-800 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer border border-gray-200 dark:border-slate-700 overflow-hidden"
-                >
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                      {team.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      {team.members?.length || 0} membro{
-                        (team.members?.length || 0) !== 1 ? 's' : ''
-                      }
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {team.members?.slice(0, 3).map((member) => (
-                        <div
-                          key={member.id}
-                          className="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 text-xs rounded-full"
-                        >
-                          {member.user?.name}
-                        </div>
-                      ))}
-                      {(team.members?.length || 0) > 3 && (
-                        <div className="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 text-xs rounded-full">
-                          +{(team.members?.length || 0) - 3}
-                        </div>
-                      )}
+              {filteredTeams.length > 0 ? (
+                filteredTeams.map((team) => (
+                  <div
+                    key={team.id}
+                    onClick={() => handleSelectTeam(team.id)}
+                    className="bg-white dark:bg-slate-800 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer border border-gray-200 dark:border-slate-700 overflow-hidden"
+                  >
+                    <div className="p-6">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                        {team.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        {team.members?.length || 0} membro{
+                          (team.members?.length || 0) !== 1 ? 's' : ''
+                        }
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {team.members?.slice(0, 3).map((member) => (
+                          <div
+                            key={member.id}
+                            className="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 text-xs rounded-full"
+                          >
+                            {member.user?.name}
+                          </div>
+                        ))}
+                        {(team.members?.length || 0) > 3 && (
+                          <div className="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 text-xs rounded-full">
+                            +{(team.members?.length || 0) - 3}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="bg-blue-50 dark:bg-blue-900/30 px-6 py-3 text-center">
+                      <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold text-sm">
+                        Abrir →
+                      </button>
                     </div>
                   </div>
-                  <div className="bg-blue-50 dark:bg-blue-900/30 px-6 py-3 text-center">
-                    <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold text-sm">
-                      Abrir →
-                    </button>
-                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-8 text-gray-600 dark:text-gray-400">
+                  Nenhum time encontrado para "{searchQuery}".
                 </div>
-              ))}
+              )}
             </div>
           </div>
         ) : (
