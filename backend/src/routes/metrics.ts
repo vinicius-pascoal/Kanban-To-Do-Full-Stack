@@ -127,22 +127,25 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
     });
 
     const overdueCards = allCards.filter(
-      (card) => card.column.name !== 'Concluído' && isOverdue(card.dueDate)
+      (card) => !card.column.isCompleted && isOverdue(card.dueDate)
     );
 
     const dueTodayCards = allCards.filter(
-      (card) => card.column.name !== 'Concluído' && isDueToday(card.dueDate)
+      (card) => !card.column.isCompleted && isDueToday(card.dueDate)
     );
 
     // Cards concluídos
-    const completedColumn = await prisma.column.findFirst({
-      where: { name: 'Concluído', boardId: board.id },
+    const completedColumns = await prisma.column.findMany({
+      where: { isCompleted: true, boardId: board.id },
       include: {
         _count: {
           select: { cards: true },
         },
       },
     });
+
+    const completedColumnIds = completedColumns.map(col => col.id);
+    const completedCount = completedColumns.reduce((sum, col) => sum + col._count.cards, 0);
 
     // Calcular tempo médio por coluna (baseado no histórico)
     const history = await prisma.cardHistory.findMany({
@@ -197,7 +200,7 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
 
     const recentCompletedCards = await prisma.card.findMany({
       where: {
-        columnId: completedColumn?.id || '',
+        columnId: { in: completedColumnIds },
         updatedAt: { gte: sevenDaysAgo },
       },
       orderBy: { updatedAt: 'asc' },
@@ -252,7 +255,7 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
           };
         }
 
-        if (card.column.name === 'Concluído') {
+        if (card.column.isCompleted) {
           memberProductivity[memberId].cardsCompleted += 1;
         } else if (card.column.name === 'Em Progresso') {
           memberProductivity[memberId].cardsInProgress += 1;
@@ -274,7 +277,7 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
     });
 
     Object.entries(cardsByMember).forEach(([memberId, cards]) => {
-      const completedCards = cards.filter((c) => c.column.name === 'Concluído');
+      const completedCards = cards.filter((c) => c.column.isCompleted);
       if (completedCards.length > 0 && memberProductivity[memberId]) {
         const historyForMember = history.filter((h) =>
           completedCards.some((c) => c.id === h.cardId)
@@ -313,7 +316,7 @@ router.get('/', async (req: AuthenticatedRequest, res: Response) => {
       })),
       overdueCount: overdueCards.length,
       dueTodayCount: dueTodayCards.length,
-      completedCount: completedColumn?._count.cards || 0,
+      completedCount: completedCount,
       avgTimeByColumn,
       completedByDay: completedByDayArray,
       completedCards,

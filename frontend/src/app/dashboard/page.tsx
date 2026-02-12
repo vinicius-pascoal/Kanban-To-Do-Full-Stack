@@ -15,6 +15,7 @@ interface CardWithTeam {
   dueDate: string | null;
   column: {
     name: string;
+    isCompleted?: boolean;
     board: {
       team: {
         id: string;
@@ -91,7 +92,7 @@ export default function DashboardHome() {
   today.setHours(0, 0, 0, 0);
   const todayCards = myCards.filter((card) => {
     if (!card.dueDate) return false;
-    if (card.column?.name === 'Concluído') return false;
+    if (card.column?.isCompleted) return false;
     const dueDate = new Date(card.dueDate);
     dueDate.setHours(0, 0, 0, 0);
     return dueDate.getTime() === today.getTime();
@@ -117,7 +118,7 @@ export default function DashboardHome() {
   const cardsByDay: Record<number, CardWithTeam[]> = {};
   myCards.forEach((card) => {
     if (!card.dueDate) return;
-    if (card.column?.name === 'Concluído') return;
+    if (card.column?.isCompleted) return;
     const dueDate = new Date(card.dueDate);
     if (dueDate.getMonth() === month && dueDate.getFullYear() === year) {
       const day = dueDate.getDate();

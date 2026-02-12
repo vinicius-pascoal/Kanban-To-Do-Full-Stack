@@ -20,9 +20,9 @@ export const isDueToday = (dueDate: string | null | undefined): boolean => {
 
 export const getCardStatus = (
   dueDate: string | null | undefined,
-  columnName: string
+  isColumnCompleted: boolean
 ): CardStatus => {
-  if (columnName === 'Concluído') return 'completed';
+  if (isColumnCompleted) return 'completed';
   if (isOverdue(dueDate)) return 'overdue';
   if (isDueToday(dueDate)) return 'today';
   return 'ontime';

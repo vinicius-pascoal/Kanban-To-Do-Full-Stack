@@ -120,11 +120,11 @@ export const api = {
     return res.json();
   },
 
-  async createColumn(boardId: string, name: string, token: string, color?: string | null) {
+  async createColumn(boardId: string, name: string, token: string, color?: string | null, isCompleted?: boolean) {
     const res = await fetch(`${API_URL}/api/column`, {
       method: 'POST',
       headers: getHeaders(token),
-      body: JSON.stringify({ boardId, name, color }),
+      body: JSON.stringify({ boardId, name, color, isCompleted }),
     });
     if (!res.ok) {
       const error = await res.json().catch(() => ({ error: 'Erro ao criar coluna' }));
@@ -144,11 +144,11 @@ export const api = {
     }
   },
 
-  async updateColumn(id: string, name: string, token: string, color?: string | null) {
+  async updateColumn(id: string, name: string, token: string, color?: string | null, isCompleted?: boolean) {
     const res = await fetch(`${API_URL}/api/column/${id}`, {
       method: 'PUT',
       headers: getHeaders(token),
-      body: JSON.stringify({ name, color }),
+      body: JSON.stringify({ name, color, isCompleted }),
     });
     if (!res.ok) throw new Error('Erro ao atualizar coluna');
     return res.json();

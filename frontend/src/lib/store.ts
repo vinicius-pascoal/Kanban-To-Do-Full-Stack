@@ -151,7 +151,7 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
       const { board, teamId } = get();
       if (!board) throw new Error('Board não encontrado');
 
-      const createdColumn = await api.createColumn(board.id, name, token, options?.color ?? null);
+      const createdColumn = await api.createColumn(board.id, name, token, options?.color ?? null, options?.isCompleted ?? false);
 
       if (options && options.position !== 'end') {
         const orderedIds = [...board.columns]

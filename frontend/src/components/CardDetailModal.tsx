@@ -22,8 +22,8 @@ export default function CardDetailModal({
   if (!isOpen || !card) return null;
 
   const daysUntil = getDaysUntilDue(card.dueDate);
-  // Status é determinado apenas pela data, não precisa do nome da coluna
-  const status = getCardStatus(card.dueDate, '');
+  // Status é determinado apenas pela data quando não temos a coluna
+  const status = getCardStatus(card.dueDate, false);
 
   const priorityColors: Record<string, string> = {
     baixa: 'bg-blue-100 text-blue-800 border border-blue-300',

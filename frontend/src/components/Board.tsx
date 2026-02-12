@@ -21,6 +21,7 @@ export default function Board({ teamId }: { teamId?: string }) {
   const [newColumnPosition, setNewColumnPosition] = useState<ColumnInsertPosition>('end');
   const [newColumnAnchorId, setNewColumnAnchorId] = useState('');
   const [newColumnColor, setNewColumnColor] = useState('#F8FAFC');
+  const [newColumnIsCompleted, setNewColumnIsCompleted] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedDetailCard, setSelectedDetailCard] = useState<CardType | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -110,11 +111,13 @@ export default function Board({ teamId }: { teamId?: string }) {
       position: newColumnPosition,
       anchorColumnId: newColumnAnchorId || null,
       color: newColumnColor || null,
+      isCompleted: newColumnIsCompleted,
     });
     setNewColumnName('');
     setNewColumnPosition('end');
     setNewColumnAnchorId('');
     setNewColumnColor('#F8FAFC');
+    setNewColumnIsCompleted(false);
     setIsAddingColumn(false);
   };
 
@@ -225,6 +228,18 @@ export default function Board({ teamId }: { teamId?: string }) {
                   className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isCompleted"
+                checked={newColumnIsCompleted}
+                onChange={(e) => setNewColumnIsCompleted(e.target.checked)}
+                className="h-5 w-5 rounded border-gray-300 dark:border-slate-600 text-blue-600 focus:ring-2 focus:ring-blue-500"
+              />
+              <label htmlFor="isCompleted" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Marcar como coluna de conclusão
+              </label>
             </div>
             {(newColumnPosition === 'before' || newColumnPosition === 'after') && (
               <div className="flex flex-col gap-2">

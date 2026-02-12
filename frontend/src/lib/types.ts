@@ -54,6 +54,7 @@ export interface Column {
   order: number;
   boardId: string;
   color?: string | null;
+  isCompleted?: boolean;
   cards: Card[];
 }
 
@@ -63,6 +64,7 @@ export interface CreateColumnOptions {
   position: ColumnInsertPosition;
   anchorColumnId?: string | null;
   color?: string | null;
+  isCompleted?: boolean;
 }
 
 export interface Board {

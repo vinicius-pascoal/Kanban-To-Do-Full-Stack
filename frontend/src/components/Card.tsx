@@ -8,15 +8,15 @@ import { useState } from 'react';
 
 interface CardProps {
   card: CardType;
-  columnName: string;
+  isColumnCompleted: boolean;
   onEdit: (card: CardType) => void;
   onDelete: (id: string) => void;
   onViewDetails: (card: CardType) => void;
   isDragging?: boolean;
 }
 
-export default function Card({ card, columnName, onEdit, onDelete, onViewDetails, isDragging }: CardProps) {
-  const status = getCardStatus(card.dueDate, columnName);
+export default function Card({ card, isColumnCompleted, onEdit, onDelete, onViewDetails, isDragging }: CardProps) {
+  const status = getCardStatus(card.dueDate, isColumnCompleted);
   const daysUntil = getDaysUntilDue(card.dueDate);
   const [isHovered, setIsHovered] = useState(false);
 
