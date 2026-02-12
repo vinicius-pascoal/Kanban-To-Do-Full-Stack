@@ -146,7 +146,7 @@ export default function DashboardHome() {
 
   return (
     <div className="h-full min-h-0 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
-      <main className="max-w-7xl mx-auto px-4 py-8 min-h-0">
+      <main className="max-w-full mx-auto px-4 py-8 min-h-0">
         {/* Seção de Calendário e Cards do Dia */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Calendário */}

@@ -92,7 +92,7 @@ function DashboardContent() {
       </div>
 
       {/* Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8 flex-1 w-full min-h-0">
+      <main className="max-w-full mx-auto px-4 py-8 flex-1 w-full min-h-0">
         {activeTab === 'board' ? <Board teamId={teamId} /> : <Metrics teamId={teamId} />}
       </main>
 
