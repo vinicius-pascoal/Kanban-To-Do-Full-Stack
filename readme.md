@@ -21,6 +21,11 @@ Todas as features principais foram implementadas e testadas:
 - ✅ Componentes animados com Framer Motion
 - ✅ Validação de dados com Zod
 
+Recursos adicionais de documentação:
+- 📄 Guia de autenticação: SETUP_AUTH.md
+- 🧪 Guia de testes: TEST_GUIDE.md
+- 🧩 Resumo técnico: IMPLEMENTATION_SUMMARY.md
+
 ---
 
 ## 🎯 Objetivo
@@ -164,6 +169,10 @@ Modal expansível que mostra:
 
 ## 🔌 Endpoints da API
 
+Documentação interativa (Swagger):
+- `http://localhost:3001/api-docs`
+- JSON spec: `http://localhost:3001/api-docs.json`
+
 ### Autenticação
 ```http
 POST   /api/auth/register    # Registrar novo usuário
@@ -279,6 +288,11 @@ Kanban-To-Do-Full-Stack/
 
 ## ▶️ Como Executar
 
+### ✅ Requisitos
+
+- Node.js 18+
+- npm (ou pnpm/yarn, se preferir adaptar os comandos)
+
 ### 1️⃣ Clonar e Preparar
 
 ```bash
@@ -286,14 +300,34 @@ Kanban-To-Do-Full-Stack/
 git clone <repo-url>
 cd Kanban-To-Do-Full-Stack
 
-# Instalar dependências (backend)
-cd backend && npm install
-
-# Instalar dependências (frontend)
-cd ../frontend && npm install
+# Instalar dependências de tudo (raiz)
+npm run install-all
 ```
 
-### 2️⃣ Backend
+### 2️⃣ Variáveis de Ambiente
+
+Crie os arquivos abaixo:
+
+**Backend (`backend/.env`)**
+```env
+DATABASE_URL="file:./dev.db"
+JWT_SECRET="seu-secret-jwt-super-seguro"
+JWT_EXPIRES_IN="7d"
+```
+
+**Frontend (`frontend/.env.local`)**
+```env
+NEXT_PUBLIC_API_URL="http://localhost:3001/api"
+```
+
+### 3️⃣ Modo rápido (raiz)
+
+```bash
+# Executa frontend e backend juntos
+npm run dev
+```
+
+### 4️⃣ Backend
 
 ```bash
 cd backend
@@ -310,7 +344,7 @@ npm run dev
 
 Backend estará em `http://localhost:3001`
 
-### 3️⃣ Frontend
+### 5️⃣ Frontend
 
 ```bash
 cd frontend
@@ -321,7 +355,7 @@ npm run dev
 
 Frontend estará em `http://localhost:3000`
 
-### 4️⃣ Usar a Aplicação
+### 6️⃣ Usar a Aplicação
 
 1. Acesse `http://localhost:3000`
 2. Registre uma conta nova ou faça login
@@ -356,18 +390,7 @@ Para testar as funcionalidades:
 ---
 
 ## 📝 Variáveis de Ambiente
-
-### Backend (`.env`)
-```env
-DATABASE_URL="file:./dev.db"
-JWT_SECRET="seu-secret-jwt-super-seguro"
-JWT_EXPIRES_IN="7d"
-```
-
-### Frontend (`.env.local`)
-```env
-NEXT_PUBLIC_API_URL="http://localhost:3001/api"
-```
+Consulte a seção **Como Executar** para os arquivos e exemplos.
 
 ---
 
@@ -389,7 +412,6 @@ NEXT_PUBLIC_API_URL="http://localhost:3001/api"
 * ✅ Middleware de autenticação nas rotas
 * ✅ CORS configurado
 * ✅ Sanitização de dados
-* ✅ Exportar dados (CSV, PDF)
 
 ---
 
