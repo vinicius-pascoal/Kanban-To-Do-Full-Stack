@@ -85,6 +85,9 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const { name, boardId, color, isCompleted } = req.body;
 
+    console.log('🔵 Backend recebeu color:', color);
+    console.log('🔵 Type of color:', typeof color);
+
     if (!name || !boardId) {
       return res.status(400).json({ error: 'Nome e boardId são obrigatórios' });
     }
@@ -108,6 +111,8 @@ router.post('/', async (req: Request, res: Response) => {
         },
       },
     });
+
+    console.log('✅ Coluna criada com color:', column.color);
 
     res.status(201).json(column);
   } catch (error) {

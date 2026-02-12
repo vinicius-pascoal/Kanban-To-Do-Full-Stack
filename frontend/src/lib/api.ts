@@ -121,6 +121,7 @@ export const api = {
   },
 
   async createColumn(boardId: string, name: string, token: string, color?: string | null, isCompleted?: boolean) {
+    console.log('🌐 API: Enviando color para backend:', color);
     const res = await fetch(`${API_URL}/api/column`, {
       method: 'POST',
       headers: getHeaders(token),

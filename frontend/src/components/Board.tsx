@@ -21,6 +21,8 @@ export default function Board({ teamId }: { teamId?: string }) {
   const [newColumnPosition, setNewColumnPosition] = useState<ColumnInsertPosition>('end');
   const [newColumnAnchorId, setNewColumnAnchorId] = useState('');
   const [newColumnColor, setNewColumnColor] = useState('#F8FAFC');
+  const [newColumnOpacity, setNewColumnOpacity] = useState(100);
+  const [newColumnBlur, setNewColumnBlur] = useState(12);
   const [newColumnIsCompleted, setNewColumnIsCompleted] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedDetailCard, setSelectedDetailCard] = useState<CardType | null>(null);
@@ -107,16 +109,39 @@ export default function Board({ teamId }: { teamId?: string }) {
   const handleAddColumn = async () => {
     if (isAddColumnDisabled) return;
     const { createColumn } = useKanbanStore.getState();
+
+    // Converter cor hex para rgba com opacidade
+    const hexToRgba = (hex: string, opacity: number) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      if (result) {
+        const r = parseInt(result[1], 16);
+        const g = parseInt(result[2], 16);
+        const b = parseInt(result[3], 16);
+        return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
+      }
+      return hex;
+    };
+
+    const colorWithOpacity = hexToRgba(newColumnColor, newColumnOpacity);
+    // Adicionar blur ao formato: rgba(...)|blur:12
+    const colorWithBlur = `${colorWithOpacity}|blur:${newColumnBlur}`;
+
+    console.log('🎨 Criando coluna com cor:', colorWithBlur);
+    console.log('📦 Opacity:', newColumnOpacity);
+    console.log('🔶 Blur:', newColumnBlur);
+
     await createColumn(newColumnName, token, {
       position: newColumnPosition,
       anchorColumnId: newColumnAnchorId || null,
-      color: newColumnColor || null,
+      color: colorWithBlur || null,
       isCompleted: newColumnIsCompleted,
     });
     setNewColumnName('');
     setNewColumnPosition('end');
     setNewColumnAnchorId('');
     setNewColumnColor('#F8FAFC');
+    setNewColumnOpacity(100);
+    setNewColumnBlur(12);
     setNewColumnIsCompleted(false);
     setIsAddingColumn(false);
   };
@@ -162,21 +187,24 @@ export default function Board({ teamId }: { teamId?: string }) {
       <div className="flex gap-6 overflow-x-auto pb-8 px-2 h-full min-h-0">
         {board.columns
           .sort((a, b) => a.order - b.order)
-          .map((column, index, columns) => (
-            <Column
-              key={column.id}
-              column={column}
-              onAddCard={handleAddCard}
-              onEditCard={handleEditCard}
-              onDeleteCard={(id) => token && deleteCard(id, token)}
-              onViewCardDetails={handleViewCardDetails}
-              onDeleteColumn={(id) => token && deleteColumn(id, token)}
-              onCardDrop={handleCardDrop}
-              onMoveColumn={handleMoveColumn}
-              canMoveLeft={index > 0}
-              canMoveRight={index < columns.length - 1}
-            />
-          ))}
+          .map((column, index, columns) => {
+            console.log('🔷 Rendering column:', column.name, 'color:', column.color);
+            return (
+              <Column
+                key={column.id}
+                column={column}
+                onAddCard={handleAddCard}
+                onEditCard={handleEditCard}
+                onDeleteCard={(id) => token && deleteCard(id, token)}
+                onViewCardDetails={handleViewCardDetails}
+                onDeleteColumn={(id) => token && deleteColumn(id, token)}
+                onCardDrop={handleCardDrop}
+                onMoveColumn={handleMoveColumn}
+                canMoveLeft={index > 0}
+                canMoveRight={index < columns.length - 1}
+              />
+            );
+          })}
 
         {/* Add Column Button */}
         {isAddingColumn ? (
@@ -228,6 +256,59 @@ export default function Board({ teamId }: { teamId?: string }) {
                   className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Transparência: {newColumnOpacity}%
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min="10"
+                  max="100"
+                  value={newColumnOpacity}
+                  onChange={(e) => setNewColumnOpacity(parseInt(e.target.value))}
+                  className="flex-1 h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer slider"
+                  style={{
+                    background: `linear-gradient(to right, rgba(59, 130, 246, ${newColumnOpacity / 100}) 0%, rgba(59, 130, 246, ${newColumnOpacity / 100}) ${newColumnOpacity}%, rgb(229, 231, 235) ${newColumnOpacity}%, rgb(229, 231, 235) 100%)`
+                  }}
+                />
+                <input
+                  type="number"
+                  min="10"
+                  max="100"
+                  value={newColumnOpacity}
+                  onChange={(e) => setNewColumnOpacity(Math.min(100, Math.max(10, parseInt(e.target.value) || 10)))}
+                  className="w-20 px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Intensidade do Blur: {newColumnBlur}px
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min="0"
+                  max="24"
+                  value={newColumnBlur}
+                  onChange={(e) => setNewColumnBlur(parseInt(e.target.value))}
+                  className="flex-1 h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer slider"
+                  style={{
+                    background: `linear-gradient(to right, rgba(139, 92, 246, 0.8) 0%, rgba(139, 92, 246, 0.8) ${(newColumnBlur / 24) * 100}%, rgb(229, 231, 235) ${(newColumnBlur / 24) * 100}%, rgb(229, 231, 235) 100%)`
+                  }}
+                />
+                <input
+                  type="number"
+                  min="0"
+                  max="24"
+                  value={newColumnBlur}
+                  onChange={(e) => setNewColumnBlur(Math.min(24, Math.max(0, parseInt(e.target.value) || 0)))}
+                  className="w-20 px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+                />
+              </div>
+
             </div>
             <div className="flex items-center gap-3">
               <input

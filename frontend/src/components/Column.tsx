@@ -43,7 +43,39 @@ export default function Column({
 
   const columnColorValue = column.color?.trim();
   const bgColor = columnColors[column.name] || 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900';
-  const columnStyle = columnColorValue ? { backgroundColor: columnColorValue } : undefined;
+
+  // Parse do formato: rgba(...)|blur:12
+  let backgroundColor = columnColorValue;
+  let blurValue = 12; // default
+
+  if (columnColorValue?.includes('|blur:')) {
+    const [color, blurPart] = columnColorValue.split('|blur:');
+    backgroundColor = color;
+    blurValue = parseInt(blurPart) || 12;
+  }
+
+  // Detectar se a cor tem transparência (rgba)
+  const hasTransparency = backgroundColor?.includes('rgba');
+  const columnStyle = backgroundColor
+    ? {
+      backgroundColor,
+      backdropFilter: hasTransparency ? `blur(${blurValue}px)` : undefined,
+      WebkitBackdropFilter: hasTransparency ? `blur(${blurValue}px)` : undefined,
+    }
+    : undefined;
+
+  // Classes para efeito glassmorphism quando há transparência
+  const glassEffect = hasTransparency ? 'backdrop-saturate-150' : '';
+  const borderEffect = hasTransparency ? 'border-white/20 dark:border-white/10' : 'border-gray-200 dark:border-slate-700';
+
+  // Log para debug
+  console.log('🎨 Column:', column.name);
+  console.log('  └─ color:', columnColorValue);
+  console.log('  └─ backgroundColor:', backgroundColor);
+  console.log('  └─ blurValue:', blurValue);
+  console.log('  └─ hasTransparency:', hasTransparency);
+  console.log('  └─ glassEffect:', glassEffect);
+  console.log('  └─ columnStyle:', columnStyle);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -82,8 +114,12 @@ export default function Column({
   return (
     <div
       style={columnStyle}
-      className={`rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 ${columnColorValue ? '' : bgColor} p-5 min-w-[340px] max-w-[340px] flex flex-col h-full min-h-0 transition-all backdrop-blur-sm ${dragOverId === column.id ? 'ring-2 ring-blue-400 dark:ring-blue-500 shadow-xl' : ''
+      className={`rounded-xl shadow-lg border ${borderEffect} ${backgroundColor ? glassEffect : bgColor
+        } ${hasTransparency ? 'glass-column' : ''} p-5 min-w-[340px] max-w-[340px] flex flex-col h-full min-h-0 transition-all ${dragOverId === column.id ? 'ring-2 ring-blue-400 dark:ring-blue-500 shadow-xl' : ''
         }`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-5 flex-shrink-0 pb-4 border-b border-gray-200 dark:border-slate-600">
