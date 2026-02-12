@@ -89,11 +89,6 @@ export default function Column({
       <div className="flex items-center justify-between mb-5 flex-shrink-0 pb-4 border-b border-gray-200 dark:border-slate-600">
         <div className="flex items-center gap-3 flex-1">
           <h2 className="font-bold text-xl text-gray-800 dark:text-white">{column.name}</h2>
-          {column.isCompleted && (
-            <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
-              ✓ Concluído
-            </span>
-          )}
           <span className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
             {column.cards.length}
           </span>
