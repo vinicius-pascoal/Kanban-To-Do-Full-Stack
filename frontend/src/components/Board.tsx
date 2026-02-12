@@ -208,7 +208,7 @@ export default function Board({ teamId }: { teamId?: string }) {
 
         {/* Add Column Button */}
         {isAddingColumn ? (
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-6 min-w-[340px] max-w-[340px] flex flex-col gap-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-6 min-w-[340px] max-w-[340px] flex flex-col gap-4 overflow-y-auto">
             <h3 className="font-bold text-lg text-gray-800 dark:text-white">Nova Coluna</h3>
             <input
               type="text"
