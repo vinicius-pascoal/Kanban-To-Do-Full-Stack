@@ -29,7 +29,6 @@ export default function RootLayout({
             <main className="app-main">
               {children}
             </main>
-            <Footer />
           </div>
         </AuthProvider>
       </body>
