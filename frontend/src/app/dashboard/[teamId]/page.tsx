@@ -55,7 +55,7 @@ function DashboardContent() {
   }
 
   return (
-    <div className="h-full min-h-0 bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col">
+    <div className="h-full min-h-0 flex flex-col" style={{ backgroundImage: 'var(--login-bg)' }}>
       {/* Tabs */}
       <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b dark:border-slate-700 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
