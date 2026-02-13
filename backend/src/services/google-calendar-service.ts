@@ -150,7 +150,7 @@ const parseEventStart = (event: { start?: { dateTime?: string | null; date?: str
   return null;
 };
 
-export const syncCalendarChanges = async (userId: string, forceFullSync = false) => {
+export const syncCalendarChanges = async (userId: string, forceFullSync = false): Promise<{ synced: number; nextSyncToken: string | null }> => {
   const integration = await getCalendarIntegration(userId);
   if (!integration) return { synced: 0, nextSyncToken: null };
 

@@ -10,7 +10,7 @@ export default function Home() {
 
   useEffect(() => {
     if (status === 'loading') return;
-    
+
     if (session) {
       router.push('/teams');
     } else {
