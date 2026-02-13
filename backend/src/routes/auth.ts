@@ -4,6 +4,7 @@ import prisma from '../lib/prisma';
 import { generateToken } from '../lib/jwt';
 import { registerSchema, loginSchema, createTeamSchema } from '../lib/auth-validations';
 import { OAuth2Client } from 'google-auth-library';
+import { createOAuthState, getOAuth2Client } from '../lib/google-calendar';
 
 const router = Router();
 
@@ -250,12 +251,15 @@ router.post('/google', async (req: Request, res: Response) => {
     });
 
     let user = existingUser;
+    let isNewUser = false;
+
     if (!user) {
       user = await createUserWithDefaultTeam({
         email: payload.email,
         name: payload.name || payload.email,
         googleSub: payload.sub,
       });
+      isNewUser = true;
     } else if (!user.googleSub && payload.sub) {
       user = await prisma.user.update({
         where: { id: user.id },
@@ -265,6 +269,19 @@ router.post('/google', async (req: Request, res: Response) => {
 
     const token = generateToken(user.id, user.email);
 
+    // Gerar URL de autorização do Google Calendar para novos usuários
+    let calendarAuthUrl: string | null = null;
+    if (isNewUser) {
+      const oauth2Client = getOAuth2Client();
+      const state = createOAuthState(user.id);
+      calendarAuthUrl = oauth2Client.generateAuthUrl({
+        access_type: 'offline',
+        prompt: 'consent',
+        scope: ['https://www.googleapis.com/auth/calendar.events'],
+        state,
+      });
+    }
+
     res.json({
       user: {
         id: user.id,
@@ -272,6 +289,7 @@ router.post('/google', async (req: Request, res: Response) => {
         name: user.name,
       },
       token,
+      calendarAuthUrl, // URL para conectar ao Google Calendar (apenas para novos usuários)
     });
   } catch (error) {
     console.error('Erro no login Google:', error);

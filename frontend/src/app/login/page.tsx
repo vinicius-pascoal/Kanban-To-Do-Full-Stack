@@ -46,7 +46,7 @@ export default function LoginPage() {
     setError('');
     setIsLoading(true);
     try {
-      await signIn('google', { callbackUrl: '/dashboard' });
+      await signIn('google', { callbackUrl: '/calendar-setup' });
     } catch (err) {
       setError('Erro ao fazer login com Google');
       setIsLoading(false);
