@@ -23,7 +23,7 @@ export default function CalendarSetupPage() {
     // Buscar a URL de autorização do Google Calendar
     const fetchCalendarUrl = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/google-calendar/connect-url`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/google-calendar/connect-url`, {
           headers: {
             Authorization: `Bearer ${session.backendToken}`,
           },
