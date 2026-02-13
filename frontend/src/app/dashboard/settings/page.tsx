@@ -2,7 +2,6 @@
 
 import { useSession } from 'next-auth/react';
 import GoogleCalendarSettings from '@/components/GoogleCalendarSettings';
-import Navbar from '@/components/Navbar';
 
 export default function SettingsPage() {
   const { data: session, status } = useSession();
@@ -19,7 +18,6 @@ export default function SettingsPage() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-slate-900">
-      <Navbar />
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto p-6">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">

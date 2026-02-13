@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 
 export default function TeamsPage() {
   const router = useRouter();
@@ -79,7 +78,6 @@ export default function TeamsPage() {
 
   return (
     <>
-      <Navbar />
       <div className="page-scroll" style={{ backgroundImage: 'var(--login-bg)' }}>
         {/* Content */}
         <div className="max-w-full mx-auto px-4 py-12">

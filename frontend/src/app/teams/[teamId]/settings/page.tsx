@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/lib/api';
-import Navbar from '@/components/Navbar';
 import { Trash2, Plus } from 'lucide-react';
 
 export default function TeamSettingsPage() {
@@ -118,7 +117,6 @@ export default function TeamSettingsPage() {
 
   return (
     <>
-      <Navbar />
       <div className="page-scroll bg-gray-50 dark:bg-slate-950">
         {/* Header */}
         <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
