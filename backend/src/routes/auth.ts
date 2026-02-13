@@ -3,8 +3,52 @@ import bcrypt from 'bcryptjs';
 import prisma from '../lib/prisma';
 import { generateToken } from '../lib/jwt';
 import { registerSchema, loginSchema, createTeamSchema } from '../lib/auth-validations';
+import { OAuth2Client } from 'google-auth-library';
 
 const router = Router();
+
+const createUserWithDefaultTeam = async (data: { email: string; name: string; password?: string | null; googleSub?: string | null }) => {
+  return prisma.user.create({
+    data: {
+      email: data.email,
+      password: data.password || null,
+      name: data.name,
+      googleSub: data.googleSub || null,
+      teams: {
+        create: {
+          team: {
+            create: {
+              name: `Time de ${data.name}`,
+              boards: {
+                create: {
+                  name: 'Meu Kanban',
+                  columns: {
+                    create: [
+                      { name: 'A Fazer', order: 0 },
+                      { name: 'Em Progresso', order: 1 },
+                      { name: 'Concluído', order: 2 },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    include: {
+      teams: {
+        include: {
+          team: {
+            include: {
+              boards: true,
+            },
+          },
+        },
+      },
+    },
+  });
+};
 
 /**
  * @swagger
@@ -74,44 +118,10 @@ router.post('/register', async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(validatedData.password, 10);
 
     // Criar usuário e seu time padrão
-    const user = await prisma.user.create({
-      data: {
-        email: validatedData.email,
-        password: hashedPassword,
-        name: validatedData.name,
-        teams: {
-          create: {
-            team: {
-              create: {
-                name: `Time de ${validatedData.name}`,
-                boards: {
-                  create: {
-                    name: 'Meu Kanban',
-                    columns: {
-                      create: [
-                        { name: 'A Fazer', order: 0 },
-                        { name: 'Em Progresso', order: 1 },
-                        { name: 'Concluído', order: 2 },
-                      ],
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      include: {
-        teams: {
-          include: {
-            team: {
-              include: {
-                boards: true,
-              },
-            },
-          },
-        },
-      },
+    const user = await createUserWithDefaultTeam({
+      email: validatedData.email,
+      password: hashedPassword,
+      name: validatedData.name,
     });
 
     const token = generateToken(user.id, user.email);
@@ -189,6 +199,10 @@ router.post('/login', async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Email ou senha inválidos' });
     }
 
+    if (!user.password) {
+      return res.status(401).json({ error: 'Email ou senha inválidos' });
+    }
+
     // Verificar senha
     const isPasswordValid = await bcrypt.compare(validatedData.password, user.password);
 
@@ -209,6 +223,59 @@ router.post('/login', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Erro ao fazer login:', error);
     res.status(400).json({ error: 'Erro ao fazer login' });
+  }
+});
+
+// POST /api/auth/google - Login/registro com Google
+router.post('/google', async (req: Request, res: Response) => {
+  try {
+    const { idToken } = req.body as { idToken?: string };
+    if (!idToken) {
+      return res.status(400).json({ error: 'idToken é obrigatório' });
+    }
+
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload?.email) {
+      return res.status(400).json({ error: 'Email não encontrado no token' });
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { email: payload.email },
+    });
+
+    let user = existingUser;
+    if (!user) {
+      user = await createUserWithDefaultTeam({
+        email: payload.email,
+        name: payload.name || payload.email,
+        googleSub: payload.sub,
+      });
+    } else if (!user.googleSub && payload.sub) {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { googleSub: payload.sub },
+      });
+    }
+
+    const token = generateToken(user.id, user.email);
+
+    res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error('Erro no login Google:', error);
+    res.status(400).json({ error: 'Erro ao autenticar com Google' });
   }
 });
 

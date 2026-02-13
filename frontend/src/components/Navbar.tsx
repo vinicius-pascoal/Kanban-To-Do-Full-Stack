@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from '@/lib/auth-provider';
+import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { Home, Users, LogOut } from 'lucide-react';
+import { Home, Users, LogOut, Settings } from 'lucide-react';
 
 const THEME_KEY = 'theme';
 type Theme = 'light' | 'dark';
@@ -20,9 +20,10 @@ function getInitialTheme(): Theme {
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, token, currentTeam } = useAuth();
+  const { data: session, status } = useSession();
   const [theme, setTheme] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
+  const [currentTeam, setCurrentTeam] = useState<any>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -36,16 +37,33 @@ export default function Navbar() {
     localStorage.setItem(THEME_KEY, theme);
   }, [theme, mounted]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    router.push('/login');
+  // Load current team from localStorage
+  useEffect(() => {
+    if (session?.backendToken) {
+      const storedTeam = localStorage.getItem('currentTeam');
+      if (storedTeam) {
+        try {
+          setCurrentTeam(JSON.parse(storedTeam));
+        } catch (e) {
+          console.error('Error parsing currentTeam:', e);
+        }
+      }
+    }
+  }, [session]);
+
+  const handleLogout = async () => {
+    localStorage.removeItem('currentTeam');
+    await signOut({ redirect: true, callbackUrl: '/login' });
   };
 
   const isDark = theme === 'dark';
 
   // Não mostrar navbar nas páginas de login e registro
-  if (!user || pathname === '/login' || pathname === '/register') {
+  if (status === 'loading') {
+    return null;
+  }
+
+  if (!session || pathname === '/login' || pathname === '/register') {
     return null;
   }
 
@@ -91,6 +109,17 @@ export default function Navbar() {
                 <Users className="w-4 h-4" />
                 <span>Times</span>
               </Link>
+
+              <Link
+                href="/dashboard/settings"
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${pathname === '/dashboard/settings'
+                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
+                  }`}
+              >
+                <Settings className="w-4 h-4" />
+                <span>Configurações</span>
+              </Link>
             </div>
           </div>
 
@@ -98,7 +127,7 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             {/* Nome do usuário */}
             <div className="hidden sm:block text-sm text-gray-700 dark:text-gray-300">
-              <span className="font-semibold">{user?.name}</span>
+              <span className="font-semibold">{session.user?.name || session.user?.email}</span>
             </div>
 
             {/* Theme Toggle */}

@@ -3,14 +3,14 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useAuth } from '@/lib/auth-provider';
+import { useSession } from 'next-auth/react';
 
 export default function Footer() {
 
   const pathname = usePathname();
-  const { user, token, currentTeam } = useAuth();
+  const { data: session } = useSession();
 
-  if (!user || pathname === '/login' || pathname === '/register') {
+  if (!session || pathname === '/login' || pathname === '/register') {
     return null;
   }
 

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useKanbanStore } from '@/lib/store';
-import { useAuth } from '@/lib/auth-provider';
 import {
   BarChart3,
   TrendingUp,
@@ -31,11 +30,28 @@ import {
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
-export default function Metrics({ teamId }: { teamId?: string }) {
+interface MetricsProps {
+  teamId?: string;
+  token?: string;
+}
+
+export default function Metrics({ teamId, token }: MetricsProps) {
   const { metrics, fetchMetrics, clearBoard } = useKanbanStore();
-  const { token, currentTeam } = useAuth();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [currentTeam, setCurrentTeam] = useState<any>(null);
+
+  useEffect(() => {
+    // Load current team from localStorage
+    const storedTeam = localStorage.getItem('currentTeam');
+    if (storedTeam) {
+      try {
+        setCurrentTeam(JSON.parse(storedTeam));
+      } catch (e) {
+        console.error('Error parsing currentTeam:', e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     console.log('🔄 Metrics useEffect triggered - teamId:', teamId);

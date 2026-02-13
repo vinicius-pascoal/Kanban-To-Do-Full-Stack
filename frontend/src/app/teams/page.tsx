@@ -2,36 +2,61 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, ProtectedRoute } from '@/lib/auth-provider';
+import { useSession } from 'next-auth/react';
+import { api } from '@/lib/api';
 import Link from 'next/link';
+import Navbar from '@/components/Navbar';
 
-function TeamsContent() {
+export default function TeamsPage() {
   const router = useRouter();
-  const { user, teams, currentTeam, fetchTeams, createTeam, isLoading, error } = useAuth();
+  const { data: session, status } = useSession();
+  const [teams, setTeams] = useState<any[]>([]);
   const [newTeamName, setNewTeamName] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [localError, setLocalError] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetchTeams();
-  }, []);
+    if (session?.backendToken) {
+      fetchTeams();
+    }
+  }, [session]);
+
+  const fetchTeams = async () => {
+    if (!session?.backendToken) return;
+    try {
+      setIsLoading(true);
+      const data = await api.getTeams(session.backendToken);
+      setTeams(data);
+    } catch (err: any) {
+      setError('Erro ao carregar times');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleCreateTeam = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLocalError('');
+    setError('');
 
     if (!newTeamName.trim()) {
-      setLocalError('Digite um nome para o time');
+      setError('Digite um nome para o time');
       return;
     }
 
+    if (!session?.backendToken) return;
+
     try {
-      await createTeam(newTeamName);
+      setIsLoading(true);
+      await api.createTeam(newTeamName, session.backendToken);
       setNewTeamName('');
       setShowCreateForm(false);
+      await fetchTeams();
     } catch (err: any) {
-      setLocalError(err.message);
+      setError(err.message || 'Erro ao criar time');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -44,16 +69,26 @@ function TeamsContent() {
     team.name.toLowerCase().includes(normalizedQuery)
   );
 
+  if (status === 'loading') {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="page-scroll" style={{ backgroundImage: 'var(--login-bg)' }}>
-      {/* Content */}
-      <div className="max-w-full mx-auto px-4 py-12">
-        {/* Error */}
-        {(error || localError) && (
-          <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
-            {error || localError}
-          </div>
-        )}
+    <>
+      <Navbar />
+      <div className="page-scroll" style={{ backgroundImage: 'var(--login-bg)' }}>
+        {/* Content */}
+        <div className="max-w-full mx-auto px-4 py-12">
+          {/* Error */}
+          {error && (
+            <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
 
         {/* Search */}
         {teams && teams.length > 0 && (
@@ -179,13 +214,6 @@ function TeamsContent() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function TeamsPage() {
-  return (
-    <ProtectedRoute>
-      <TeamsContent />
-    </ProtectedRoute>
+    </>
   );
 }

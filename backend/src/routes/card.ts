@@ -3,8 +3,11 @@ import prisma from '../lib/prisma';
 import { createCardSchema, updateCardSchema, moveCardSchema } from '../lib/validations';
 import { parseDateString } from '../lib/date-utils';
 import { AuthenticatedRequest, authMiddleware } from '../lib/auth-middleware';
+import { deleteCardEvent, upsertCardEvent } from '../services/google-calendar-service';
 
 const router = Router();
+
+router.use(authMiddleware);
 
 /**
  * @swagger
@@ -56,8 +59,9 @@ const router = Router();
  *               $ref: '#/components/schemas/Error'
  */
 // POST /api/card - Criar novo card
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const userId = req.user?.userId;
     const validatedData = createCardSchema.parse(req.body);
 
     // Contar cards na coluna para definir a ordem
@@ -88,6 +92,12 @@ router.post('/', async (req: Request, res: Response) => {
         },
       },
     });
+
+    if (userId) {
+      upsertCardEvent(userId, card.id).catch((error) => {
+        console.error('Erro ao sincronizar card com calendário:', error);
+      });
+    }
 
     res.status(201).json(card);
   } catch (error) {
@@ -125,7 +135,7 @@ router.post('/', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 // GET /api/card/:id - Buscar card específico
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -154,8 +164,9 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 // PUT /api/card/:id - Atualizar card
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const userId = req.user?.userId;
     const { id } = req.params;
     const validatedData = updateCardSchema.parse(req.body);
 
@@ -186,6 +197,12 @@ router.put('/:id', async (req: Request, res: Response) => {
       },
     });
 
+    if (userId) {
+      upsertCardEvent(userId, card.id).catch((error) => {
+        console.error('Erro ao sincronizar card com calendário:', error);
+      });
+    }
+
     res.json(card);
   } catch (error) {
     console.error('Erro ao atualizar card:', error);
@@ -194,13 +211,20 @@ router.put('/:id', async (req: Request, res: Response) => {
 });
 
 // DELETE /api/card/:id - Deletar card
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const userId = req.user?.userId;
     const { id } = req.params;
 
     await prisma.card.delete({
       where: { id },
     });
+
+    if (userId) {
+      deleteCardEvent(userId, id).catch((error) => {
+        console.error('Erro ao remover evento do calendário:', error);
+      });
+    }
 
     res.status(204).send();
   } catch (error) {
@@ -210,8 +234,9 @@ router.delete('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/card/move - Mover card entre colunas
-router.post('/move', async (req: Request, res: Response) => {
+router.post('/move', async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const userId = req.user?.userId;
     const validatedData = moveCardSchema.parse(req.body);
 
     // Buscar card atual
@@ -291,6 +316,12 @@ router.post('/move', async (req: Request, res: Response) => {
       });
     });
 
+    if (userId) {
+      upsertCardEvent(userId, updatedCard.id).catch((error) => {
+        console.error('Erro ao sincronizar card com calendário:', error);
+      });
+    }
+
     res.json(updatedCard);
   } catch (error) {
     console.error('Erro ao mover card:', error);
@@ -299,7 +330,7 @@ router.post('/move', async (req: Request, res: Response) => {
 });
 
 // GET /api/card/user/my-cards - Buscar cards do usuário autenticado
-router.get('/user/my-cards', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/user/my-cards', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
 

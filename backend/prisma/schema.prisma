@@ -11,14 +11,17 @@ datasource db {
 }
 
 model User {
-  id        String       @id @default(cuid())
-  email     String       @unique
-  password  String
-  name      String
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  teams     TeamMember[]
-  cards     Card[]
+  id                   String                      @id @default(cuid())
+  email                String                      @unique
+  password             String?
+  name                 String
+  googleSub            String?                     @unique
+  createdAt            DateTime                    @default(now())
+  updatedAt            DateTime                    @updatedAt
+  teams                TeamMember[]
+  cards                Card[]
+  calendarIntegrations GoogleCalendarIntegration[]
+  calendarEventLinks   CalendarEventLink[]
 }
 
 model Team {
@@ -62,19 +65,20 @@ model Column {
 }
 
 model Card {
-  id           String        @id @default(cuid())
-  title        String
-  description  String?
-  priority     String
-  dueDate      DateTime?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  columnId     String
-  column       Column        @relation(fields: [columnId], references: [id], onDelete: Cascade)
-  assignedToId String?
-  assignedTo   User?         @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
-  history      CardHistory[]
-  order        Int           @default(0)
+  id                 String              @id @default(cuid())
+  title              String
+  description        String?
+  priority           String
+  dueDate            DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  columnId           String
+  column             Column              @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  assignedToId       String?
+  assignedTo         User?               @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  history            CardHistory[]
+  order              Int                 @default(0)
+  calendarEventLinks CalendarEventLink[]
 }
 
 model CardHistory {
@@ -84,4 +88,55 @@ model CardHistory {
   from    String
   to      String
   movedAt DateTime @default(now())
+}
+
+model GoogleCalendarIntegration {
+  id                    String               @id @default(cuid())
+  userId                String
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  googleSub             String?
+  refreshTokenEncrypted String
+  scope                 String?
+  calendarId            String               @default("primary")
+  status                GoogleCalendarStatus @default(CONNECTED)
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  syncState             CalendarSyncState?
+  eventLinks            CalendarEventLink[]
+
+  @@unique([userId, calendarId])
+}
+
+model CalendarEventLink {
+  id                          String                     @id @default(cuid())
+  userId                      String
+  cardId                      String
+  boardId                     String?
+  calendarId                  String
+  eventId                     String
+  etag                        String?
+  updatedAt                   DateTime                   @updatedAt
+  user                        User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card                        Card                       @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  googleCalendarIntegration   GoogleCalendarIntegration? @relation(fields: [googleCalendarIntegrationId], references: [id])
+  googleCalendarIntegrationId String?
+
+  @@unique([userId, cardId])
+  @@unique([calendarId, eventId])
+}
+
+model CalendarSyncState {
+  id                String                    @id @default(cuid())
+  integrationId     String                    @unique
+  integration       GoogleCalendarIntegration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  syncToken         String?
+  channelId         String?
+  resourceId        String?
+  channelExpiration DateTime?
+  updatedAt         DateTime                  @updatedAt
+}
+
+enum GoogleCalendarStatus {
+  CONNECTED
+  DISCONNECTED
 }

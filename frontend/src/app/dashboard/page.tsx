@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/auth-provider';
+import { useSession } from 'next-auth/react';
 import { api } from '@/lib/api';
 import { Calendar, Clock, AlertCircle, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
@@ -27,13 +27,14 @@ interface CardWithTeam {
 
 export default function DashboardHome() {
   const router = useRouter();
-  const { user, token, teams, fetchTeams } = useAuth();
+  const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
   const [myCards, setMyCards] = useState<CardWithTeam[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  const [recentTeams, setRecentTeams] = useState<typeof teams>([]);
+  const [teams, setTeams] = useState<any[]>([]);
+  const [recentTeams, setRecentTeams] = useState<any[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -48,26 +49,30 @@ export default function DashboardHome() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
-    if (!user || !token) {
-      router.push('/login');
-      return;
-    }
-  }, [mounted, user, token, router]);
+  // Middleware handles authentication - no manual redirect needed
 
   useEffect(() => {
-    if (token) {
+    if (session?.backendToken) {
       fetchTeams();
       loadMyCards();
     }
-  }, [token]);
+  }, [session]);
+
+  const fetchTeams = async () => {
+    if (!session?.backendToken) return;
+    try {
+      const data = await api.getTeams(session.backendToken);
+      setTeams(data);
+    } catch (error) {
+      console.error('Erro ao carregar times:', error);
+    }
+  };
 
   const loadMyCards = async () => {
-    if (!token) return;
+    if (!session?.backendToken) return;
     try {
       setLoading(true);
-      const cards = await api.getMyCards(token);
+      const cards = await api.getMyCards(session.backendToken);
       setMyCards(cards);
     } catch (error) {
       console.error('Erro ao carregar cards:', error);
@@ -76,12 +81,12 @@ export default function DashboardHome() {
     }
   };
 
-  if (!mounted || !user || !token) {
+  if (!mounted || status === 'loading') {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Carregando...</h1>
-          <p className="text-gray-600">Verificando autenticação...</p>
+          <p className="text-gray-600">Carregando dados...</p>
         </div>
       </div>
     );

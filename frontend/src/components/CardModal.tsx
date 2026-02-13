@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useKanbanStore } from '@/lib/store';
-import { useAuth } from '@/lib/auth-provider';
 import { Card, Priority } from '@/lib/types';
 import { X } from 'lucide-react';
 
@@ -11,17 +10,30 @@ interface CardModalProps {
   onClose: () => void;
   columnId: string;
   editingCard?: Card | null;
+  token?: string;
 }
 
-export default function CardModal({ isOpen, onClose, columnId, editingCard }: CardModalProps) {
+export default function CardModal({ isOpen, onClose, columnId, editingCard, token }: CardModalProps) {
   const { createCard, updateCard } = useKanbanStore();
-  const { token, currentTeam } = useAuth();
+  const [currentTeam, setCurrentTeam] = useState<any>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Priority>('média');
   const [dueDate, setDueDate] = useState('');
   const [assignedToId, setAssignedToId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    // Load current team from localStorage
+    const storedTeam = localStorage.getItem('currentTeam');
+    if (storedTeam) {
+      try {
+        setCurrentTeam(JSON.parse(storedTeam));
+      } catch (e) {
+        console.error('Error parsing currentTeam:', e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (editingCard) {

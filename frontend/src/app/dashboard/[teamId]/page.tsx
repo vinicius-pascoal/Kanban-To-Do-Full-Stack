@@ -5,50 +5,59 @@ import { useParams, useRouter } from 'next/navigation';
 import Board from '@/components/Board';
 import Metrics from '@/components/Metrics';
 import { LayoutDashboard, BarChart3, Settings, LogOut } from 'lucide-react';
-import { useAuth } from '@/lib/auth-provider';
+import { useSession } from 'next-auth/react';
+import { api } from '@/lib/api';
 import Link from 'next/link';
 
 function DashboardContent() {
   const params = useParams();
   const router = useRouter();
-  const { user, token, currentTeam, fetchTeam, isLoading } = useAuth();
+  const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
   const teamId = params.teamId as string;
   const [activeTab, setActiveTab] = useState<'board' | 'metrics'>('board');
+  const [currentTeam, setCurrentTeam] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Verificar autenticação apenas no cliente
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
-    if (!user || !token) {
-      router.push('/login');
-      return;
-    }
-  }, [mounted, user, token, router]);
+  // Middleware handles authentication - no manual redirect needed
 
   useEffect(() => {
-    if (teamId && token) {
+    if (teamId && session?.backendToken) {
       fetchTeam(teamId);
     }
-  }, [teamId, token, fetchTeam]);
+  }, [teamId, session]);
+
+  const fetchTeam = async (id: string) => {
+    if (!session?.backendToken) return;
+    try {
+      setIsLoading(true);
+      const team = await api.getTeam(id, session.backendToken);
+      setCurrentTeam(team);
+      localStorage.setItem('currentTeam', JSON.stringify(team));
+    } catch (error) {
+      console.error('Erro ao carregar time:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    document.cookie = 'token=; Max-Age=0; path=/;';
+    localStorage.removeItem('currentTeam');
     router.push('/login');
   };
 
   // Mostrar loading enquanto verifica autenticação
-  if (!mounted || !user || !token) {
+  if (!mounted || status === 'loading') {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Carregando...</h1>
-          <p className="text-gray-600">Verificando autenticação...</p>
+          <p className="text-gray-600">Carregando dados...</p>
         </div>
       </div>
     );
@@ -93,7 +102,11 @@ function DashboardContent() {
 
       {/* Content */}
       <main className="max-w-full mx-auto px-4 py-8 flex-1 w-full min-h-0">
-        {activeTab === 'board' ? <Board teamId={teamId} /> : <Metrics teamId={teamId} />}
+        {activeTab === 'board' ? (
+          <Board teamId={teamId} token={session?.backendToken} />
+        ) : (
+          <Metrics teamId={teamId} token={session?.backendToken} />
+        )}
       </main>
 
     </div>

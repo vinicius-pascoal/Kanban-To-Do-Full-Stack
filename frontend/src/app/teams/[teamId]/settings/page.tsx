@@ -2,14 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useAuth, ProtectedRoute } from '@/lib/auth-provider';
+import { useSession } from 'next-auth/react';
+import { api } from '@/lib/api';
+import Navbar from '@/components/Navbar';
 import { Trash2, Plus } from 'lucide-react';
 
-function TeamSettingsContent() {
+export default function TeamSettingsPage() {
   const params = useParams();
   const router = useRouter();
+  const { data: session, status } = useSession();
   const teamId = params.teamId as string;
-  const { currentTeam, fetchTeam, addTeamMember, removeTeamMember, deleteTeam, token, isLoading, error } = useAuth();
+  const [currentTeam, setCurrentTeam] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [localError, setLocalError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -17,10 +23,23 @@ function TeamSettingsContent() {
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
   useEffect(() => {
-    if (token && teamId) {
-      fetchTeam(teamId);
+    if (session?.backendToken && teamId) {
+      fetchTeam();
     }
-  }, [token, teamId]);
+  }, [session, teamId]);
+
+  const fetchTeam = async () => {
+    if (!session?.backendToken) return;
+    try {
+      setIsLoading(true);
+      const team = await api.getTeam(teamId, session.backendToken);
+      setCurrentTeam(team);
+    } catch (err: any) {
+      setError('Erro ao carregar time');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,25 +51,37 @@ function TeamSettingsContent() {
       return;
     }
 
+    if (!session?.backendToken) return;
+
     try {
-      await addTeamMember(newMemberEmail);
+      setIsLoading(true);
+      await api.addTeamMember(teamId, newMemberEmail, session.backendToken);
       setNewMemberEmail('');
       setSuccessMessage('Membro adicionado com sucesso!');
       setTimeout(() => setSuccessMessage(''), 3000);
+      await fetchTeam();
     } catch (err: any) {
-      setLocalError(err.message);
+      setLocalError(err.message || 'Erro ao adicionar membro');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleRemoveMember = async (userId: string) => {
     if (!confirm('Tem certeza que deseja remover este membro?')) return;
 
+    if (!session?.backendToken) return;
+
     try {
-      await removeTeamMember(userId);
+      setIsLoading(true);
+      await api.removeTeamMember(teamId, userId, session.backendToken);
       setSuccessMessage('Membro removido com sucesso!');
       setTimeout(() => setSuccessMessage(''), 3000);
+      await fetchTeam();
     } catch (err: any) {
-      setLocalError(err.message);
+      setLocalError(err.message || 'Erro ao remover membro');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,17 +95,32 @@ function TeamSettingsContent() {
       return;
     }
 
+    if (!session?.backendToken) return;
+
     try {
-      await deleteTeam(teamId);
+      setIsLoading(true);
+      await api.deleteTeam(teamId, session.backendToken);
       setSuccessMessage('Time deletado com sucesso!');
       setTimeout(() => router.push('/teams'), 2000);
     } catch (err: any) {
-      setLocalError(err.message);
+      setLocalError(err.message || 'Erro ao deletar time');
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  if (status === 'loading') {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="page-scroll bg-gray-50 dark:bg-slate-950">
+    <>
+      <Navbar />
+      <div className="page-scroll bg-gray-50 dark:bg-slate-950">
       {/* Header */}
       <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
         <div className="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
@@ -237,14 +283,6 @@ function TeamSettingsContent() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-export default function TeamSettingsPage() {
-  return (
-    <ProtectedRoute>
-      <TeamSettingsContent />
-    </ProtectedRoute>
+    </>
   );
 }

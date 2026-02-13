@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useKanbanStore } from '@/lib/store';
-import { useAuth } from '@/lib/auth-provider';
 import Column from './Column';
 import CardModal from './CardModal';
 import CardDetailModal from './CardDetailModal';
@@ -10,9 +9,13 @@ import Toast from './Toast';
 import { Card as CardType, ColumnInsertPosition } from '@/lib/types';
 import { Plus } from 'lucide-react';
 
-export default function Board({ teamId }: { teamId?: string }) {
+interface BoardProps {
+  teamId?: string;
+  token?: string;
+}
+
+export default function Board({ teamId, token }: BoardProps) {
   const { board, fetchBoard, deleteCard, moveCard, deleteColumn, clearBoard } = useKanbanStore();
-  const { token, currentTeam } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedColumnId, setSelectedColumnId] = useState<string | null>(null);
   const [editingCard, setEditingCard] = useState<CardType | null>(null);
@@ -381,6 +384,7 @@ export default function Board({ teamId }: { teamId?: string }) {
           onClose={handleCloseModal}
           columnId={selectedColumnId}
           editingCard={editingCard}
+          token={token}
         />
       )}
 

@@ -2,19 +2,21 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/auth-provider';
+import { useSession } from 'next-auth/react';
 
 export default function Home() {
   const router = useRouter();
-  const { user, token } = useAuth();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (user && token) {
+    if (status === 'loading') return;
+    
+    if (session) {
       router.push('/teams');
     } else {
       router.push('/login');
     }
-  }, [user, token, router]);
+  }, [session, status, router]);
 
   return (
     <div className="h-full min-h-0 flex items-center justify-center">
