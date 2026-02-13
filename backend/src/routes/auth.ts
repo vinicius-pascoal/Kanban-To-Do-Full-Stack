@@ -5,6 +5,7 @@ import { generateToken } from '../lib/jwt';
 import { registerSchema, loginSchema, createTeamSchema } from '../lib/auth-validations';
 import { OAuth2Client } from 'google-auth-library';
 import { createOAuthState, getOAuth2Client } from '../lib/google-calendar';
+import { authMiddleware, AuthenticatedRequest } from '../lib/auth-middleware';
 
 const router = Router();
 
@@ -294,6 +295,69 @@ router.post('/google', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Erro no login Google:', error);
     res.status(400).json({ error: 'Erro ao autenticar com Google' });
+  }
+});
+
+// PUT /api/auth/profile - Atualizar perfil do usuário
+router.put('/profile', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Não autorizado' });
+    }
+
+    const { name, email, password } = req.body as { name?: string; email?: string; password?: string };
+
+    // Validar que pelo menos um campo foi fornecido
+    if (!name && !email && !password) {
+      return res.status(400).json({ error: 'Forneça pelo menos um campo para atualizar' });
+    }
+
+    // Atualizar dados do usuário
+    const updateData: any = {};
+
+    if (name) {
+      updateData.name = name;
+    }
+
+    if (email) {
+      // Verificar se email já está em uso por outro usuário
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (existingUser && existingUser.id !== userId) {
+        return res.status(400).json({ error: 'Email já está em uso' });
+      }
+
+      updateData.email = email;
+    }
+
+    if (password) {
+      // Hash da nova senha
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
+
+    // Se email foi alterado, gerar novo token
+    const token = email ? generateToken(updatedUser.id, updatedUser.email) : undefined;
+
+    res.json({
+      user: updatedUser,
+      token, // Retornar novo token apenas se email foi alterado
+    });
+  } catch (error) {
+    console.error('Erro ao atualizar perfil:', error);
+    res.status(400).json({ error: 'Erro ao atualizar perfil' });
   }
 });
 

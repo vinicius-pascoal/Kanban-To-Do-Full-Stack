@@ -228,4 +228,18 @@ export const api = {
     if (!res.ok) throw new Error('Erro ao buscar métricas');
     return res.json();
   },
+
+  // User Profile
+  async updateProfile(data: { name?: string; email?: string; password?: string }, token: string) {
+    const res = await fetch(`${API_URL}/api/auth/profile`, {
+      method: 'PUT',
+      headers: getHeaders(token),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || 'Erro ao atualizar perfil');
+    }
+    return res.json();
+  },
 };
