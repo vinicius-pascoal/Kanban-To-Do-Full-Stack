@@ -130,7 +130,7 @@ export default function TeamsPage() {
                           }
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {team.members?.slice(0, 3).map((member) => (
+                          {team.members?.slice(0, 3).map((member: any) => (
                             <div
                               key={member.id}
                               className="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 text-xs rounded-full"
