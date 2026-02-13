@@ -179,7 +179,7 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard, toke
                 className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
               >
                 <option value="">Sem atribuição</option>
-                {currentTeam.members?.map((member) => (
+                {currentTeam.members?.map((member: any) => (
                   <option key={member.user?.id} value={member.user?.id || ''}>
                     {member.user?.name} ({member.user?.email})
                   </option>
