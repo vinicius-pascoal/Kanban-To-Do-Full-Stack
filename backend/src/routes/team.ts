@@ -154,7 +154,7 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
               create: [
                 { name: 'A Fazer', order: 0 },
                 { name: 'Em Progresso', order: 1 },
-                { name: 'Concluído', order: 2 },
+                { name: 'Concluído', order: 2, isCompleted: true },
               ],
             },
           },
