@@ -12,6 +12,7 @@ export default function TeamsPage() {
   const [teams, setTeams] = useState<any[]>([]);
   const [newTeamName, setNewTeamName] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [template, setTemplate] = useState<'default' | 'blank'>('default');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,8 +49,9 @@ export default function TeamsPage() {
 
     try {
       setIsLoading(true);
-      await api.createTeam(newTeamName, session.backendToken);
+      await api.createTeam(newTeamName, session.backendToken, template);
       setNewTeamName('');
+      setTemplate('default');
       setShowCreateForm(false);
       await fetchTeams();
     } catch (err: any) {
@@ -173,11 +175,11 @@ export default function TeamsPage() {
                 + Criar novo time
               </button>
             ) : (
-              <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-6 w-full max-w-md">
+              <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-6 w-full max-w-lg">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Criar novo time
                 </h3>
-                <form onSubmit={handleCreateTeam} className="space-y-4">
+                <form onSubmit={handleCreateTeam} className="space-y-5">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Nome do time
@@ -190,6 +192,37 @@ export default function TeamsPage() {
                       className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Modelo do board
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setTemplate('default')}
+                        className={`flex flex-col items-start p-4 rounded-lg border-2 transition-colors text-left ${template === 'default'
+                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                            : 'border-gray-200 dark:border-slate-600 hover:border-blue-400'
+                          }`}
+                      >
+                        <span className="text-2xl mb-2">📋</span>
+                        <span className="font-semibold text-gray-900 dark:text-white text-sm">Modelo padrão</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">A Fazer · Em Progresso · Concluído</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTemplate('blank')}
+                        className={`flex flex-col items-start p-4 rounded-lg border-2 transition-colors text-left ${template === 'blank'
+                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                            : 'border-gray-200 dark:border-slate-600 hover:border-blue-400'
+                          }`}
+                      >
+                        <span className="text-2xl mb-2">🗒️</span>
+                        <span className="font-semibold text-gray-900 dark:text-white text-sm">Em branco</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">Comece sem colunas</span>
+                      </button>
+                    </div>
+                  </div>
                   <div className="flex gap-3">
                     <button
                       type="submit"
@@ -200,7 +233,7 @@ export default function TeamsPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setShowCreateForm(false)}
+                      onClick={() => { setShowCreateForm(false); setTemplate('default'); }}
                       className="flex-1 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 font-semibold py-2 rounded-lg transition-colors"
                     >
                       Cancelar

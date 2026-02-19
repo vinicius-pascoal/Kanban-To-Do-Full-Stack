@@ -53,11 +53,11 @@ export const api = {
     return res.json();
   },
 
-  async createTeam(name: string, token: string) {
+  async createTeam(name: string, token: string, template: 'default' | 'blank' = 'default') {
     const res = await fetch(`${API_URL}/api/team`, {
       method: 'POST',
       headers: getHeaders(token),
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, template }),
     });
     if (!res.ok) throw new Error('Erro ao criar time');
     return res.json();

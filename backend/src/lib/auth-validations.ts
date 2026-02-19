@@ -13,6 +13,7 @@ export const loginSchema = z.object({
 
 export const createTeamSchema = z.object({
   name: z.string().min(1, 'Nome do time é obrigatório'),
+  template: z.enum(['default', 'blank']).optional().default('default'),
 });
 
 export const addTeamMemberSchema = z.object({

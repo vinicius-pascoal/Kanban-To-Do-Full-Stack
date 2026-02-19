@@ -10,4 +10,4 @@
 [] deixar as funcionalidades do google em producao 
 [X] mesmo estando logado com o google configurado ao entrar no sistema esta aparecendo para configurar o google
 [X] nas colunas geradas automaticamente ao criar um time a coluna de concluido nao esta vindo com a marca de coluna de conclusao 
-[] adicionar a opcao ao criar um time e usar o modelo pronto ou criar em branco
+[X] adicionar a opcao ao criar um time e usar o modelo pronto ou criar em branco

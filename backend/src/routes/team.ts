@@ -137,10 +137,11 @@ router.get('/:id', async (req: AuthenticatedRequest, res: Response) => {
 router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const validatedData = createTeamSchema.parse(req.body);
+    const { name, template = 'default' } = validatedData;
 
     const team = await prisma.team.create({
       data: {
-        name: validatedData.name,
+        name,
         members: {
           create: {
             userId: req.user?.userId || '',
@@ -150,13 +151,15 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
         boards: {
           create: {
             name: 'Meu Kanban',
-            columns: {
-              create: [
-                { name: 'A Fazer', order: 0 },
-                { name: 'Em Progresso', order: 1 },
-                { name: 'Concluído', order: 2, isCompleted: true },
-              ],
-            },
+            ...(template === 'default' ? {
+              columns: {
+                create: [
+                  { name: 'A Fazer', order: 0 },
+                  { name: 'Em Progresso', order: 1 },
+                  { name: 'Concluído', order: 2, isCompleted: true },
+                ],
+              },
+            } : {}),
           },
         },
       },
