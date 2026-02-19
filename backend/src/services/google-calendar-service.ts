@@ -351,6 +351,23 @@ export const getCalendarStatus = async (userId: string) => {
   };
 };
 
+export const syncAssignedCardsToCalendar = async (userId: string) => {
+  const cards = await prisma.card.findMany({
+    where: {
+      assignedToId: userId,
+      dueDate: { not: null },
+      column: { isCompleted: false },
+    },
+    select: { id: true },
+  });
+
+  for (const card of cards) {
+    await upsertCardEvent(userId, card.id).catch((error) => {
+      console.error(`Erro ao sincronizar card ${card.id} com calendário:`, error);
+    });
+  }
+};
+
 export const markIntegrationDisconnected = async (userId: string) => {
   const integration = await prisma.googleCalendarIntegration.findFirst({
     where: { userId },

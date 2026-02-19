@@ -8,6 +8,7 @@ import {
   markIntegrationDisconnected,
   renewExpiringWatches,
   stopWatchChannel,
+  syncAssignedCardsToCalendar,
   syncCalendarChanges,
   upsertIntegration,
 } from '../services/google-calendar-service';
@@ -63,6 +64,9 @@ router.get('/callback', async (req: Request, res: Response) => {
 
     await syncCalendarChanges(userId, true);
     await createWatchChannel(userId);
+    syncAssignedCardsToCalendar(userId).catch((error) => {
+      console.error('Erro ao sincronizar cards atribuídos com o calendário:', error);
+    });
 
     const redirectUrl = process.env.FRONTEND_URL
       ? `${process.env.FRONTEND_URL}/teams?calendar=connected`

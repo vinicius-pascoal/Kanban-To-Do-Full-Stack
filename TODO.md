@@ -1,6 +1,6 @@
 #TODO
 [] adicionar gestao de permissoes 
-[] corrigir bug da integracao com o google agenda (nao esta agendando para o usuario correto )
+[X] corrigir bug da integracao com o google agenda (nao esta agendando para o usuario correto )
 [X] add edicao de usuario na tela de configuracoes
 [X] corrigir navbar duplicada em algumas telas 
 [] melhorias gerais de estetica pelo projeto 

@@ -94,7 +94,8 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
     });
 
     if (userId) {
-      upsertCardEvent(userId, card.id).catch((error) => {
+      const calendarUserId = card.assignedToId || userId;
+      upsertCardEvent(calendarUserId, card.id).catch((error) => {
         console.error('Erro ao sincronizar card com calendário:', error);
       });
     }
@@ -170,6 +171,11 @@ router.put('/:id', async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const validatedData = updateCardSchema.parse(req.body);
 
+    const existingCard = await prisma.card.findUnique({
+      where: { id },
+      select: { assignedToId: true },
+    });
+
     const updateData: any = {};
 
     if (validatedData.title) updateData.title = validatedData.title;
@@ -198,7 +204,17 @@ router.put('/:id', async (req: AuthenticatedRequest, res: Response) => {
     });
 
     if (userId) {
-      upsertCardEvent(userId, card.id).catch((error) => {
+      const oldAssignedToId = existingCard?.assignedToId;
+      const newAssignedToId = card.assignedToId;
+
+      if (oldAssignedToId && oldAssignedToId !== newAssignedToId) {
+        deleteCardEvent(oldAssignedToId, card.id).catch((error) => {
+          console.error('Erro ao remover evento do calendário do usuário anterior:', error);
+        });
+      }
+
+      const calendarUserId = newAssignedToId || userId;
+      upsertCardEvent(calendarUserId, card.id).catch((error) => {
         console.error('Erro ao sincronizar card com calendário:', error);
       });
     }
@@ -216,12 +232,18 @@ router.delete('/:id', async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.userId;
     const { id } = req.params;
 
+    const cardToDelete = await prisma.card.findUnique({
+      where: { id },
+      select: { assignedToId: true },
+    });
+
     await prisma.card.delete({
       where: { id },
     });
 
     if (userId) {
-      deleteCardEvent(userId, id).catch((error) => {
+      const calendarUserId = cardToDelete?.assignedToId || userId;
+      deleteCardEvent(calendarUserId, id).catch((error) => {
         console.error('Erro ao remover evento do calendário:', error);
       });
     }
@@ -317,7 +339,8 @@ router.post('/move', async (req: AuthenticatedRequest, res: Response) => {
     });
 
     if (userId) {
-      upsertCardEvent(userId, updatedCard.id).catch((error) => {
+      const calendarUserId = updatedCard.assignedToId || userId;
+      upsertCardEvent(calendarUserId, updatedCard.id).catch((error) => {
         console.error('Erro ao sincronizar card com calendário:', error);
       });
     }
