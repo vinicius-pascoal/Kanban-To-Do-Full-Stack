@@ -6,15 +6,16 @@ import Column from './Column';
 import CardModal from './CardModal';
 import CardDetailModal from './CardDetailModal';
 import Toast from './Toast';
-import { Card as CardType, ColumnInsertPosition } from '@/lib/types';
+import { Card as CardType, ColumnInsertPosition, TeamMember } from '@/lib/types';
 import { Plus } from 'lucide-react';
 
 interface BoardProps {
   teamId?: string;
   token?: string;
+  currentMember?: TeamMember;
 }
 
-export default function Board({ teamId, token }: BoardProps) {
+export default function Board({ teamId, token, currentMember }: BoardProps) {
   const { board, fetchBoard, deleteCard, moveCard, deleteColumn, clearBoard } = useKanbanStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedColumnId, setSelectedColumnId] = useState<string | null>(null);
@@ -205,177 +206,184 @@ export default function Board({ teamId, token }: BoardProps) {
                 onMoveColumn={handleMoveColumn}
                 canMoveLeft={index > 0}
                 canMoveRight={index < columns.length - 1}
+                canCreateCard={currentMember?.isOwner || currentMember?.canCreateCard}
+                canEditCard={currentMember?.isOwner || currentMember?.canEditCard}
+                canRemoveCard={currentMember?.isOwner || currentMember?.canRemoveCard}
+                canEditColumn={currentMember?.isOwner || currentMember?.canEditColumn}
+                canRemoveColumn={currentMember?.isOwner || currentMember?.canRemoveColumn}
               />
             );
           })}
 
-        {/* Add Column Button */}
-        {isAddingColumn ? (
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-6 min-w-[340px] max-w-[340px] flex flex-col gap-4 overflow-y-auto">
-            <h3 className="font-bold text-lg text-gray-800 dark:text-white">Nova Coluna</h3>
-            <input
-              type="text"
-              value={newColumnName}
-              onChange={(e) => setNewColumnName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleAddColumn();
-                if (e.key === 'Escape') {
-                  setIsAddingColumn(false);
-                  setNewColumnName('');
-                }
-              }}
-              placeholder="Nome da coluna"
-              autoFocus
-              className="px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Posição</label>
-              <select
-                value={newColumnPosition}
-                onChange={(e) => setNewColumnPosition(e.target.value as ColumnInsertPosition)}
-                className="px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="end">No final</option>
-                <option value="start">No início</option>
-                <option value="before">Antes de...</option>
-                <option value="after">Depois de...</option>
-              </select>
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Cor</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={newColumnColor}
-                  onChange={(e) => setNewColumnColor(e.target.value)}
-                  className="h-12 w-12 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-1"
-                  aria-label="Selecionar cor da coluna"
-                />
-                <input
-                  type="text"
-                  value={newColumnColor}
-                  onChange={(e) => setNewColumnColor(e.target.value)}
-                  placeholder="#F8FAFC"
-                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Transparência: {newColumnOpacity}%
-              </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="range"
-                  min="10"
-                  max="100"
-                  value={newColumnOpacity}
-                  onChange={(e) => setNewColumnOpacity(parseInt(e.target.value))}
-                  className="flex-1 h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer slider"
-                  style={{
-                    background: `linear-gradient(to right, rgba(59, 130, 246, ${newColumnOpacity / 100}) 0%, rgba(59, 130, 246, ${newColumnOpacity / 100}) ${newColumnOpacity}%, rgb(229, 231, 235) ${newColumnOpacity}%, rgb(229, 231, 235) 100%)`
-                  }}
-                />
-                <input
-                  type="number"
-                  min="10"
-                  max="100"
-                  value={newColumnOpacity}
-                  onChange={(e) => setNewColumnOpacity(Math.min(100, Math.max(10, parseInt(e.target.value) || 10)))}
-                  className="w-20 px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Intensidade do Blur: {newColumnBlur}px
-              </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="range"
-                  min="0"
-                  max="24"
-                  value={newColumnBlur}
-                  onChange={(e) => setNewColumnBlur(parseInt(e.target.value))}
-                  className="flex-1 h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer slider"
-                  style={{
-                    background: `linear-gradient(to right, rgba(139, 92, 246, 0.8) 0%, rgba(139, 92, 246, 0.8) ${(newColumnBlur / 24) * 100}%, rgb(229, 231, 235) ${(newColumnBlur / 24) * 100}%, rgb(229, 231, 235) 100%)`
-                  }}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="24"
-                  value={newColumnBlur}
-                  onChange={(e) => setNewColumnBlur(Math.min(24, Math.max(0, parseInt(e.target.value) || 0)))}
-                  className="w-20 px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
-                />
-              </div>
-
-            </div>
-            <div className="flex items-center gap-3">
+        {/* Add Column Button - apenas para quem tem permissão */}
+        {(currentMember?.isOwner || currentMember?.canCreateColumn) && (<>
+          {isAddingColumn ? (
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-6 min-w-[340px] max-w-[340px] flex flex-col gap-4 overflow-y-auto">
+              <h3 className="font-bold text-lg text-gray-800 dark:text-white">Nova Coluna</h3>
               <input
-                type="checkbox"
-                id="isCompleted"
-                checked={newColumnIsCompleted}
-                onChange={(e) => setNewColumnIsCompleted(e.target.checked)}
-                className="h-5 w-5 rounded border-gray-300 dark:border-slate-600 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                type="text"
+                value={newColumnName}
+                onChange={(e) => setNewColumnName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleAddColumn();
+                  if (e.key === 'Escape') {
+                    setIsAddingColumn(false);
+                    setNewColumnName('');
+                  }
+                }}
+                placeholder="Nome da coluna"
+                autoFocus
+                className="px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <label htmlFor="isCompleted" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Marcar como coluna de conclusão
-              </label>
-            </div>
-            {(newColumnPosition === 'before' || newColumnPosition === 'after') && (
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Referência</label>
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Posição</label>
                 <select
-                  value={newColumnAnchorId}
-                  onChange={(e) => setNewColumnAnchorId(e.target.value)}
+                  value={newColumnPosition}
+                  onChange={(e) => setNewColumnPosition(e.target.value as ColumnInsertPosition)}
                   className="px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Selecione uma coluna</option>
-                  {board.columns
-                    .sort((a, b) => a.order - b.order)
-                    .map((column) => (
-                      <option key={column.id} value={column.id}>
-                        {column.name}
-                      </option>
-                    ))}
+                  <option value="end">No final</option>
+                  <option value="start">No início</option>
+                  <option value="before">Antes de...</option>
+                  <option value="after">Depois de...</option>
                 </select>
               </div>
-            )}
-            <div className="flex gap-3">
-              <button
-                onClick={handleAddColumn}
-                disabled={isAddColumnDisabled}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                Adicionar
-              </button>
-              <button
-                onClick={() => {
-                  setIsAddingColumn(false);
-                  setNewColumnName('');
-                }}
-                className="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-all"
-              >
-                Cancelar
-              </button>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Cor</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={newColumnColor}
+                    onChange={(e) => setNewColumnColor(e.target.value)}
+                    className="h-12 w-12 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 p-1"
+                    aria-label="Selecionar cor da coluna"
+                  />
+                  <input
+                    type="text"
+                    value={newColumnColor}
+                    onChange={(e) => setNewColumnColor(e.target.value)}
+                    placeholder="#F8FAFC"
+                    className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Transparência: {newColumnOpacity}%
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="range"
+                    min="10"
+                    max="100"
+                    value={newColumnOpacity}
+                    onChange={(e) => setNewColumnOpacity(parseInt(e.target.value))}
+                    className="flex-1 h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer slider"
+                    style={{
+                      background: `linear-gradient(to right, rgba(59, 130, 246, ${newColumnOpacity / 100}) 0%, rgba(59, 130, 246, ${newColumnOpacity / 100}) ${newColumnOpacity}%, rgb(229, 231, 235) ${newColumnOpacity}%, rgb(229, 231, 235) 100%)`
+                    }}
+                  />
+                  <input
+                    type="number"
+                    min="10"
+                    max="100"
+                    value={newColumnOpacity}
+                    onChange={(e) => setNewColumnOpacity(Math.min(100, Math.max(10, parseInt(e.target.value) || 10)))}
+                    className="w-20 px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Intensidade do Blur: {newColumnBlur}px
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="range"
+                    min="0"
+                    max="24"
+                    value={newColumnBlur}
+                    onChange={(e) => setNewColumnBlur(parseInt(e.target.value))}
+                    className="flex-1 h-2 bg-gray-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer slider"
+                    style={{
+                      background: `linear-gradient(to right, rgba(139, 92, 246, 0.8) 0%, rgba(139, 92, 246, 0.8) ${(newColumnBlur / 24) * 100}%, rgb(229, 231, 235) ${(newColumnBlur / 24) * 100}%, rgb(229, 231, 235) 100%)`
+                    }}
+                  />
+                  <input
+                    type="number"
+                    min="0"
+                    max="24"
+                    value={newColumnBlur}
+                    onChange={(e) => setNewColumnBlur(Math.min(24, Math.max(0, parseInt(e.target.value) || 0)))}
+                    className="w-20 px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+                  />
+                </div>
+
+              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="isCompleted"
+                  checked={newColumnIsCompleted}
+                  onChange={(e) => setNewColumnIsCompleted(e.target.checked)}
+                  className="h-5 w-5 rounded border-gray-300 dark:border-slate-600 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                />
+                <label htmlFor="isCompleted" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Marcar como coluna de conclusão
+                </label>
+              </div>
+              {(newColumnPosition === 'before' || newColumnPosition === 'after') && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Referência</label>
+                  <select
+                    value={newColumnAnchorId}
+                    onChange={(e) => setNewColumnAnchorId(e.target.value)}
+                    className="px-4 py-3 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Selecione uma coluna</option>
+                    {board.columns
+                      .sort((a, b) => a.order - b.order)
+                      .map((column) => (
+                        <option key={column.id} value={column.id}>
+                          {column.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              )}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleAddColumn}
+                  disabled={isAddColumnDisabled}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  Adicionar
+                </button>
+                <button
+                  onClick={() => {
+                    setIsAddingColumn(false);
+                    setNewColumnName('');
+                  }}
+                  className="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-all"
+                >
+                  Cancelar
+                </button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <button
-            onClick={() => setIsAddingColumn(true)}
-            className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900 rounded-xl shadow-lg border-2 border-dashed border-gray-300 dark:border-slate-600 p-6 min-w-[340px] max-w-[340px] flex flex-col items-center justify-center gap-3 hover:border-blue-400 dark:hover:border-blue-500 hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/20 dark:hover:to-blue-900/10 transition-all group"
-          >
-            <div className="w-16 h-16 rounded-full bg-white dark:bg-slate-800 shadow-md flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Plus className="w-8 h-8 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
-            </div>
-            <span className="font-semibold text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-400">
-              Adicionar Coluna
-            </span>
-          </button>
-        )}
+          ) : (
+            <button
+              onClick={() => setIsAddingColumn(true)}
+              className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900 rounded-xl shadow-lg border-2 border-dashed border-gray-300 dark:border-slate-600 p-6 min-w-[340px] max-w-[340px] flex flex-col items-center justify-center gap-3 hover:border-blue-400 dark:hover:border-blue-500 hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/20 dark:hover:to-blue-900/10 transition-all group"
+            >
+              <div className="w-16 h-16 rounded-full bg-white dark:bg-slate-800 shadow-md flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Plus className="w-8 h-8 text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
+              </div>
+              <span className="font-semibold text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-400">
+                Adicionar Coluna
+              </span>
+            </button>
+          )}
+        </>)}
       </div>
 
       {isModalOpen && selectedColumnId && (

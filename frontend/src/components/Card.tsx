@@ -13,9 +13,11 @@ interface CardProps {
   onDelete: (id: string) => void;
   onViewDetails: (card: CardType) => void;
   isDragging?: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
 }
 
-export default function Card({ card, isColumnCompleted, onEdit, onDelete, onViewDetails, isDragging }: CardProps) {
+export default function Card({ card, isColumnCompleted, onEdit, onDelete, onViewDetails, isDragging, canEdit, canDelete }: CardProps) {
   const status = getCardStatus(card.dueDate, isColumnCompleted);
   const daysUntil = getDaysUntilDue(card.dueDate);
   const [isHovered, setIsHovered] = useState(false);
@@ -38,30 +40,34 @@ export default function Card({ card, isColumnCompleted, onEdit, onDelete, onView
       {/* Header */}
       <div className="flex items-start justify-between mb-3 flex-shrink-0">
         <h3 className="font-bold text-base text-gray-900 dark:text-white flex-1 line-clamp-2 leading-tight">{card.title}</h3>
-        {isHovered && (
+        {isHovered && (canEdit || canDelete) && (
           <div className="flex gap-1.5 ml-2 flex-shrink-0">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(card);
-              }}
-              className="p-1.5 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-all hover:scale-110"
-              title="Editar"
-            >
-              <Edit className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (confirm('Deseja realmente deletar este card?')) {
-                  onDelete(card.id);
-                }
-              }}
-              className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"
-              title="Deletar"
-            >
-              <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
-            </button>
+            {canEdit && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(card);
+                }}
+                className="p-1.5 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-all hover:scale-110"
+                title="Editar"
+              >
+                <Edit className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              </button>
+            )}
+            {canDelete && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (confirm('Deseja realmente deletar este card?')) {
+                    onDelete(card.id);
+                  }
+                }}
+                className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"
+                title="Deletar"
+              >
+                <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+              </button>
+            )}
           </div>
         )}
       </div>

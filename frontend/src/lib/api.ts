@@ -92,6 +92,37 @@ export const api = {
     if (!res.ok) throw new Error('Erro ao deletar time');
   },
 
+  async renameTeam(teamId: string, name: string, token: string) {
+    const res = await fetch(`${API_URL}/api/team/${teamId}/name`, {
+      method: 'PATCH',
+      headers: getHeaders(token),
+      body: JSON.stringify({ name }),
+    });
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || 'Erro ao renomear time');
+    }
+    return res.json();
+  },
+
+  async updateMemberPermissions(
+    teamId: string,
+    userId: string,
+    permissions: Record<string, boolean>,
+    token: string,
+  ) {
+    const res = await fetch(`${API_URL}/api/team/${teamId}/members/${userId}/permissions`, {
+      method: 'PATCH',
+      headers: getHeaders(token),
+      body: JSON.stringify(permissions),
+    });
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error || 'Erro ao atualizar permissões');
+    }
+    return res.json();
+  },
+
   // Board
   async getBoard(teamId: string, token: string) {
     const res = await fetch(`${API_URL}/api/board?teamId=${teamId}`, {

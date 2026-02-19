@@ -14,6 +14,20 @@ export interface TeamMember {
   teamId: string;
   user: User;
   createdAt: string;
+  // Perfil
+  isOwner: boolean;
+  // Permissões de Card
+  canCreateCard: boolean;
+  canEditCard: boolean;
+  canRemoveCard: boolean;
+  // Permissões de Coluna
+  canCreateColumn: boolean;
+  canEditColumn: boolean;
+  canRemoveColumn: boolean;
+  // Permissões de Time
+  canAddMember: boolean;
+  canRemoveMember: boolean;
+  canRenameTeam: boolean;
 }
 
 export interface Team {

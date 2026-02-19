@@ -41,6 +41,24 @@ model TeamMember {
   team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
+  // Perfil
+  isOwner Boolean @default(false)
+
+  // Permissões de Card
+  canCreateCard Boolean @default(false)
+  canEditCard   Boolean @default(false)
+  canRemoveCard Boolean @default(false)
+
+  // Permissões de Coluna
+  canCreateColumn Boolean @default(false)
+  canEditColumn   Boolean @default(false)
+  canRemoveColumn Boolean @default(false)
+
+  // Permissões de Time
+  canAddMember    Boolean @default(false)
+  canRemoveMember Boolean @default(false)
+  canRenameTeam   Boolean @default(false)
+
   @@unique([userId, teamId])
 }
 

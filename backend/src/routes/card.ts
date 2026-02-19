@@ -4,6 +4,7 @@ import { createCardSchema, updateCardSchema, moveCardSchema } from '../lib/valid
 import { parseDateString } from '../lib/date-utils';
 import { AuthenticatedRequest, authMiddleware } from '../lib/auth-middleware';
 import { deleteCardEvent, upsertCardEvent } from '../services/google-calendar-service';
+import { checkPermission, getTeamIdFromCard, getTeamIdFromColumn } from '../lib/permissions';
 
 const router = Router();
 
@@ -63,6 +64,12 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
     const validatedData = createCardSchema.parse(req.body);
+
+    // Verificar permissão de criar card
+    const teamId = await getTeamIdFromColumn(validatedData.columnId);
+    if (teamId && userId) {
+      if (!(await checkPermission(userId, teamId, 'canCreateCard', res))) return;
+    }
 
     // Contar cards na coluna para definir a ordem
     const cardsInColumn = await prisma.card.count({
@@ -171,6 +178,12 @@ router.put('/:id', async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const validatedData = updateCardSchema.parse(req.body);
 
+    // Verificar permissão de editar card
+    const teamId = await getTeamIdFromCard(id);
+    if (teamId && userId) {
+      if (!(await checkPermission(userId, teamId, 'canEditCard', res))) return;
+    }
+
     const existingCard = await prisma.card.findUnique({
       where: { id },
       select: { assignedToId: true },
@@ -231,6 +244,12 @@ router.delete('/:id', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
     const { id } = req.params;
+
+    // Verificar permissão de remover card
+    const teamId = await getTeamIdFromCard(id);
+    if (teamId && userId) {
+      if (!(await checkPermission(userId, teamId, 'canRemoveCard', res))) return;
+    }
 
     const cardToDelete = await prisma.card.findUnique({
       where: { id },

@@ -17,6 +17,12 @@ interface ColumnProps {
   canMoveLeft?: boolean;
   canMoveRight?: boolean;
   isDraggingColumn?: boolean;
+  // Permissões
+  canCreateCard?: boolean;
+  canEditCard?: boolean;
+  canRemoveCard?: boolean;
+  canEditColumn?: boolean;
+  canRemoveColumn?: boolean;
 }
 
 export default function Column({
@@ -31,6 +37,11 @@ export default function Column({
   canMoveLeft,
   canMoveRight,
   isDraggingColumn,
+  canCreateCard,
+  canEditCard,
+  canRemoveCard,
+  canEditColumn,
+  canRemoveColumn,
 }: ColumnProps) {
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [draggedCardId, setDraggedCardId] = useState<string | null>(null);
@@ -130,14 +141,16 @@ export default function Column({
           </span>
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={() => onAddCard(column.id)}
-            className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-all hover:scale-110"
-            title="Adicionar card"
-          >
-            <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-          </button>
-          {onDeleteColumn && column.cards.length === 0 && (
+          {canCreateCard && (
+            <button
+              onClick={() => onAddCard(column.id)}
+              className="p-2 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-all hover:scale-110"
+              title="Adicionar card"
+            >
+              <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </button>
+          )}
+          {canRemoveColumn && onDeleteColumn && column.cards.length === 0 && (
             <button
               onClick={() => {
                 if (confirm(`Deseja deletar a coluna "${column.name}"?`)) {
@@ -180,10 +193,12 @@ export default function Column({
               <Card
                 card={card}
                 isColumnCompleted={column.isCompleted || false}
-                onEdit={onEditCard}
-                onDelete={onDeleteCard}
+                onEdit={canEditCard ? onEditCard : () => { }}
+                onDelete={canRemoveCard ? onDeleteCard : () => { }}
                 onViewDetails={onViewCardDetails}
                 isDragging={draggedCardId === card.id}
+                canEdit={canEditCard}
+                canDelete={canRemoveCard}
               />
             </div>
           ))

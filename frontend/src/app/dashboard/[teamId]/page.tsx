@@ -8,6 +8,7 @@ import { LayoutDashboard, BarChart3, Settings, LogOut } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
+import { TeamMember } from '@/lib/types';
 
 function DashboardContent() {
   const params = useParams();
@@ -45,6 +46,10 @@ function DashboardContent() {
       setIsLoading(false);
     }
   };
+
+  const currentMember: TeamMember | undefined = currentTeam?.members?.find(
+    (m: TeamMember) => m.userId === session?.user?.id,
+  );
 
   const handleLogout = () => {
     localStorage.removeItem('currentTeam');
@@ -103,7 +108,7 @@ function DashboardContent() {
       {/* Content */}
       <main className="max-w-full mx-auto px-4 py-8 flex-1 w-full min-h-0">
         {activeTab === 'board' ? (
-          <Board teamId={teamId} token={session?.backendToken} />
+          <Board teamId={teamId} token={session?.backendToken} currentMember={currentMember} />
         ) : (
           <Metrics teamId={teamId} token={session?.backendToken} />
         )}

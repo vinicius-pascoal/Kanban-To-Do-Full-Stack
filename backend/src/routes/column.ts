@@ -1,7 +1,11 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
 import prisma from '../lib/prisma';
+import { AuthenticatedRequest, authMiddleware } from '../lib/auth-middleware';
+import { checkPermission, getTeamIdFromColumn } from '../lib/permissions';
 
 const router = Router();
+
+router.use(authMiddleware);
 
 /**
  * @swagger
@@ -26,7 +30,7 @@ const router = Router();
  *               $ref: '#/components/schemas/Error'
  */
 // GET /api/column - Buscar todas as colunas
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const columns = await prisma.column.findMany({
       orderBy: { order: 'asc' },
@@ -81,21 +85,22 @@ router.get('/', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 // POST /api/column - Criar nova coluna
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const userId = req.user?.userId || '';
     const { name, boardId, color, isCompleted } = req.body;
-
-    console.log('🔵 Backend recebeu color:', color);
-    console.log('🔵 Type of color:', typeof color);
 
     if (!name || !boardId) {
       return res.status(400).json({ error: 'Nome e boardId são obrigatórios' });
     }
 
-    // Contar colunas existentes para definir a ordem
-    const columnCount = await prisma.column.count({
-      where: { boardId },
-    });
+    // Verificar permissão de criar coluna
+    const board = await prisma.board.findUnique({ where: { id: boardId }, select: { teamId: true } });
+    if (board?.teamId) {
+      if (!(await checkPermission(userId, board.teamId, 'canCreateColumn', res))) return;
+    }
+
+    const columnCount = await prisma.column.count({ where: { boardId } });
 
     const column = await prisma.column.create({
       data: {
@@ -106,13 +111,9 @@ router.post('/', async (req: Request, res: Response) => {
         isCompleted: isCompleted || false,
       },
       include: {
-        cards: {
-          orderBy: { order: 'asc' },
-        },
+        cards: { orderBy: { order: 'asc' } },
       },
     });
-
-    console.log('✅ Coluna criada com color:', column.color);
 
     res.status(201).json(column);
   } catch (error) {
@@ -122,24 +123,25 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 // DELETE /api/column/:id - Deletar coluna
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const userId = req.user?.userId || '';
     const { id } = req.params;
 
-    // Verificar se a coluna tem cards
-    const cardCount = await prisma.card.count({
-      where: { columnId: id },
-    });
+    // Verificar permissão de remover coluna
+    const teamId = await getTeamIdFromColumn(id);
+    if (teamId) {
+      if (!(await checkPermission(userId, teamId, 'canRemoveColumn', res))) return;
+    }
 
+    const cardCount = await prisma.card.count({ where: { columnId: id } });
     if (cardCount > 0) {
       return res.status(400).json({
-        error: 'Não é possível deletar uma coluna com cards. Mova os cards primeiro.'
+        error: 'Não é possível deletar uma coluna com cards. Mova os cards primeiro.',
       });
     }
 
-    await prisma.column.delete({
-      where: { id },
-    });
+    await prisma.column.delete({ where: { id } });
 
     res.status(204).send();
   } catch (error) {
@@ -149,8 +151,9 @@ router.delete('/:id', async (req: Request, res: Response) => {
 });
 
 // PUT /api/column/:id - Atualizar nome da coluna
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const userId = req.user?.userId || '';
     const { id } = req.params;
     const { name, color, isCompleted } = req.body;
 
@@ -158,17 +161,21 @@ router.put('/:id', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Nome é obrigatório' });
     }
 
+    // Verificar permissão de editar coluna
+    const teamId = await getTeamIdFromColumn(id);
+    if (teamId) {
+      if (!(await checkPermission(userId, teamId, 'canEditColumn', res))) return;
+    }
+
     const column = await prisma.column.update({
       where: { id },
       data: {
         name,
         color: color || null,
-        ...(isCompleted !== undefined && { isCompleted })
+        ...(isCompleted !== undefined && { isCompleted }),
       },
       include: {
-        cards: {
-          orderBy: { order: 'asc' },
-        },
+        cards: { orderBy: { order: 'asc' } },
       },
     });
 
@@ -181,7 +188,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 
 
 // PATCH /api/column/reorder - Reordenar colunas
-router.patch('/reorder/:boardId', async (req: Request, res: Response) => {
+router.patch('/reorder/:boardId', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { boardId } = req.params;
     const { columnIds } = req.body;

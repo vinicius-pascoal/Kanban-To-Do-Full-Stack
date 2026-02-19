@@ -1,5 +1,5 @@
 #TODO
-[] adicionar gestao de permissoes 
+[X] adicionar gestao de permissoes 
 [X] corrigir bug da integracao com o google agenda (nao esta agendando para o usuario correto )
 [X] add edicao de usuario na tela de configuracoes
 [X] corrigir navbar duplicada em algumas telas 
