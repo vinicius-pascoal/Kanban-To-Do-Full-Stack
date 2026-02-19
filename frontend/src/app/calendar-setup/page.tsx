@@ -20,13 +20,25 @@ export default function CalendarSetupPage() {
       return;
     }
 
-    // Buscar a URL de autorização do Google Calendar
-    const fetchCalendarUrl = async () => {
+    const init = async () => {
       try {
+        // Verificar se já está conectado ao Google Calendar
+        const statusRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/google-calendar/status`, {
+          headers: { Authorization: `Bearer ${session.backendToken}` },
+        });
+
+        if (statusRes.ok) {
+          const statusData = await statusRes.json();
+          if (statusData.connected) {
+            // Já conectado, ir direto para o dashboard
+            router.push('/dashboard');
+            return;
+          }
+        }
+
+        // Não conectado — buscar URL de autorização
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/google-calendar/connect-url`, {
-          headers: {
-            Authorization: `Bearer ${session.backendToken}`,
-          },
+          headers: { Authorization: `Bearer ${session.backendToken}` },
         });
 
         if (!response.ok) {
@@ -43,7 +55,7 @@ export default function CalendarSetupPage() {
       }
     };
 
-    fetchCalendarUrl();
+    init();
   }, [session, status, router]);
 
   const handleSkip = () => {

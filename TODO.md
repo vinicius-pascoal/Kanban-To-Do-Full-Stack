@@ -7,3 +7,5 @@
 [] (EXTRA) marcar reuniao (ja integrado com o meet)
 [] (EXTRA) Suporte a múltiplos idiomas
 [X] criar conta com o google nao esta vinculando o calendario automaticamente
+[] deixar as funcionalidades do google em producao 
+[X] mesmo estando logado com o google configurado ao entrar no sistema esta aparecendo para configurar o google 
