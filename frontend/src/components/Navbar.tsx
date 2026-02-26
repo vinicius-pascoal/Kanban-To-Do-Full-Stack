@@ -79,9 +79,7 @@ export default function Navbar() {
               className="flex items-center gap-2 bg-white/25 dark:bg-slate-900/40 backdrop-blur-md rounded-2xl px-4 py-2.5 border border-white/40 dark:border-slate-600/40 shadow-lg hover:bg-white/40 dark:hover:bg-slate-900/55 transition-all"
             >
               <div className="flex flex-col">
-                <span className="text-lg font-bold text-white drop-shadow-md leading-tight">
-                  Planify
-                </span>
+                <img src="/imgs/logo-texto.png" className='w-24 h-6 object-contain' />
                 {currentTeam && (
                   <span className="text-xs text-white/75 leading-tight">
                     {currentTeam.name}
@@ -96,8 +94,8 @@ export default function Navbar() {
             <Link
               href="/dashboard"
               className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all text-sm font-medium ${pathname === '/dashboard'
-                  ? 'bg-white/50 dark:bg-white/15 text-white shadow-sm'
-                  : 'text-white/80 hover:bg-white/25 dark:hover:bg-white/10 hover:text-white'
+                ? 'bg-white/50 dark:bg-white/15 text-white shadow-sm'
+                : 'text-white/80 hover:bg-white/25 dark:hover:bg-white/10 hover:text-white'
                 }`}
             >
               <Home className="w-4 h-4 drop-shadow" />
@@ -107,8 +105,8 @@ export default function Navbar() {
             <Link
               href="/teams"
               className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all text-sm font-medium ${pathname === '/teams'
-                  ? 'bg-white/50 dark:bg-white/15 text-white shadow-sm'
-                  : 'text-white/80 hover:bg-white/25 dark:hover:bg-white/10 hover:text-white'
+                ? 'bg-white/50 dark:bg-white/15 text-white shadow-sm'
+                : 'text-white/80 hover:bg-white/25 dark:hover:bg-white/10 hover:text-white'
                 }`}
             >
               <Users className="w-4 h-4 drop-shadow" />
@@ -118,8 +116,8 @@ export default function Navbar() {
             <Link
               href="/dashboard/settings"
               className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all text-sm font-medium ${pathname === '/dashboard/settings'
-                  ? 'bg-white/50 dark:bg-white/15 text-white shadow-sm'
-                  : 'text-white/80 hover:bg-white/25 dark:hover:bg-white/10 hover:text-white'
+                ? 'bg-white/50 dark:bg-white/15 text-white shadow-sm'
+                : 'text-white/80 hover:bg-white/25 dark:hover:bg-white/10 hover:text-white'
                 }`}
             >
               <Settings className="w-4 h-4 drop-shadow" />

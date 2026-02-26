@@ -20,7 +20,7 @@ export default function Home() {
       <div className="backdrop-blur-md bg-white/10 dark:bg-slate-900/40 rounded-2xl shadow-2xl p-10 w-full max-w-4xl border border-white/20 dark:border-white/10">
         <div className="text-center space-y-6">
           <div className="inline-block px-4 py-1.5 rounded-full bg-gradient-to-r from-cyan-400/20 to-blue-500/20 border border-cyan-300/30 backdrop-blur-sm">
-            <p className="text-sm font-semibold uppercase tracking-wide text-cyan-100">planify-kanban</p>
+            <img src="/imgs/logo-texto.png" alt="" className="w-24 h-9 object-contain" />
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white drop-shadow-lg leading-tight">
