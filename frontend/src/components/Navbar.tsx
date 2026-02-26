@@ -68,65 +68,69 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 shadow-sm">
-      <div className="max-w-full mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+    <nav className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+      <div className="max-w-full mx-auto px-4 sm:px-6 py-3">
+        <div className="flex items-center justify-between gap-3">
+
           {/* Logo e Nome */}
-          <div className="flex items-center gap-8">
-            <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <div className="pointer-events-auto">
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-2 bg-white/25 dark:bg-slate-900/40 backdrop-blur-md rounded-2xl px-4 py-2.5 border border-white/40 dark:border-slate-600/40 shadow-lg hover:bg-white/40 dark:hover:bg-slate-900/55 transition-all"
+            >
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-gray-800 dark:text-white">
+                <span className="text-lg font-bold text-white drop-shadow-md leading-tight">
                   Planify
                 </span>
                 {currentTeam && (
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
-                    Time: {currentTeam.name}
+                  <span className="text-xs text-white/75 leading-tight">
+                    {currentTeam.name}
                   </span>
                 )}
               </div>
             </Link>
+          </div>
 
-            {/* Links de navegação */}
-            <div className="hidden md:flex items-center gap-1">
-              <Link
-                href="/dashboard"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${pathname === '/dashboard'
-                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
-                  }`}
-              >
-                <Home className="w-4 h-4" />
-                <span>Home</span>
-              </Link>
+          {/* Links de navegação */}
+          <div className="hidden md:flex items-center gap-1 bg-white/25 dark:bg-slate-900/40 backdrop-blur-md rounded-2xl px-2 py-2 border border-white/40 dark:border-slate-600/40 shadow-lg pointer-events-auto">
+            <Link
+              href="/dashboard"
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all text-sm font-medium ${pathname === '/dashboard'
+                  ? 'bg-white/50 dark:bg-white/15 text-white shadow-sm'
+                  : 'text-white/80 hover:bg-white/25 dark:hover:bg-white/10 hover:text-white'
+                }`}
+            >
+              <Home className="w-4 h-4 drop-shadow" />
+              <span className="drop-shadow">Home</span>
+            </Link>
 
-              <Link
-                href="/teams"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${pathname === '/teams'
-                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
-                  }`}
-              >
-                <Users className="w-4 h-4" />
-                <span>Times</span>
-              </Link>
+            <Link
+              href="/teams"
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all text-sm font-medium ${pathname === '/teams'
+                  ? 'bg-white/50 dark:bg-white/15 text-white shadow-sm'
+                  : 'text-white/80 hover:bg-white/25 dark:hover:bg-white/10 hover:text-white'
+                }`}
+            >
+              <Users className="w-4 h-4 drop-shadow" />
+              <span className="drop-shadow">Times</span>
+            </Link>
 
-              <Link
-                href="/dashboard/settings"
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${pathname === '/dashboard/settings'
-                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800'
-                  }`}
-              >
-                <Settings className="w-4 h-4" />
-                <span>Configurações</span>
-              </Link>
-            </div>
+            <Link
+              href="/dashboard/settings"
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all text-sm font-medium ${pathname === '/dashboard/settings'
+                  ? 'bg-white/50 dark:bg-white/15 text-white shadow-sm'
+                  : 'text-white/80 hover:bg-white/25 dark:hover:bg-white/10 hover:text-white'
+                }`}
+            >
+              <Settings className="w-4 h-4 drop-shadow" />
+              <span className="drop-shadow">Configurações</span>
+            </Link>
           </div>
 
           {/* Lado direito - User info, Theme Toggle e Logout */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 bg-white/25 dark:bg-slate-900/40 backdrop-blur-md rounded-2xl px-3 py-2 border border-white/40 dark:border-slate-600/40 shadow-lg pointer-events-auto">
             {/* Nome do usuário */}
-            <div className="hidden sm:block text-sm text-gray-700 dark:text-gray-300">
+            <div className="hidden sm:block text-sm text-white drop-shadow mr-1">
               <span className="font-semibold">{session.user?.name || session.user?.email}</span>
             </div>
 
@@ -135,7 +139,7 @@ export default function Navbar() {
               type="button"
               aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
               onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-semibold text-gray-800 dark:text-gray-100 shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-slate-700"
+              className="flex items-center gap-1.5 rounded-xl bg-white/20 dark:bg-white/10 hover:bg-white/35 dark:hover:bg-white/20 px-2.5 py-1.5 text-sm font-semibold text-white transition-all"
             >
               <span className="text-base" aria-hidden="true">
                 {isDark ? '🌙' : '☀️'}
@@ -146,13 +150,14 @@ export default function Navbar() {
             {/* Botão de Logout */}
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-white/80 hover:text-white hover:bg-red-500/30 rounded-xl transition-all"
               aria-label="Sair"
             >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Sair</span>
+              <LogOut className="w-4 h-4 drop-shadow" />
+              <span className="hidden sm:inline text-sm font-medium">Sair</span>
             </button>
           </div>
+
         </div>
       </div>
     </nav>

@@ -3,7 +3,7 @@
 [X] corrigir bug da integracao com o google agenda (nao esta agendando para o usuario correto )
 [X] add edicao de usuario na tela de configuracoes
 [X] corrigir navbar duplicada em algumas telas 
-[] melhorias gerais de estetica pelo projeto 
+[X] melhorias gerais de estetica pelo projeto 
 [] (EXTRA) marcar reuniao (ja integrado com o meet)
 [] (EXTRA) Suporte a múltiplos idiomas
 [X] criar conta com o google nao esta vinculando o calendario automaticamente

@@ -80,9 +80,9 @@ export default function TeamsPage() {
 
   return (
     <>
-      <div className="page-scroll" style={{ backgroundImage: 'var(--login-bg)' }}>
+      <div>
         {/* Content */}
-        <div className="max-w-full mx-auto px-4 py-12">
+        <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Error */}
           {error && (
             <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
@@ -201,8 +201,8 @@ export default function TeamsPage() {
                         type="button"
                         onClick={() => setTemplate('default')}
                         className={`flex flex-col items-start p-4 rounded-lg border-2 transition-colors text-left ${template === 'default'
-                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                            : 'border-gray-200 dark:border-slate-600 hover:border-blue-400'
+                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                          : 'border-gray-200 dark:border-slate-600 hover:border-blue-400'
                           }`}
                       >
                         <span className="text-2xl mb-2">📋</span>
@@ -213,8 +213,8 @@ export default function TeamsPage() {
                         type="button"
                         onClick={() => setTemplate('blank')}
                         className={`flex flex-col items-start p-4 rounded-lg border-2 transition-colors text-left ${template === 'blank'
-                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                            : 'border-gray-200 dark:border-slate-600 hover:border-blue-400'
+                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                          : 'border-gray-200 dark:border-slate-600 hover:border-blue-400'
                           }`}
                       >
                         <span className="text-2xl mb-2">🗒️</span>

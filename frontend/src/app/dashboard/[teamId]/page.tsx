@@ -69,9 +69,9 @@ function DashboardContent() {
   }
 
   return (
-    <div className="h-full min-h-0 flex flex-col" style={{ backgroundImage: 'var(--login-bg)' }}>
+    <div className="flex flex-col">
       {/* Tabs */}
-      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b dark:border-slate-700 sticky top-0 z-10 shadow-sm">
+      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b dark:border-slate-700 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-4">
             <button

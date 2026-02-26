@@ -30,35 +30,18 @@ body {
 
 html,
 body {
-  height: 100%;
+  min-height: 100%;
 }
 
 .app-shell {
-  height: 100vh;
   min-height: 100vh;
 }
 
 .app-main {
   flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-}
-
-@media (min-width: 1024px) {
-  body {
-    overflow-y: hidden;
-  }
-}
-
-@media (max-width: 1023px) {
-  .app-main {
-    overflow-y: auto;
-  }
 }
 
 .page-scroll {
-  height: 100%;
-  min-height: 0;
   overflow-y: auto;
 }
 

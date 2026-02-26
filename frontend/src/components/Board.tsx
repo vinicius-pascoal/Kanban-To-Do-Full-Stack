@@ -188,7 +188,7 @@ export default function Board({ teamId, token, currentMember }: BoardProps) {
 
   return (
     <>
-      <div className="flex gap-6 overflow-x-auto pb-8 px-2 h-full min-h-0">
+      <div className="flex gap-6 overflow-x-auto pb-8 px-2 h-[calc(100vh-14rem)] min-h-0">
         {board.columns
           .sort((a, b) => a.order - b.order)
           .map((column, index, columns) => {

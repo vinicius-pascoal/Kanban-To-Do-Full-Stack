@@ -126,7 +126,7 @@ export default function Column({
     <div
       style={columnStyle}
       className={`rounded-xl shadow-lg border ${borderEffect} ${backgroundColor ? glassEffect : bgColor
-        } ${hasTransparency ? 'glass-column' : ''} p-5 min-w-[340px] max-w-[340px] flex flex-col h-full min-h-0 transition-all ${dragOverId === column.id ? 'ring-2 ring-blue-400 dark:ring-blue-500 shadow-xl' : ''
+        } ${hasTransparency ? 'glass-column' : ''} p-5 min-w-[340px] max-w-[340px] flex flex-col h-full max-h-full min-h-0 transition-all ${dragOverId === column.id ? 'ring-2 ring-blue-400 dark:ring-blue-500 shadow-xl' : ''
         }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}

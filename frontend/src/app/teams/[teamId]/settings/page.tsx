@@ -165,7 +165,7 @@ export default function TeamSettingsPage() {
 
   if (status === 'loading') {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     );
@@ -175,9 +175,9 @@ export default function TeamSettingsPage() {
 
   return (
     <>
-      <div className="page-scroll bg-gray-50 dark:bg-slate-950">
+      <div>
         {/* Header */}
-        <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-slate-800">
           <div className="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
             <div>
               <button

@@ -80,7 +80,7 @@ export default function CalendarSetupPage() {
   }
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-950 p-4">
+    <div className="min-h-screen pt-20 flex items-center justify-center bg-gray-50 dark:bg-slate-950 p-4">
       <div className="bg-white dark:bg-slate-900 rounded-lg shadow-lg p-8 max-w-md w-full">
         <div className="text-center mb-6">
           <svg className="w-16 h-16 mx-auto mb-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

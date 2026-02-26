@@ -54,7 +54,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="h-full min-h-0 bg-cover bg-center bg-fixed flex items-center justify-center p-4" style={{ backgroundImage: 'var(--login-bg)' }}>
+    <div className="min-h-screen bg-cover bg-center bg-fixed flex items-center justify-center p-4" style={{ backgroundImage: 'var(--login-bg)' }}>
       <div className="backdrop-blur-md bg-white/10 dark:bg-slate-900/40 rounded-2xl shadow-2xl p-8 w-full max-w-md border border-white/20 dark:border-white/10">
         <h1 className="text-4xl font-bold text-white mb-6 text-center drop-shadow-lg">
           Entrar
