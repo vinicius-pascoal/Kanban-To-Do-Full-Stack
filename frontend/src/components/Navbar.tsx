@@ -80,11 +80,6 @@ export default function Navbar() {
             >
               <div className="flex flex-col">
                 <img src="/imgs/logo-texto.png" className='w-24 h-6 object-contain' />
-                {currentTeam && (
-                  <span className="text-xs text-white/75 leading-tight">
-                    {currentTeam.name}
-                  </span>
-                )}
               </div>
             </Link>
           </div>
