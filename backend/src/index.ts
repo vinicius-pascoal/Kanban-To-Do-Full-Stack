@@ -7,6 +7,8 @@ import cardRoutes from './routes/card';
 import columnRoutes from './routes/column';
 import metricsRoutes from './routes/metrics';
 import googleCalendarRoutes from './routes/google-calendar';
+import commentRoutes from './routes/comment';
+import tagRoutes from './routes/tag';
 import { setupSwagger } from './lib/swagger';
 
 const app = express();
@@ -58,6 +60,8 @@ app.use('/api/card', cardRoutes);
 app.use('/api/column', columnRoutes);
 app.use('/api/metrics', metricsRoutes);
 app.use('/api/google-calendar', googleCalendarRoutes);
+app.use('/api/comment', commentRoutes);
+app.use('/api/tag', tagRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

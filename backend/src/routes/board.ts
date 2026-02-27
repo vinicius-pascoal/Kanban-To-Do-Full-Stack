@@ -62,6 +62,7 @@ router.get('/', async (req: Request, res: Response) => {
                 assignedTo: {
                   select: { id: true, name: true, email: true },
                 },
+                tags: true,
               },
             },
           },
@@ -99,6 +100,7 @@ router.get('/', async (req: Request, res: Response) => {
                   assignedTo: {
                     select: { id: true, name: true, email: true },
                   },
+                  tags: true,
                 },
               },
             },

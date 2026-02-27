@@ -20,6 +20,7 @@ model User {
   updatedAt            DateTime                    @updatedAt
   teams                TeamMember[]
   cards                Card[]
+  comments             Comment[]
   calendarIntegrations GoogleCalendarIntegration[]
   calendarEventLinks   CalendarEventLink[]
 }
@@ -69,6 +70,7 @@ model Board {
   team      Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   columns   Column[]
+  tags      Tag[]
 }
 
 model Column {
@@ -95,8 +97,29 @@ model Card {
   assignedToId       String?
   assignedTo         User?               @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
   history            CardHistory[]
+  comments           Comment[]
+  tags               Tag[]
   order              Int                 @default(0)
   calendarEventLinks CalendarEventLink[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Tag {
+  id      String @id @default(cuid())
+  name    String
+  color   String @default("#6366f1")
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  cards   Card[]
 }
 
 model CardHistory {

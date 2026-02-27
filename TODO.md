@@ -15,8 +15,8 @@
 ## Melhorias Futuras
 
 ### Cards
-[] adicionar sistema de comentarios nos cards (exibir no modal de detalhes)
-[] adicionar suporte a etiquetas (tags) coloridas nos cards para categorizacao
+[X] adicionar sistema de comentarios nos cards (exibir no modal de detalhes)
+[X] adicionar suporte a etiquetas (tags) coloridas nos cards para categorizacao
 [] permitir arquivar card em vez de deletar permanentemente
 
 ### Board e Colunas

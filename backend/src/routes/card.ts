@@ -154,8 +154,15 @@ router.get('/:id', async (req: AuthenticatedRequest, res: Response) => {
         assignedTo: {
           select: { id: true, name: true, email: true },
         },
+        tags: true,
         history: {
           orderBy: { movedAt: 'desc' },
+        },
+        comments: {
+          include: {
+            author: { select: { id: true, name: true, email: true } },
+          },
+          orderBy: { createdAt: 'asc' },
         },
       },
     });

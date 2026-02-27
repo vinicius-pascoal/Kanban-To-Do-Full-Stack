@@ -251,6 +251,70 @@ export const api = {
     return res.json();
   },
 
+  // Comments
+  async getComments(cardId: string, token: string) {
+    const res = await fetch(`${API_URL}/api/comment/card/${cardId}`, {
+      headers: getHeaders(token),
+    });
+    if (!res.ok) throw new Error('Erro ao buscar comentários');
+    return res.json();
+  },
+
+  async createComment(cardId: string, content: string, token: string) {
+    const res = await fetch(`${API_URL}/api/comment`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify({ cardId, content }),
+    });
+    if (!res.ok) throw new Error('Erro ao criar comentário');
+    return res.json();
+  },
+
+  async deleteComment(id: string, token: string) {
+    const res = await fetch(`${API_URL}/api/comment/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(token),
+    });
+    if (!res.ok) throw new Error('Erro ao deletar comentário');
+  },
+
+  // Tags
+  async getBoardTags(boardId: string, token: string) {
+    const res = await fetch(`${API_URL}/api/tag/board/${boardId}`, {
+      headers: getHeaders(token),
+    });
+    if (!res.ok) throw new Error('Erro ao buscar tags');
+    return res.json();
+  },
+
+  async createTag(data: { name: string; color: string; boardId: string }, token: string) {
+    const res = await fetch(`${API_URL}/api/tag`, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Erro ao criar tag');
+    return res.json();
+  },
+
+  async deleteTag(id: string, token: string) {
+    const res = await fetch(`${API_URL}/api/tag/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(token),
+    });
+    if (!res.ok) throw new Error('Erro ao deletar tag');
+  },
+
+  async updateCardTags(cardId: string, tagIds: string[], token: string) {
+    const res = await fetch(`${API_URL}/api/tag/card/${cardId}`, {
+      method: 'PUT',
+      headers: getHeaders(token),
+      body: JSON.stringify({ tagIds }),
+    });
+    if (!res.ok) throw new Error('Erro ao atualizar tags do card');
+    return res.json();
+  },
+
   // Metrics
   async getMetrics(teamId: string, token: string) {
     const res = await fetch(`${API_URL}/api/metrics?teamId=${teamId}`, {

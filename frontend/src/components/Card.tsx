@@ -85,6 +85,21 @@ export default function Card({ card, isColumnCompleted, onEdit, onDelete, onView
         </div>
       )}
 
+      {/* Tags */}
+      {card.tags && card.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-3">
+          {card.tags.map((tag) => (
+            <span
+              key={tag.id}
+              className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold text-white"
+              style={{ backgroundColor: tag.color }}
+            >
+              {tag.name}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Spacer */}
       <div className="flex-1" />
 

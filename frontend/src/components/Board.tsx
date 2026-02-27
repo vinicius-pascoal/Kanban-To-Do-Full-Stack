@@ -403,6 +403,8 @@ export default function Board({ teamId, token, currentMember }: BoardProps) {
           onClose={handleCloseDetailModal}
           onEdit={handleEditCard}
           onDelete={(id) => token && deleteCard(id, token)}
+          token={token}
+          currentUserId={currentMember?.userId}
         />
       )}
 

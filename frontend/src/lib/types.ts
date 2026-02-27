@@ -47,6 +47,22 @@ export interface CardHistory {
   movedAt: string;
 }
 
+export interface Tag {
+  id: string;
+  name: string;
+  color: string;
+  boardId: string;
+}
+
+export interface Comment {
+  id: string;
+  content: string;
+  cardId: string;
+  authorId: string;
+  author: { id: string; name: string; email: string };
+  createdAt: string;
+}
+
 export interface Card {
   id: string;
   title: string;
@@ -60,6 +76,8 @@ export interface Card {
   assignedTo?: User | null;
   order: number;
   history?: CardHistory[];
+  tags?: Tag[];
+  comments?: Comment[];
 }
 
 export interface Column {

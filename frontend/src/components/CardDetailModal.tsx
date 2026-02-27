@@ -1,8 +1,10 @@
 'use client';
 
-import { Card as CardType } from '@/lib/types';
-import { X, Calendar, Clock, User, Flag, Edit, Trash2 } from 'lucide-react';
+import { Card as CardType, Comment, Tag } from '@/lib/types';
+import { X, Calendar, Clock, User, Flag, Edit, Trash2, MessageSquare, Send, Tag as TagIcon } from 'lucide-react';
 import { formatDate, getDaysUntilDue, getCardStatus } from '@/lib/date-utils';
+import { useEffect, useState, useRef } from 'react';
+import { api } from '@/lib/api';
 
 interface CardDetailModalProps {
   card: CardType | null;
@@ -10,6 +12,8 @@ interface CardDetailModalProps {
   onClose: () => void;
   onEdit: (card: CardType) => void;
   onDelete: (id: string) => void;
+  token?: string;
+  currentUserId?: string;
 }
 
 export default function CardDetailModal({
@@ -18,11 +22,29 @@ export default function CardDetailModal({
   onClose,
   onEdit,
   onDelete,
+  token,
+  currentUserId,
 }: CardDetailModalProps) {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState('');
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const commentInputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (isOpen && card && token) {
+      api.getComments(card.id, token)
+        .then(setComments)
+        .catch(console.error);
+    }
+    if (!isOpen) {
+      setComments([]);
+      setNewComment('');
+    }
+  }, [isOpen, card?.id, token]);
+
   if (!isOpen || !card) return null;
 
   const daysUntil = getDaysUntilDue(card.dueDate);
-  // Status é determinado apenas pela data quando não temos a coluna
   const status = getCardStatus(card.dueDate, false);
 
   const priorityColors: Record<string, string> = {
@@ -37,6 +59,32 @@ export default function CardDetailModal({
     ontime: 'bg-green-100 text-green-800 border border-green-300',
     completed: 'bg-gray-100 text-gray-800 border border-gray-300',
   };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim() || !token || !card) return;
+    setIsSubmittingComment(true);
+    try {
+      const comment = await api.createComment(card.id, newComment.trim(), token);
+      setComments((prev) => [...prev, comment]);
+      setNewComment('');
+    } catch (e) {
+      console.error('Erro ao adicionar comentário:', e);
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!token) return;
+    try {
+      await api.deleteComment(commentId, token);
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+    } catch (e) {
+      console.error('Erro ao deletar comentário:', e);
+    }
+  };
+
+  const tags: Tag[] = card.tags ?? [];
 
   return (
     <>
@@ -68,6 +116,22 @@ export default function CardDetailModal({
 
           {/* Content */}
           <div className="p-6 space-y-6">
+            {/* Tags Section */}
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 items-center">
+                <TagIcon className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                {tags.map((tag) => (
+                  <span
+                    key={tag.id}
+                    className="inline-block px-3 py-1 rounded-full text-xs font-semibold text-white"
+                    style={{ backgroundColor: tag.color }}
+                  >
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {/* Description Section */}
             {card.description && (
               <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
@@ -84,10 +148,7 @@ export default function CardDetailModal({
                   <Flag className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                   <h4 className="font-semibold text-gray-800 dark:text-white">Prioridade</h4>
                 </div>
-                <span
-                  className={`inline-block px-4 py-2 rounded-lg font-medium ${priorityColors[card.priority]
-                    }`}
-                >
+                <span className={`inline-block px-4 py-2 rounded-lg font-medium ${priorityColors[card.priority]}`}>
                   {card.priority.charAt(0).toUpperCase() + card.priority.slice(1)}
                 </span>
               </div>
@@ -125,10 +186,7 @@ export default function CardDetailModal({
                   <div>
                     <p className="font-medium text-gray-800 dark:text-white">{formatDate(card.dueDate)}</p>
                     {daysUntil !== null && status !== 'completed' && (
-                      <p
-                        className={`text-sm font-medium mt-1 ${daysUntil < 0 ? 'text-red-600' : daysUntil === 0 ? 'text-orange-600' : 'text-green-600'
-                          }`}
-                      >
+                      <p className={`text-sm font-medium mt-1 ${daysUntil < 0 ? 'text-red-600' : daysUntil === 0 ? 'text-orange-600' : 'text-green-600'}`}>
                         {daysUntil > 0
                           ? `Vence em ${daysUntil} dia${daysUntil === 1 ? '' : 's'}`
                           : daysUntil === 0
@@ -149,17 +207,8 @@ export default function CardDetailModal({
                   <h4 className="font-semibold text-gray-800 dark:text-white">Status</h4>
                 </div>
                 <div className="space-y-2">
-                  <span
-                    className={`inline-block px-4 py-2 rounded-lg font-medium text-sm ${statusColors[status] || 'bg-gray-100 text-gray-800 border border-gray-300'
-                      }`}
-                  >
-                    {status === 'overdue'
-                      ? 'Atrasado'
-                      : status === 'today'
-                        ? 'Vence Hoje'
-                        : status === 'ontime'
-                          ? 'No Prazo'
-                          : 'Concluído'}
+                  <span className={`inline-block px-4 py-2 rounded-lg font-medium text-sm ${statusColors[status] || 'bg-gray-100 text-gray-800 border border-gray-300'}`}>
+                    {status === 'overdue' ? 'Atrasado' : status === 'today' ? 'Vence Hoje' : status === 'ontime' ? 'No Prazo' : 'Concluído'}
                   </span>
                 </div>
               </div>
@@ -176,7 +225,6 @@ export default function CardDetailModal({
                     <p className="text-sm text-gray-600 dark:text-gray-300">{formatDate(card.createdAt)}</p>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-3">
                   <div className="w-3 h-3 rounded-full bg-purple-500 mt-1.5 flex-shrink-0" />
                   <div>
@@ -184,7 +232,6 @@ export default function CardDetailModal({
                     <p className="text-sm text-gray-600 dark:text-gray-300">{formatDate(card.updatedAt)}</p>
                   </div>
                 </div>
-
                 {card.history && card.history.length > 0 && (
                   <div className="mt-4 pt-4 border-t border-gray-300 dark:border-slate-600">
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-3">Histórico de Movimentação</p>
@@ -203,6 +250,84 @@ export default function CardDetailModal({
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Comments Section */}
+            <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
+              <div className="flex items-center gap-2 mb-4">
+                <MessageSquare className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <h3 className="font-semibold text-gray-800 dark:text-white">
+                  Comentários
+                  {comments.length > 0 && (
+                    <span className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">({comments.length})</span>
+                  )}
+                </h3>
+              </div>
+
+              {comments.length > 0 ? (
+                <div className="space-y-3 mb-4 max-h-64 overflow-y-auto pr-1">
+                  {comments.map((comment) => (
+                    <div key={comment.id} className="bg-white dark:bg-slate-900 rounded-lg p-3 border border-gray-200 dark:border-slate-700">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="w-7 h-7 bg-blue-200 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
+                            <span className="text-blue-700 dark:text-blue-200 text-xs font-bold">
+                              {comment.author.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-gray-800 dark:text-white">{comment.author.name}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(comment.createdAt)}</p>
+                          </div>
+                        </div>
+                        {currentUserId === comment.authorId && (
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors flex-shrink-0"
+                            title="Deletar comentário"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                          </button>
+                        )}
+                      </div>
+                      <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">
+                        {comment.content}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-400 italic mb-4">
+                  Nenhum comentário ainda. Seja o primeiro!
+                </p>
+              )}
+
+              {token && (
+                <div className="flex gap-2 items-end">
+                  <textarea
+                    ref={commentInputRef}
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Escreva um comentário... (Enter para enviar)"
+                    rows={2}
+                    className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleAddComment();
+                      }
+                    }}
+                  />
+                  <button
+                    onClick={handleAddComment}
+                    disabled={isSubmittingComment || !newComment.trim()}
+                    className="p-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                    title="Enviar (Enter)"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Additional Info */}
