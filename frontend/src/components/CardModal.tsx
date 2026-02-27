@@ -93,7 +93,7 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard, toke
     try {
       const tag = await api.createTag({ name: newTagName.trim(), color: newTagColor, boardId: board.id }, token);
       setBoardTags((prev) => [...prev, tag]);
-      setSelectedTagIds((prev) => new Set([...prev, tag.id]));
+      setSelectedTagIds((prev) => new Set(Array.from(prev).concat(tag.id)));
       setNewTagName('');
     } catch (e) {
       console.error('Erro ao criar tag:', e);
