@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Card as CardType } from '@/lib/types';
 import { getCardStatus, formatDate, getDaysUntilDue, getStatusColor, getPriorityColor } from '@/lib/date-utils';
-import { Calendar, Clock, Trash2, Edit } from 'lucide-react';
+import { Calendar, Clock, Trash2, Edit, Copy } from 'lucide-react';
 import { useState } from 'react';
 
 interface CardProps {
@@ -12,12 +12,14 @@ interface CardProps {
   onEdit: (card: CardType) => void;
   onDelete: (id: string) => void;
   onViewDetails: (card: CardType) => void;
+  onClone?: (card: CardType) => void;
   isDragging?: boolean;
   canEdit?: boolean;
   canDelete?: boolean;
+  canClone?: boolean;
 }
 
-export default function Card({ card, isColumnCompleted, onEdit, onDelete, onViewDetails, isDragging, canEdit, canDelete }: CardProps) {
+export default function Card({ card, isColumnCompleted, onEdit, onDelete, onViewDetails, onClone, isDragging, canEdit, canDelete, canClone }: CardProps) {
   const status = getCardStatus(card.dueDate, isColumnCompleted);
   const daysUntil = getDaysUntilDue(card.dueDate);
   const [isHovered, setIsHovered] = useState(false);
@@ -40,8 +42,20 @@ export default function Card({ card, isColumnCompleted, onEdit, onDelete, onView
       {/* Header */}
       <div className="flex items-start justify-between mb-3 flex-shrink-0">
         <h3 className="font-bold text-base text-gray-900 dark:text-white flex-1 line-clamp-2 leading-tight">{card.title}</h3>
-        {isHovered && (canEdit || canDelete) && (
+        {isHovered && (canEdit || canDelete || canClone) && (
           <div className="flex gap-1.5 ml-2 flex-shrink-0">
+            {canClone && onClone && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClone(card);
+                }}
+                className="p-1.5 hover:bg-green-100 dark:hover:bg-green-900/40 rounded-lg transition-all hover:scale-110"
+                title="Clonar card"
+              >
+                <Copy className="w-4 h-4 text-green-600 dark:text-green-400" />
+              </button>
+            )}
             {canEdit && (
               <button
                 onClick={(e) => {

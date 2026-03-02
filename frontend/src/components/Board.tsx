@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useKanbanStore } from '@/lib/store';
+import { api } from '@/lib/api';
 import Column from './Column';
 import CardModal from './CardModal';
 import CardDetailModal from './CardDetailModal';
@@ -76,6 +77,41 @@ export default function Board({ teamId, token, currentMember }: BoardProps) {
     setSelectedColumnId(card.columnId);
     setEditingCard(card);
     setIsModalOpen(true);
+  };
+
+  const handleCloneCard = async (card: CardType) => {
+    if (!token) return;
+    try {
+      const newCard = await api.createCard(
+        {
+          title: `Cópia de ${card.title}`,
+          description: card.description ?? undefined,
+          priority: card.priority,
+          dueDate: card.dueDate ? card.dueDate.substring(0, 10) : undefined,
+          columnId: card.columnId,
+          assignedToId: card.assignedToId ?? undefined,
+        },
+        token,
+      );
+
+      if (card.tags && card.tags.length > 0) {
+        await api.updateCardTags(
+          newCard.id,
+          card.tags.map((t) => t.id),
+          token,
+        );
+      }
+
+      const { teamId, fetchBoard, fetchMetrics } = useKanbanStore.getState();
+      if (teamId) {
+        await fetchBoard(teamId, token);
+        await fetchMetrics(teamId, token);
+      }
+
+      setToast({ message: 'Card clonado com sucesso!', type: 'success' });
+    } catch {
+      setToast({ message: 'Erro ao clonar card.', type: 'error' });
+    }
   };
 
   const handleCloseModal = () => {
@@ -200,6 +236,7 @@ export default function Board({ teamId, token, currentMember }: BoardProps) {
                 onAddCard={handleAddCard}
                 onEditCard={handleEditCard}
                 onDeleteCard={(id) => token && deleteCard(id, token)}
+                onCloneCard={handleCloneCard}
                 onViewCardDetails={handleViewCardDetails}
                 onDeleteColumn={(id) => token && deleteColumn(id, token)}
                 onCardDrop={handleCardDrop}

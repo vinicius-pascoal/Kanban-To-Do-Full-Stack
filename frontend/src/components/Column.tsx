@@ -10,6 +10,7 @@ interface ColumnProps {
   onAddCard: (columnId: string) => void;
   onEditCard: (card: CardType) => void;
   onDeleteCard: (id: string) => void;
+  onCloneCard?: (card: CardType) => void;
   onViewCardDetails: (card: CardType) => void;
   onDeleteColumn?: (id: string) => void;
   onCardDrop: (cardId: string, targetColumnId: string) => void;
@@ -30,6 +31,7 @@ export default function Column({
   onAddCard,
   onEditCard,
   onDeleteCard,
+  onCloneCard,
   onViewCardDetails,
   onDeleteColumn,
   onCardDrop,
@@ -195,10 +197,12 @@ export default function Column({
                 isColumnCompleted={column.isCompleted || false}
                 onEdit={canEditCard ? onEditCard : () => { }}
                 onDelete={canRemoveCard ? onDeleteCard : () => { }}
+                onClone={onCloneCard}
                 onViewDetails={onViewCardDetails}
                 isDragging={draggedCardId === card.id}
                 canEdit={canEditCard}
                 canDelete={canRemoveCard}
+                canClone={canCreateCard}
               />
             </div>
           ))
