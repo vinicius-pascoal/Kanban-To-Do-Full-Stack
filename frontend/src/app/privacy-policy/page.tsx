@@ -1,5 +1,8 @@
 import Link from 'next/link';
 
+// Força pre-render estático: não gera Serverless Function no Vercel
+export const dynamic = 'force-static';
+
 const sections = [
   {
     icon: (
