@@ -328,6 +328,8 @@ router.patch('/:id/members/:userId/permissions', async (req: AuthenticatedReques
       'canAddMember',
       'canRemoveMember',
       'canRenameTeam',
+      'canViewMetrics',
+      'canManageTags',
     ];
 
     const updateData: Record<string, boolean> = {};

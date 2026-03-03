@@ -60,6 +60,10 @@ model TeamMember {
   canRemoveMember Boolean @default(false)
   canRenameTeam   Boolean @default(false)
 
+  // Permissões de Visualização
+  canViewMetrics Boolean @default(false)
+  canManageTags  Boolean @default(false)
+
   @@unique([userId, teamId])
 }
 

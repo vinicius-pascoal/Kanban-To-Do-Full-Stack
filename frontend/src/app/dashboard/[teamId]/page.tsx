@@ -52,6 +52,17 @@ function DashboardContent() {
     (m: TeamMember) => m.userId === session?.user?.id,
   );
 
+  // Helpers de permissão (dono sempre tem acesso a tudo)
+  const canViewMetrics = currentMember?.isOwner || currentMember?.canViewMetrics;
+  const canManageTags = currentMember?.isOwner || currentMember?.canManageTags;
+
+  // Se a aba ativa ficar inacessível (após as permissões serem carregadas), volta para o board
+  useEffect(() => {
+    if (!currentMember) return; // aguarda o carregamento das permissões
+    if (activeTab === 'metrics' && !canViewMetrics) setActiveTab('board');
+    if (activeTab === 'tags' && !canManageTags) setActiveTab('board');
+  }, [canViewMetrics, canManageTags, activeTab, currentMember]);
+
   const handleLogout = () => {
     localStorage.removeItem('currentTeam');
     router.push('/login');
@@ -85,26 +96,30 @@ function DashboardContent() {
               <LayoutDashboard className="w-5 h-5" />
               Board Planify
             </button>
-            <button
-              onClick={() => setActiveTab('metrics')}
-              className={`flex items-center gap-2 px-5 py-4 border-b-2 transition-all ${activeTab === 'metrics'
-                ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-semibold'
-                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800/50'
-                }`}
-            >
-              <BarChart3 className="w-5 h-5" />
-              Métricas
-            </button>
-            <button
-              onClick={() => setActiveTab('tags')}
-              className={`flex items-center gap-2 px-5 py-4 border-b-2 transition-all ${activeTab === 'tags'
-                ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-semibold'
-                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800/50'
-                }`}
-            >
-              <Tag className="w-5 h-5" />
-              Etiquetas
-            </button>
+            {canViewMetrics && (
+              <button
+                onClick={() => setActiveTab('metrics')}
+                className={`flex items-center gap-2 px-5 py-4 border-b-2 transition-all ${activeTab === 'metrics'
+                  ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-semibold'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800/50'
+                  }`}
+              >
+                <BarChart3 className="w-5 h-5" />
+                Métricas
+              </button>
+            )}
+            {canManageTags && (
+              <button
+                onClick={() => setActiveTab('tags')}
+                className={`flex items-center gap-2 px-5 py-4 border-b-2 transition-all ${activeTab === 'tags'
+                  ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-semibold'
+                  : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800/50'
+                  }`}
+              >
+                <Tag className="w-5 h-5" />
+                Etiquetas
+              </button>
+            )}
             <button
               onClick={() => router.push(`/teams/${teamId}/settings`)}
               className="flex items-center gap-2 px-5 py-4 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 border-transparent border-b-2 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-all"
@@ -121,10 +136,10 @@ function DashboardContent() {
         {activeTab === 'board' && (
           <Board teamId={teamId} token={session?.backendToken} currentMember={currentMember} />
         )}
-        {activeTab === 'metrics' && (
+        {activeTab === 'metrics' && canViewMetrics && (
           <Metrics teamId={teamId} token={session?.backendToken} />
         )}
-        {activeTab === 'tags' && (
+        {activeTab === 'tags' && canManageTags && (
           <TagsManager teamId={teamId} token={session?.backendToken} />
         )}
       </main>

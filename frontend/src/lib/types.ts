@@ -28,6 +28,9 @@ export interface TeamMember {
   canAddMember: boolean;
   canRemoveMember: boolean;
   canRenameTeam: boolean;
+  // Permissões de Visualização
+  canViewMetrics: boolean;
+  canManageTags: boolean;
 }
 
 export interface Team {

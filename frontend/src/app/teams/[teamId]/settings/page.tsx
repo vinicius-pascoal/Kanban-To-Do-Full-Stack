@@ -17,6 +17,8 @@ const PERMISSION_LABELS: { key: keyof TeamMember; label: string; group: string }
   { key: 'canAddMember', label: 'Adicionar membro', group: 'Time' },
   { key: 'canRemoveMember', label: 'Remover membro', group: 'Time' },
   { key: 'canRenameTeam', label: 'Renomear time', group: 'Time' },
+  { key: 'canViewMetrics', label: 'Ver métricas', group: 'Visualização' },
+  { key: 'canManageTags', label: 'Gerenciar etiquetas', group: 'Visualização' },
 ];
 
 export default function TeamSettingsPage() {

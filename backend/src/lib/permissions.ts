@@ -10,7 +10,9 @@ export type Permission =
   | 'canRemoveColumn'
   | 'canAddMember'
   | 'canRemoveMember'
-  | 'canRenameTeam';
+  | 'canRenameTeam'
+  | 'canViewMetrics'
+  | 'canManageTags';
 
 /**
  * Busca o TeamMember de um usuário em um time.
@@ -98,6 +100,8 @@ export const ALL_PERMISSIONS = {
   canRemoveColumn: true,
   canAddMember: true,
   canRemoveMember: true,
+  canViewMetrics: true,
+  canManageTags: true,
   canRenameTeam: true,
 };
 
@@ -115,4 +119,6 @@ export const DEFAULT_MEMBER_PERMISSIONS = {
   canAddMember: false,
   canRemoveMember: false,
   canRenameTeam: false,
+  canViewMetrics: false,
+  canManageTags: false,
 };
