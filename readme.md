@@ -417,12 +417,6 @@ npx prisma generate
 
 ### 5. Rodar o projeto (modo desenvolvimento)
 ```bash
-# Na raiz — inicia frontend e backend simultaneamente
-npm run dev
-```
-
-Ou separadamente:
-```bash
 # Backend → http://localhost:3001
 cd backend && npm run dev
 
