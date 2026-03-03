@@ -1,30 +1,52 @@
-# 📌 Kanban To-Do Full Stack
+# Planify — Kanban To-Do Full Stack
 
-Um sistema **Kanban completo** para gerenciamento de tarefas em equipe, unindo **Kanban visual**, **controle por datas**, **autenticação JWT**, **métricas de produtividade** e **analytics avançado**, desenvolvido como **projeto Full Stack** com **Next.js**, **Express.js** e **SQLite**.
+<p align="center">
+  <img src="./frontend/public/imgs/logo-texto.png" alt="Planify Logo" width="220"/>
+</p>
 
-Projeto ideal para portfólio, demonstrando arquitetura moderna, regras de negócio complexas, persistência real de dados, segurança com autenticação e visualização avançada de informações.
+<p align="center">
+  Um sistema <strong>Kanban completo</strong> para gerenciamento de tarefas em equipe — com board visual, Google Calendar, comentários, tags, métricas avançadas e autenticação OAuth.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js"/>
+  <img src="https://img.shields.io/badge/Express.js-4-green?style=flat-square&logo=express"/>
+  <img src="https://img.shields.io/badge/Prisma-5-2D3748?style=flat-square&logo=prisma"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-blue?style=flat-square&logo=postgresql"/>
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3-38BDF8?style=flat-square&logo=tailwind-css"/>
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square"/>
+</p>
+
+---
+
+## 🖼️ Screenshots
+
+### Home
+![Home Page](./demohome.png)
+
+### Kanban Board
+![Kanban Board](./demoBoard.png)
+
+---
 
 ## ✅ Status do Projeto
 
 **Projeto Completo e Funcional!** ✨
 
-Todas as features principais foram implementadas e testadas:
-- ✅ Backend com API REST, Prisma ORM, SQLite e autenticação JWT
-- ✅ Frontend com Next.js 14 (App Router), TypeScript e Tailwind CSS
-- ✅ Sistema de autenticação com registro e login
-- ✅ Gerenciamento de times e membros
-- ✅ Kanban board completo com drag & drop
-- ✅ Cards com prioridade, datas, atribuição de usuários
-- ✅ Modal detalhado de cards com histórico completo
-- ✅ Dashboard de métricas com Recharts (Power BI-style)
-- ✅ Análise de produtividade por membro
-- ✅ Componentes animados com Framer Motion
-- ✅ Validação de dados com Zod
-
-Recursos adicionais de documentação:
-- 📄 Guia de autenticação: SETUP_AUTH.md
-- 🧪 Guia de testes: TEST_GUIDE.md
-- 🧩 Resumo técnico: IMPLEMENTATION_SUMMARY.md
+| Módulo | Status |
+|--------|--------|
+| API REST com Express + Prisma | ✅ |
+| Autenticação JWT + Google OAuth | ✅ |
+| Board Kanban com drag & drop | ✅ |
+| Comentários em cards | ✅ |
+| Tags / Labels personalizáveis | ✅ |
+| Integração com Google Calendar | ✅ |
+| Dashboard de métricas (Recharts) | ✅ |
+| Exportação de relatório em PDF | ✅ |
+| Permissões granulares por membro | ✅ |
+| Documentação Swagger | ✅ |
+| Deploy Vercel (frontend + backend) | ✅ |
 
 ---
 
@@ -32,185 +54,214 @@ Recursos adicionais de documentação:
 
 Criar uma aplicação Kanban profissional que permita:
 
-* Organizar tarefas em colunas customizáveis
-* Controlar prazos com alertas visuais
-* Atribuir tarefas a membros do time
-* Visualizar métricas reais de produtividade
-* Registrar histórico de movimentações
-* Gerenciar múltiplos times e projetos
-* Persistir dados em banco relacional (SQLite)
+- Organizar tarefas em colunas customizáveis com cores
+- Controlar prazos com alertas visuais de urgência
+- Atribuir tarefas a membros do time
+- Comentar e colaborar diretamente nos cards
+- Classificar tasks com tags coloridas
+- Sincronizar prazos com o Google Calendar
+- Visualizar métricas reais de produtividade
+- Gerenciar múltiplos times com permissões personalizadas
 
 ---
 
-## 🚀 Funcionalidades Principais
+## 🚀 Funcionalidades
 
 ### 🔐 Autenticação
-* Registro e login de usuários com JWT
-* Tokens seguros com expiração
-* Proteção de rotas com middleware
-* Recuperação de sessão automática
+- Registro e login com e-mail + senha (JWT)
+- Login social com **Google OAuth** (NextAuth + `@react-oauth/google`)
+- Tokens seguros com expiração de 7 dias
+- Proteção de rotas com middleware e `next/middleware`
+- Recuperação de sessão automática
 
 ### 👥 Gerenciamento de Times
-* Criar e gerenciar times
-* Adicionar/remover membros
-* Atribuir tarefas a membros específicos
-* Visualizar produtividade por membro
+- Criar e renomear times
+- Adicionar e remover membros
+- Sistema de **permissões granulares** por membro:
+  - Criar / editar / remover cards
+  - Criar / editar / remover colunas
+  - Adicionar / remover membros
+  - Visualizar métricas
+  - Gerenciar tags
 
 ### ✅ Kanban Board
-* Colunas fixas: **A Fazer**, **Em Progresso**, **Concluído**
-* Criar, editar e remover cards
-* **Drag & drop** animado entre colunas
-* Reordenação de cards dentro da coluna
-* Histórico completo de movimentações
+- Colunas customizáveis com **nome e cor**
+- Marcar coluna como **"Concluída"** (conclusão automática de cards)
+- **Drag & drop** animado entre colunas (Framer Motion)
+- Reordenação de cards dentro da coluna
+- Histórico completo de movimentações por card
 
-### 📅 Gerenciamento de Datas
-Cada card possui:
-* Data de criação (automática)
-* Data de vencimento (optional)
-* Data de atualização (automática)
-* Histórico de todas as movimentações
+### 🏷️ Tags & Labels
+- Criar tags com nome e cor personalizada por board
+- Associar múltiplas tags a um card
+- Gerenciar tags de forma centralizada (TagsManager)
+- Permissão específica para gerenciar tags (`canManageTags`)
 
-**Indicadores Visuais**
-* 🔴 **Atrasado** - Prazo passou
-* 🟡 **Vence hoje** - Entrega no mesmo dia
-* 🟢 **No prazo** - Ainda dentro do prazo
-* ✅ **Concluído** - Tarefa finalizada
+### 💬 Comentários
+- Adicionar comentários diretamente no card
+- Autoria e timestamp por comentário
+- Listagem em ordem cronológica no modal de detalhes
 
-### 🏷️ Prioridades
-* **Baixa** (Azul)
-* **Média** (Amarelo)
-* **Alta** (Vermelho)
-
-### 👤 Atribuição de Usuários
-* Atribuir cards a membros do time
-* Visualizar nome e email do responsável
-* Filtrar por membro (futuro)
+### 📅 Integração Google Calendar
+- Conectar conta Google via OAuth
+- Sincronizar cards com data de vencimento como eventos no Google Calendar
+- Setup guiado em `/calendar-setup`
+- Gerir integração nas configurações do time
 
 ### 📊 Dashboard de Métricas
-Dashboard avançado com visualizações interativas:
+KPIs em tempo real:
+- Total de cards / taxa de conclusão / cards atrasados / vencendo hoje
 
-**KPIs (Key Performance Indicators)**
-* Total de cards
-* Taxa de conclusão (%)
-* Cards atrasados (%)
-* Cards vencendo hoje
+Gráficos interativos (Recharts):
+- 🥧 **Pie** — Distribuição por coluna
+- 📊 **Bar** — Conclusões por dia
+- 📈 **Line** — Tempo médio por coluna
+- 📋 **Composed** — Status dos cards (stacked)
 
-**Visualizações Gráficas (Recharts)**
-* 🥧 **Pie Chart** - Distribuição de cards por coluna
-* 📊 **Bar Chart** - Conclusões por dia
-* 📈 **Line Chart** - Tempo médio por coluna
-* 📋 **Composed Chart** - Status dos cards (stacked)
+Produtividade por membro:
+- Cards criados, concluídos e em progresso
+- Tempo médio de conclusão
+- Tabela com ranking
 
-**Análise de Produtividade**
-* Cards criados por membro
-* Cards concluídos por membro
-* Cards em progresso por membro
-* Tempo médio de conclusão por membro
-* Tabela detalhada com rankings
+Exportar relatório completo em **PDF** (jsPDF + AutoTable)
 
-### 🔍 Detalhes do Card
-Modal expansível que mostra:
-* Título e descrição completos
-* Prioridade com badge colorido
-* Usuário atribuído com avatar
-* Data de vencimento com countdown
-* Status atual (atrasado, hoje, no prazo, concluído)
-* Histórico de movimentações (de qual coluna para qual)
-* Data de criação e última atualização
-* ID único do card
-* Botões de ação (editar, deletar)
+### 🎨 Visual & UX
+- Tema claro / escuro (ThemeToggle)
+- Animações com Framer Motion
+- Indicadores visuais de prazo no card:
+  - 🔴 Atrasado | 🟡 Vence hoje | 🟢 No prazo | ✅ Concluído
+- Prioridade por badge colorido: Baixa / Média / Alta
+- Toast de feedback em todas as ações
+- Totalmente responsivo (mobile-first)
 
 ---
 
-## 🧠 Regras de Negócio
-
-* Um card pertence a apenas uma coluna
-* Um card pode ser atribuído a no máximo um usuário
-* Ao mover um card:
-  - Atualiza data de modificação
-  - Registra no histórico (de → para)
-* Cards concluídos não entram em atraso
-* Datas tratadas sem offset de timezone (sempre noon UTC)
-* Apenas membros do time podem ser atribuídos
-* Métricas atualizadas em tempo real
-
----
-
-## 🛠️ Stack Utilizada
+## 🛠️ Stack
 
 ### Frontend
-- **Next.js 14** (App Router)
-- **TypeScript** (type-safe)
-- **Tailwind CSS** (utility-first styling)
-- **Framer Motion** (animations & drag-drop)
-- **Recharts** (interactive charts)
-- **Lucide React** (icons)
-- **Zustand** (state management)
-- **Zod** (validation)
+| Tech | Versão | Uso |
+|------|--------|-----|
+| Next.js | 14 | Framework React (App Router) |
+| TypeScript | 5 | Type safety |
+| Tailwind CSS | 3 | Estilização utility-first |
+| Framer Motion | 11 | Animações e drag & drop |
+| Recharts | 3 | Gráficos interativos |
+| Zustand | 4 | State management |
+| NextAuth | 4 | Autenticação social (Google) |
+| @react-oauth/google | 0.12 | Login com Google |
+| jsPDF + AutoTable | — | Exportação PDF |
+| Lucide React | — | Ícones |
+| Zod | 3 | Validação client-side |
+| date-fns | 3 | Manipulação de datas |
 
 ### Backend
-- **Express.js** (HTTP server)
-- **TypeScript** (type-safe)
-- **Prisma ORM** (database)
-- **SQLite** (lightweight DB)
-- **JWT** (authentication)
-- **Zod** (validation)
+| Tech | Versão | Uso |
+|------|--------|-----|
+| Express.js | 4 | Servidor HTTP / API REST |
+| TypeScript | 5 | Type safety |
+| Prisma ORM | 5 | Acesso ao banco de dados |
+| PostgreSQL | — | Banco de dados relacional |
+| JWT (jsonwebtoken) | 9 | Autenticação |
+| bcryptjs | — | Hash de senhas |
+| Google Auth Library | 9 | Verificação Google OAuth |
+| googleapis | 131 | API Google Calendar |
+| Zod | 3 | Validação server-side |
+| Swagger (jsdoc + ui) | — | Documentação da API |
 
-### Database Schema
-- **User** - Dados de usuário
-- **Team** - Times/Projetos
-- **TeamMember** - Relação usuário-time
-- **Board** - Quadro Kanban
-- **Column** - Colunas do board
-- **Card** - Tarefas/Cards
-- **CardHistory** - Histórico de movimentações
+---
+
+## 🗄️ Schema do Banco de Dados
+
+```
+User                 — Dados de usuário e credenciais Google
+Team                 — Times / Projetos
+TeamMember           — Relação usuário-time + permissões granulares
+Board                — Quadro Kanban (vinculado ao time)
+Column               — Colunas do board (com cor e flag isCompleted)
+Card                 — Tarefas com prioridade, prazo, atribuição
+Comment              — Comentários em cards
+Tag                  — Labels coloridas por board
+CardHistory          — Histórico de movimentações dos cards
+GoogleCalendarIntegration — Tokens OAuth Google por usuário
+CalendarEventLink    — Vínculo card ↔ evento do Google Calendar
+CalendarSyncState    — Estado de sincronização
+```
 
 ---
 
 ## 🔌 Endpoints da API
 
-Documentação interativa (Swagger):
-- `http://localhost:3001/api-docs`
-- JSON spec: `http://localhost:3001/api-docs.json`
+Documentação interativa Swagger disponível em:
+```
+http://localhost:3001/api-docs
+```
 
 ### Autenticação
 ```http
-POST   /api/auth/register    # Registrar novo usuário
-POST   /api/auth/login       # Login e obter JWT
+POST   /api/auth/register          # Registrar novo usuário
+POST   /api/auth/login             # Login (e-mail + senha)
+POST   /api/auth/google            # Login com Google OAuth
 ```
 
 ### Board
 ```http
-GET    /api/board            # Buscar board com todas as colunas e cards
-POST   /api/board            # Criar novo board
+GET    /api/board                  # Board com colunas, cards e tags
+POST   /api/board                  # Criar board
 ```
 
 ### Cards
 ```http
-POST   /api/card             # Criar novo card
-GET    /api/card/:id         # Buscar card específico
-PUT    /api/card/:id         # Atualizar card
-DELETE /api/card/:id         # Deletar card
-POST   /api/card/move        # Mover card entre colunas
+POST   /api/card                   # Criar card
+GET    /api/card/:id               # Detalhes do card
+PUT    /api/card/:id               # Editar card
+DELETE /api/card/:id               # Deletar card
+POST   /api/card/move              # Mover card entre colunas
 ```
 
 ### Colunas
 ```http
-POST   /api/column           # Criar nova coluna
-DELETE /api/column/:id       # Deletar coluna
+POST   /api/column                 # Criar coluna
+PUT    /api/column/:id             # Editar coluna
+DELETE /api/column/:id             # Deletar coluna
+```
+
+### Comentários
+```http
+POST   /api/comment                # Adicionar comentário
+DELETE /api/comment/:id            # Remover comentário
+```
+
+### Tags
+```http
+GET    /api/tag                    # Listar tags do board
+POST   /api/tag                    # Criar tag
+PUT    /api/tag/:id                # Editar tag
+DELETE /api/tag/:id                # Deletar tag
+POST   /api/tag/:id/card/:cardId   # Associar tag a card
+DELETE /api/tag/:id/card/:cardId   # Desassociar tag de card
 ```
 
 ### Métricas
 ```http
-GET    /api/metrics          # Buscar todas as métricas e produtividade
+GET    /api/metrics                # KPIs, gráficos e produtividade por membro
 ```
 
-### Teams
+### Times
 ```http
-POST   /api/team             # Criar novo time
-GET    /api/team/:id         # Buscar time com membros
-POST   /api/team/:id/member  # Adicionar membro ao time
-DELETE /api/team/:id/member  # Remover membro do time
+POST   /api/team                   # Criar time
+GET    /api/team/:id               # Time com membros e permissões
+POST   /api/team/:id/member        # Adicionar membro
+DELETE /api/team/:id/member        # Remover membro
+PUT    /api/team/:id/member/:uid   # Atualizar permissões do membro
+```
+
+### Google Calendar
+```http
+GET    /api/google-calendar/auth-url        # URL de autorização OAuth
+POST   /api/google-calendar/callback        # Trocar código por tokens
+GET    /api/google-calendar/status          # Status da integração
+POST   /api/google-calendar/sync/:cardId    # Sincronizar card como evento
+DELETE /api/google-calendar/disconnect      # Desconectar integração
 ```
 
 ---
@@ -219,242 +270,226 @@ DELETE /api/team/:id/member  # Remover membro do time
 
 ```
 Kanban-To-Do-Full-Stack/
-├── backend/                          # Backend Express.js
+├── backend/
 │   ├── src/
+│   │   ├── index.ts                  # Entry point
+│   │   ├── server.ts                 # Configuração Express
 │   │   ├── routes/
-│   │   │   ├── auth.ts              # Rotas de autenticação
-│   │   │   ├── board.ts             # Rotas do board
-│   │   │   ├── card.ts              # Rotas de cards
-│   │   │   ├── column.ts            # Rotas de colunas
-│   │   │   ├── metrics.ts           # Rotas de métricas
-│   │   │   └── team.ts              # Rotas de teams
-│   │   ├── lib/
-│   │   │   ├── auth-middleware.ts   # Middleware JWT
-│   │   │   ├── auth-validations.ts  # Validações de auth
-│   │   │   ├── date-utils.ts        # Utilitários de data
-│   │   │   ├── jwt.ts               # Funções JWT
-│   │   │   ├── prisma.ts            # Cliente Prisma
-│   │   │   └── validations.ts       # Schemas Zod
-│   │   └── server.ts                # Servidor Express
+│   │   │   ├── auth.ts
+│   │   │   ├── board.ts
+│   │   │   ├── card.ts
+│   │   │   ├── column.ts
+│   │   │   ├── comment.ts
+│   │   │   ├── tag.ts
+│   │   │   ├── metrics.ts
+│   │   │   ├── team.ts
+│   │   │   └── google-calendar.ts
+│   │   ├── services/
+│   │   │   └── google-calendar-service.ts
+│   │   └── lib/
+│   │       ├── auth-middleware.ts
+│   │       ├── auth-validations.ts
+│   │       ├── date-utils.ts
+│   │       ├── google-calendar.ts
+│   │       ├── jwt.ts
+│   │       ├── permissions.ts
+│   │       ├── prisma.ts
+│   │       ├── swagger.ts
+│   │       └── validations.ts
 │   ├── prisma/
-│   │   └── schema.prisma            # Schema do banco
+│   │   ├── schema.prisma
+│   │   └── migrations/
+│   ├── vercel.json
 │   ├── package.json
 │   └── tsconfig.json
 │
-├── frontend/                         # Frontend Next.js
+├── frontend/
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── page.tsx             # Home/Redirect
-│   │   │   ├── layout.tsx           # Layout raiz
-│   │   │   ├── globals.css          # Estilos globais
-│   │   │   ├── login/
-│   │   │   │   └── page.tsx         # Página de login
-│   │   │   ├── register/
-│   │   │   │   └── page.tsx         # Página de registro
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
+│   │   │   ├── globals.css
+│   │   │   ├── login/page.tsx
+│   │   │   ├── register/page.tsx
+│   │   │   ├── calendar-setup/page.tsx
 │   │   │   ├── dashboard/
-│   │   │   │   └── page.tsx         # Dashboard principal
+│   │   │   │   ├── layout.tsx
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── settings/page.tsx
+│   │   │   │   └── [teamId]/page.tsx
 │   │   │   ├── teams/
-│   │   │   │   └── page.tsx         # Gerenciamento de times
-│   │   │   └── teams/[teamId]/
-│   │   │       ├── page.tsx         # Board do time
-│   │   │       └── settings/
-│   │   │           └── page.tsx     # Configurações do time
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── [teamId]/settings/page.tsx
+│   │   │   ├── api/auth/[...nextauth]/route.ts
+│   │   │   ├── privacy-policy/page.tsx
+│   │   │   └── terms-of-service/page.tsx
 │   │   ├── components/
-│   │   │   ├── Board.tsx            # Componente principal do board
-│   │   │   ├── Column.tsx           # Coluna com cards
-│   │   │   ├── Card.tsx             # Card individual
-│   │   │   ├── CardModal.tsx        # Modal de criar/editar card
-│   │   │   ├── CardDetailModal.tsx  # Modal com detalhes do card
-│   │   │   └── Metrics.tsx          # Dashboard de métricas
-│   │   └── lib/
-│   │       ├── api.ts               # Client API
-│   │       ├── auth-provider.tsx    # Auth context
-│   │       ├── auth-store.ts        # Auth state
-│   │       ├── store.ts             # Zustand store (board)
-│   │       ├── date-utils.ts        # Utilitários de data
-│   │       └── types.ts             # Types TypeScript
-│   ├── package.json
-│   ├── tsconfig.json
+│   │   │   ├── Board.tsx
+│   │   │   ├── Column.tsx
+│   │   │   ├── Card.tsx
+│   │   │   ├── CardModal.tsx
+│   │   │   ├── CardDetailModal.tsx
+│   │   │   ├── Metrics.tsx
+│   │   │   ├── TagsManager.tsx
+│   │   │   ├── GoogleCalendarSettings.tsx
+│   │   │   ├── Navbar.tsx
+│   │   │   ├── Footer.tsx
+│   │   │   ├── ThemeToggle.tsx
+│   │   │   └── Toast.tsx
+│   │   ├── lib/
+│   │   │   ├── api.ts
+│   │   │   ├── api-client.ts
+│   │   │   ├── auth-provider.tsx
+│   │   │   ├── auth-store.ts
+│   │   │   ├── session-provider.tsx
+│   │   │   ├── store.ts
+│   │   │   ├── date-utils.ts
+│   │   │   └── types.ts
+│   │   └── middleware.ts
+│   ├── public/imgs/
+│   ├── vercel.json
+│   ├── next.config.js
 │   ├── tailwind.config.js
-│   └── next.config.js
+│   └── package.json
 │
-├── readme.md                         # Este arquivo
-├── SETUP_AUTH.md                     # Guia de setup de auth
-├── TEST_GUIDE.md                     # Guia de testes
-└── IMPLEMENTATION_SUMMARY.md         # Resumo de implementação
+├── demohome.png
+├── demoBoard.png
+├── package.json                      # Scripts raiz (concurrently)
+├── prepare-deploy.sh
+├── prepare-deploy.ps1
+└── readme.md
 ```
 
 ---
 
-## ▶️ Como Executar
+## ▶️ Como Executar Localmente
 
-### ✅ Requisitos
-
+### Pré-requisitos
 - Node.js 18+
-- npm (ou pnpm/yarn, se preferir adaptar os comandos)
+- PostgreSQL rodando localmente (ou string de conexão remota)
+- Conta Google Cloud com OAuth 2.0 configurado (para Calendar)
 
-### 1️⃣ Clonar e Preparar
-
+### 1. Clonar o repositório
 ```bash
-# Clonar repositório
-git clone <repo-url>
+git clone https://github.com/vinicius-pascoal/Kanban-To-Do-Full-Stack.git
 cd Kanban-To-Do-Full-Stack
+```
 
-# Instalar dependências de tudo (raiz)
+### 2. Instalar dependências
+```bash
 npm run install-all
 ```
 
-### 2️⃣ Variáveis de Ambiente
+### 3. Configurar variáveis de ambiente
 
-Crie os arquivos abaixo:
-
-**Backend (`backend/.env`)**
+**`backend/.env`**
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://user:password@localhost:5432/kanban"
 JWT_SECRET="seu-secret-jwt-super-seguro"
 JWT_EXPIRES_IN="7d"
+
+# Google Calendar OAuth
+GOOGLE_CLIENT_ID="seu-google-client-id"
+GOOGLE_CLIENT_SECRET="seu-google-client-secret"
+CALENDAR_ENCRYPTION_KEY="chave-de-32-caracteres"
+FRONTEND_URL="http://localhost:3000"
 ```
 
-**Frontend (`frontend/.env.local`)**
+**`frontend/.env.local`**
 ```env
 NEXT_PUBLIC_API_URL="http://localhost:3001/api"
+
+# NextAuth
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="seu-nextauth-secret"
+
+# Google OAuth (NextAuth)
+GOOGLE_CLIENT_ID="seu-google-client-id"
+GOOGLE_CLIENT_SECRET="seu-google-client-secret"
 ```
 
-### 3️⃣ Modo rápido (raiz)
-
-```bash
-# Executa frontend e backend juntos
-npm run dev
-```
-
-### 4️⃣ Backend
-
+### 4. Executar migrations
 ```bash
 cd backend
-
-# Gerar cliente Prisma
-npm run prisma:generate
-
-# Executar migrations
-npm run prisma:migrate
-
-# Rodar servidor (desenvolvimento)
-npm run dev
+npx prisma migrate deploy
+npx prisma generate
 ```
 
-Backend estará em `http://localhost:3001`
-
-### 5️⃣ Frontend
-
+### 5. Rodar o projeto (modo desenvolvimento)
 ```bash
-cd frontend
-
-# Rodar servidor de desenvolvimento
+# Na raiz — inicia frontend e backend simultaneamente
 npm run dev
 ```
 
-Frontend estará em `http://localhost:3000`
+Ou separadamente:
+```bash
+# Backend → http://localhost:3001
+cd backend && npm run dev
 
-### 6️⃣ Usar a Aplicação
+# Frontend → http://localhost:3000
+cd frontend && npm run dev
+```
 
+### 6. Primeiros passos na aplicação
 1. Acesse `http://localhost:3000`
-2. Registre uma conta nova ou faça login
-3. Crie um time
-4. Adicione membros ao time
-5. Comece a criar cards e organizá-los!
-
----
-
-## 🧪 Testes
-
-Para testar as funcionalidades:
-
-### Fluxo de Autenticação
-1. Registre um novo usuário
-2. Faça login
-3. Acesse o dashboard
-4. Token JWT armazenado em localStorage
-
-### Fluxo de Board
-1. Crie um novo card com título, descrição, prioridade e prazo
-2. Arraste entre colunas
-3. Clique no card para ver detalhes
-4. Edite ou delete o card
-
-### Fluxo de Métricas
-1. Crie vários cards com prazos variados
-2. Mova alguns para "Concluído"
-3. Acesse o dashboard de métricas
-4. Visualize os gráficos e produtividade
-
----
-
-## 📝 Variáveis de Ambiente
-Consulte a seção **Como Executar** para os arquivos e exemplos.
-
----
-
-## 🎨 Design & UX
-
-* **Cores**: Azul primário (#3B82F6), com acentos em vermelho/amarelo
-* **Typography**: Inter/System fonts, tamanhos responsivos
-* **Animações**: Transições suaves com Framer Motion
-* **Responsivo**: Mobile-first com Tailwind CSS
-* **Acessibilidade**: Labels, ARIA attributes, keyboard navigation
+2. Registre uma conta ou entre com Google
+3. Crie um time e adicione membros
+4. Crie colunas e comece a adicionar cards
+5. Configure o Google Calendar em `/calendar-setup`
+6. Acesse as métricas pelo dashboard
 
 ---
 
 ## 🔐 Segurança
 
-* ✅ Senhas hasheadas com bcrypt
-* ✅ JWT com expiração de 7 dias
-* ✅ Validação de entrada com Zod
-* ✅ Middleware de autenticação nas rotas
-* ✅ CORS configurado
-* ✅ Sanitização de dados
+- Senhas hasheadas com **bcrypt**
+- Autenticação via **JWT** (7 dias) + **Google OAuth**
+- Validação rigorosa de dados com **Zod** (server + client)
+- **Middleware de permissões** verificado em cada rota protegida
+- CORS configurado para origens permitidas
+- Tokens Google armazenados criptografados no banco
 
 ---
 
-## 🚀 Próximas Melhorias
+## 🌐 Deploy
 
-* 🔲 Filtros por data (próximos dias, atrasados, etc)
-* 🔲 Busca por título/descrição
-* 🔲 Notificações (email, browser)
-* 🔲 Labels/tags customizáveis
-* 🔲 Integração com calendário
-* 🔲 Melhorias na análise de produtividade
-* 🔲 Sistema de notificações
-* 🔲 Suporte a múltiplos idiomas
+O projeto possui suporte a deploy na **Vercel** com `vercel.json` configurado para ambos frontend e backend.
+
+```bash
+# Script de preparação para deploy
+./prepare-deploy.sh   # Linux/macOS
+./prepare-deploy.ps1  # Windows PowerShell
+```
 
 ---
 
-## 🌟 Diferenciais
+## 📄 Documentação da API
 
-* Full Stack profissional com padrões de produção
-* Persistência real com SQLite e migrations
-* Autenticação segura com JWT
-* Métricas e analytics avançadas
-* Animations smooth com Framer Motion
-* Código organizado, type-safe e escalável
-* UI/UX moderna e responsiva
-* Histórico completo de mudanças
+Swagger UI disponível após subir o backend:
+```
+http://localhost:3001/api-docs
+```
+JSON spec:
+```
+http://localhost:3001/api-docs.json
+```
 
 ---
 
 ## 👨‍💻 Autor
 
-Desenvolvido como projeto Full Stack profissional, demonstrando expertise em:
-- Arquitetura de software moderna
-- Boas práticas de desenvolvimento
-- TypeScript avançado
-- Autenticação e segurança
-- UI/UX com Tailwind CSS
-- Analytics e data visualization
-- State management
-- Database design
+Desenvolvido por **Vinícius Pascoal** como projeto Full Stack profissional, demonstrando:
+
+- Arquitetura de software moderna (monorepo)
+- Autenticação multi-provider (JWT + Google OAuth)
+- Integração com APIs externas (Google Calendar)
+- State management avançado (Zustand)
+- Database design com Prisma + PostgreSQL
+- UI/UX moderna com Tailwind + Framer Motion
+- Analytics e data visualization com Recharts
 
 ---
 
 ## 📄 Licença
 
-MIT License - Fique livre para usar em seus projetos!
+[MIT](./LICENSE) — Fique livre para usar em seus projetos!
