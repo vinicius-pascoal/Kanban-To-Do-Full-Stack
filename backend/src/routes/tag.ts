@@ -50,6 +50,34 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   }
 });
 
+// PUT /api/tag/:id - Editar nome/cor de uma tag
+router.put('/:id', async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, color } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'name é obrigatório' });
+    }
+
+    const tag = await prisma.tag.findUnique({ where: { id } });
+    if (!tag) return res.status(404).json({ error: 'Tag não encontrada' });
+
+    const updated = await prisma.tag.update({
+      where: { id },
+      data: {
+        name: name.trim(),
+        ...(color ? { color } : {}),
+      },
+    });
+
+    res.json(updated);
+  } catch (error) {
+    console.error('Erro ao editar tag:', error);
+    res.status(500).json({ error: 'Erro ao editar tag' });
+  }
+});
+
 // DELETE /api/tag/:id - Deletar tag
 router.delete('/:id', async (req: AuthenticatedRequest, res: Response) => {
   try {

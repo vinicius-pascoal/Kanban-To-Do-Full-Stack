@@ -297,6 +297,16 @@ export const api = {
     return res.json();
   },
 
+  async updateTag(id: string, data: { name: string; color: string }, token: string) {
+    const res = await fetch(`${API_URL}/api/tag/${id}`, {
+      method: 'PUT',
+      headers: getHeaders(token),
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Erro ao editar tag');
+    return res.json();
+  },
+
   async deleteTag(id: string, token: string) {
     const res = await fetch(`${API_URL}/api/tag/${id}`, {
       method: 'DELETE',

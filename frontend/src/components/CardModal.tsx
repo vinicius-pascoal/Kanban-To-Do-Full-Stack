@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useKanbanStore } from '@/lib/store';
 import { Card, Priority, Tag } from '@/lib/types';
-import { X, Plus, Tag as TagIcon } from 'lucide-react';
+import { X, Tag as TagIcon } from 'lucide-react';
 import { api } from '@/lib/api';
 
 interface CardModalProps {
@@ -13,12 +13,6 @@ interface CardModalProps {
   editingCard?: Card | null;
   token?: string;
 }
-
-const PRESET_COLORS = [
-  '#ef4444', '#f97316', '#eab308', '#22c55e',
-  '#06b6d4', '#6366f1', '#a855f7', '#ec4899',
-  '#64748b', '#0ea5e9',
-];
 
 export default function CardModal({ isOpen, onClose, columnId, editingCard, token }: CardModalProps) {
   const { fetchBoard, fetchMetrics, board, teamId } = useKanbanStore();
@@ -33,10 +27,6 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard, toke
   // Tag state
   const [boardTags, setBoardTags] = useState<Tag[]>([]);
   const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set());
-  const [newTagName, setNewTagName] = useState('');
-  const [newTagColor, setNewTagColor] = useState('#6366f1');
-  const [isCreatingTag, setIsCreatingTag] = useState(false);
-  const [showTagPanel, setShowTagPanel] = useState(false);
 
   useEffect(() => {
     const storedTeam = localStorage.getItem('currentTeam');
@@ -65,8 +55,6 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard, toke
       setAssignedToId('');
       setSelectedTagIds(new Set());
     }
-    setShowTagPanel(false);
-    setNewTagName('');
   }, [editingCard, isOpen]);
 
   // Carregar tags do board
@@ -85,21 +73,6 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard, toke
       else next.add(tagId);
       return next;
     });
-  };
-
-  const handleCreateTag = async () => {
-    if (!newTagName.trim() || !board?.id || !token) return;
-    setIsCreatingTag(true);
-    try {
-      const tag = await api.createTag({ name: newTagName.trim(), color: newTagColor, boardId: board.id }, token);
-      setBoardTags((prev) => [...prev, tag]);
-      setSelectedTagIds((prev) => new Set(Array.from(prev).concat(tag.id)));
-      setNewTagName('');
-    } catch (e) {
-      console.error('Erro ao criar tag:', e);
-    } finally {
-      setIsCreatingTag(false);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -254,117 +227,40 @@ export default function CardModal({ isOpen, onClose, columnId, editingCard, toke
 
           {/* Tags */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <span className="flex items-center gap-1.5">
+                <TagIcon className="w-4 h-4" />
                 Etiquetas
-              </label>
-              <button
-                type="button"
-                onClick={() => setShowTagPanel((v) => !v)}
-                className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
-              >
-                <TagIcon className="w-3 h-3" />
-                {showTagPanel ? 'Fechar' : 'Gerenciar'}
-              </button>
-            </div>
-
-            {/* Selected tags preview */}
-            {selectedTagIds.size > 0 && (
-              <div className="flex flex-wrap gap-1 mb-2">
-                {boardTags
-                  .filter((t) => selectedTagIds.has(t.id))
-                  .map((tag) => (
-                    <span
-                      key={tag.id}
-                      className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold text-white cursor-pointer"
-                      style={{ backgroundColor: tag.color }}
-                      onClick={() => toggleTag(tag.id)}
-                      title="Clique para remover"
-                    >
-                      {tag.name} ×
-                    </span>
-                  ))}
-              </div>
-            )}
-
-            {showTagPanel && (
-              <div className="border border-gray-200 dark:border-slate-700 rounded-md p-3 space-y-3 bg-gray-50 dark:bg-slate-800">
-                {/* Existing tags */}
-                {boardTags.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {boardTags.map((tag) => (
-                      <button
-                        key={tag.id}
-                        type="button"
-                        onClick={() => toggleTag(tag.id)}
-                        className={`px-2.5 py-1 rounded-full text-xs font-semibold text-white transition-all ${selectedTagIds.has(tag.id)
-                          ? 'ring-2 ring-offset-1 ring-gray-400 dark:ring-offset-slate-800'
-                          : 'opacity-70'
-                          }`}
-                        style={{ backgroundColor: tag.color }}
-                      >
-                        {tag.name}
-                        {selectedTagIds.has(tag.id) && ' ✓'}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 italic">Nenhuma etiqueta cadastrada.</p>
-                )}
-
-                <hr className="border-gray-200 dark:border-slate-600" />
-
-                {/* Create new tag */}
-                <div className="space-y-2">
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Nova etiqueta</p>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={newTagName}
-                      onChange={(e) => setNewTagName(e.target.value)}
-                      placeholder="Nome da etiqueta"
-                      className="flex-1 px-2 py-1.5 text-xs border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleCreateTag();
-                        }
-                      }}
-                    />
-                    <div className="relative">
-                      <input
-                        type="color"
-                        value={newTagColor}
-                        onChange={(e) => setNewTagColor(e.target.value)}
-                        className="w-8 h-8 rounded cursor-pointer border border-gray-300 dark:border-slate-600 p-0.5"
-                        title="Escolher cor"
-                      />
-                    </div>
+              </span>
+            </label>
+            {boardTags.length === 0 ? (
+              <p className="text-xs text-gray-400 dark:text-gray-500 italic">
+                Nenhuma etiqueta cadastrada. Crie etiquetas na aba{' '}
+                <span className="font-medium text-indigo-600 dark:text-indigo-400">Etiquetas</span>{' '}
+                do dashboard.
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-1.5">
+                {boardTags.map((tag) => {
+                  const selected = selectedTagIds.has(tag.id);
+                  return (
                     <button
+                      key={tag.id}
                       type="button"
-                      onClick={handleCreateTag}
-                      disabled={isCreatingTag || !newTagName.trim()}
-                      className="px-2 py-1.5 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1"
+                      onClick={() => toggleTag(tag.id)}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-white transition-all ${
+                        selected
+                          ? 'ring-2 ring-offset-1 ring-gray-500 dark:ring-offset-slate-900 scale-105'
+                          : 'opacity-50 hover:opacity-80'
+                      }`}
+                      style={{ backgroundColor: tag.color }}
+                      title={selected ? 'Clique para remover' : 'Clique para adicionar'}
                     >
-                      <Plus className="w-3 h-3" />
-                      Criar
+                      {selected && <span className="font-bold">✓</span>}
+                      {tag.name}
                     </button>
-                  </div>
-                  {/* Color presets */}
-                  <div className="flex gap-1 flex-wrap">
-                    {PRESET_COLORS.map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        onClick={() => setNewTagColor(color)}
-                        className={`w-5 h-5 rounded-full border-2 transition-transform ${newTagColor === color ? 'border-gray-800 dark:border-white scale-125' : 'border-transparent'
-                          }`}
-                        style={{ backgroundColor: color }}
-                        title={color}
-                      />
-                    ))}
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             )}
           </div>

@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Board from '@/components/Board';
 import Metrics from '@/components/Metrics';
-import { LayoutDashboard, BarChart3, Settings, LogOut } from 'lucide-react';
+import TagsManager from '@/components/TagsManager';
+import { LayoutDashboard, BarChart3, Tag, Settings, LogOut } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { api } from '@/lib/api';
 import Link from 'next/link';
@@ -16,7 +17,7 @@ function DashboardContent() {
   const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
   const teamId = params.teamId as string;
-  const [activeTab, setActiveTab] = useState<'board' | 'metrics'>('board');
+  const [activeTab, setActiveTab] = useState<'board' | 'metrics' | 'tags'>('board');
   const [currentTeam, setCurrentTeam] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -95,6 +96,16 @@ function DashboardContent() {
               Métricas
             </button>
             <button
+              onClick={() => setActiveTab('tags')}
+              className={`flex items-center gap-2 px-5 py-4 border-b-2 transition-all ${activeTab === 'tags'
+                ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 font-semibold'
+                : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800/50'
+                }`}
+            >
+              <Tag className="w-5 h-5" />
+              Etiquetas
+            </button>
+            <button
               onClick={() => router.push(`/teams/${teamId}/settings`)}
               className="flex items-center gap-2 px-5 py-4 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 border-transparent border-b-2 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-all"
             >
@@ -107,10 +118,14 @@ function DashboardContent() {
 
       {/* Content */}
       <main className="max-w-full mx-auto px-4 py-8 flex-1 w-full min-h-0">
-        {activeTab === 'board' ? (
+        {activeTab === 'board' && (
           <Board teamId={teamId} token={session?.backendToken} currentMember={currentMember} />
-        ) : (
+        )}
+        {activeTab === 'metrics' && (
           <Metrics teamId={teamId} token={session?.backendToken} />
+        )}
+        {activeTab === 'tags' && (
+          <TagsManager teamId={teamId} token={session?.backendToken} />
         )}
       </main>
 
