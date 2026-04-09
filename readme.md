@@ -18,9 +18,27 @@
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square"/>
 </p>
 
+## <img src="https://api.iconify.design/mdi:book-open-page-variant-outline.svg?color=%232563eb" alt="" width="18"/> Sumário
+
+- [<img src="https://api.iconify.design/mdi:image-outline.svg?color=%232563eb" alt="" width="14"/> Screenshots](#screenshots)
+- [<img src="https://api.iconify.design/mdi:check-decagram-outline.svg?color=%2316a34a" alt="" width="14"/> Status do Projeto](#status-do-projeto)
+- [<img src="https://api.iconify.design/mdi:target.svg?color=%23dc2626" alt="" width="14"/> Objetivo](#objetivo)
+- [<img src="https://api.iconify.design/mdi:rocket-launch-outline.svg?color=%23ea580c" alt="" width="14"/> Funcionalidades](#funcionalidades)
+- [<img src="https://api.iconify.design/mdi:tools.svg?color=%237c3aed" alt="" width="14"/> Stack](#stack)
+- [<img src="https://api.iconify.design/mdi:database-outline.svg?color=%237c3aed" alt="" width="14"/> Schema do Banco de Dados](#schema-do-banco-de-dados)
+- [<img src="https://api.iconify.design/mdi:api.svg?color=%237c3aed" alt="" width="14"/> Endpoints da API](#endpoints-da-api)
+- [<img src="https://api.iconify.design/mdi:folder-multiple-outline.svg?color=%237c3aed" alt="" width="14"/> Estrutura do Projeto](#estrutura-do-projeto)
+- [<img src="https://api.iconify.design/mdi:play-circle-outline.svg?color=%237c3aed" alt="" width="14"/> Como Executar Localmente](#como-executar-localmente)
+- [<img src="https://api.iconify.design/mdi:shield-check-outline.svg?color=%237c3aed" alt="" width="14"/> Segurança](#seguranca)
+- [<img src="https://api.iconify.design/mdi:cloud-upload-outline.svg?color=%237c3aed" alt="" width="14"/> Deploy](#deploy)
+- [<img src="https://api.iconify.design/mdi:file-document-outline.svg?color=%237c3aed" alt="" width="14"/> Documentação da API](#documentacao-da-api)
+- [<img src="https://api.iconify.design/mdi:account-tie-outline.svg?color=%237c3aed" alt="" width="14"/> Autor](#autor)
+- [<img src="https://api.iconify.design/mdi:license.svg?color=%237c3aed" alt="" width="14"/> Licença](#licenca)
+
 ---
 
-## 🖼️ Screenshots
+<a id="screenshots"></a>
+## <img src="https://api.iconify.design/mdi:image-outline.svg?color=%232563eb" alt="" width="18"/> Screenshots
 
 ### Home
 ![Home Page](./demohome.png)
@@ -30,7 +48,8 @@
 
 ---
 
-## ✅ Status do Projeto
+<a id="status-do-projeto"></a>
+## <img src="https://api.iconify.design/mdi:check-decagram-outline.svg?color=%2316a34a" alt="" width="18"/> Status do Projeto
 
 **Projeto Completo e Funcional!** ✨
 
@@ -50,7 +69,8 @@
 
 ---
 
-## 🎯 Objetivo
+<a id="objetivo"></a>
+## <img src="https://api.iconify.design/mdi:target.svg?color=%23dc2626" alt="" width="18"/> Objetivo
 
 Criar uma aplicação Kanban profissional que permita:
 
@@ -65,16 +85,17 @@ Criar uma aplicação Kanban profissional que permita:
 
 ---
 
-## 🚀 Funcionalidades
+<a id="funcionalidades"></a>
+## <img src="https://api.iconify.design/mdi:rocket-launch-outline.svg?color=%23ea580c" alt="" width="18"/> Funcionalidades
 
-### 🔐 Autenticação
+### <img src="https://api.iconify.design/mdi:shield-lock-outline.svg?color=%230ea5e9" alt="" width="16"/> Autenticação
 - Registro e login com e-mail + senha (JWT)
 - Login social com **Google OAuth** (NextAuth + `@react-oauth/google`)
 - Tokens seguros com expiração de 7 dias
 - Proteção de rotas com middleware e `next/middleware`
 - Recuperação de sessão automática
 
-### 👥 Gerenciamento de Times
+### <img src="https://api.iconify.design/mdi:account-group-outline.svg?color=%230ea5e9" alt="" width="16"/> Gerenciamento de Times
 - Criar e renomear times
 - Adicionar e remover membros
 - Sistema de **permissões granulares** por membro:
@@ -84,31 +105,31 @@ Criar uma aplicação Kanban profissional que permita:
   - Visualizar métricas
   - Gerenciar tags
 
-### ✅ Kanban Board
+### <img src="https://api.iconify.design/mdi:view-kanban-outline.svg?color=%230ea5e9" alt="" width="16"/> Kanban Board
 - Colunas customizáveis com **nome e cor**
 - Marcar coluna como **"Concluída"** (conclusão automática de cards)
 - **Drag & drop** animado entre colunas (Framer Motion)
 - Reordenação de cards dentro da coluna
 - Histórico completo de movimentações por card
 
-### 🏷️ Tags & Labels
+### <img src="https://api.iconify.design/mdi:tag-multiple-outline.svg?color=%230ea5e9" alt="" width="16"/> Tags & Labels
 - Criar tags com nome e cor personalizada por board
 - Associar múltiplas tags a um card
 - Gerenciar tags de forma centralizada (TagsManager)
 - Permissão específica para gerenciar tags (`canManageTags`)
 
-### 💬 Comentários
+### <img src="https://api.iconify.design/mdi:comment-text-outline.svg?color=%230ea5e9" alt="" width="16"/> Comentários
 - Adicionar comentários diretamente no card
 - Autoria e timestamp por comentário
 - Listagem em ordem cronológica no modal de detalhes
 
-### 📅 Integração Google Calendar
+### <img src="https://api.iconify.design/mdi:calendar-sync-outline.svg?color=%230ea5e9" alt="" width="16"/> Integração Google Calendar
 - Conectar conta Google via OAuth
 - Sincronizar cards com data de vencimento como eventos no Google Calendar
 - Setup guiado em `/calendar-setup`
 - Gerir integração nas configurações do time
 
-### 📊 Dashboard de Métricas
+### <img src="https://api.iconify.design/mdi:chart-box-outline.svg?color=%230ea5e9" alt="" width="16"/> Dashboard de Métricas
 KPIs em tempo real:
 - Total de cards / taxa de conclusão / cards atrasados / vencendo hoje
 
@@ -125,7 +146,7 @@ Produtividade por membro:
 
 Exportar relatório completo em **PDF** (jsPDF + AutoTable)
 
-### 🎨 Visual & UX
+### <img src="https://api.iconify.design/mdi:palette-outline.svg?color=%230ea5e9" alt="" width="16"/> Visual & UX
 - Tema claro / escuro (ThemeToggle)
 - Animações com Framer Motion
 - Indicadores visuais de prazo no card:
@@ -136,7 +157,8 @@ Exportar relatório completo em **PDF** (jsPDF + AutoTable)
 
 ---
 
-## 🛠️ Stack
+<a id="stack"></a>
+## <img src="https://api.iconify.design/mdi:tools.svg?color=%237c3aed" alt="" width="18"/> Stack
 
 ### Frontend
 | Tech | Versão | Uso |
@@ -170,7 +192,8 @@ Exportar relatório completo em **PDF** (jsPDF + AutoTable)
 
 ---
 
-## 🗄️ Schema do Banco de Dados
+<a id="schema-do-banco-de-dados"></a>
+## <img src="https://api.iconify.design/mdi:database-outline.svg?color=%237c3aed" alt="" width="18"/> Schema do Banco de Dados
 
 ```
 User                 — Dados de usuário e credenciais Google
@@ -189,7 +212,8 @@ CalendarSyncState    — Estado de sincronização
 
 ---
 
-## 🔌 Endpoints da API
+<a id="endpoints-da-api"></a>
+## <img src="https://api.iconify.design/mdi:api.svg?color=%237c3aed" alt="" width="18"/> Endpoints da API
 
 Documentação interativa Swagger disponível em:
 ```
@@ -266,7 +290,8 @@ DELETE /api/google-calendar/disconnect      # Desconectar integração
 
 ---
 
-## 📁 Estrutura do Projeto
+<a id="estrutura-do-projeto"></a>
+## <img src="https://api.iconify.design/mdi:folder-multiple-outline.svg?color=%237c3aed" alt="" width="18"/> Estrutura do Projeto
 
 ```
 Kanban-To-Do-Full-Stack/
@@ -362,7 +387,8 @@ Kanban-To-Do-Full-Stack/
 
 ---
 
-## ▶️ Como Executar Localmente
+<a id="como-executar-localmente"></a>
+## <img src="https://api.iconify.design/mdi:play-circle-outline.svg?color=%237c3aed" alt="" width="18"/> Como Executar Localmente
 
 ### Pré-requisitos
 - Node.js 18+
@@ -434,7 +460,8 @@ cd frontend && npm run dev
 
 ---
 
-## 🔐 Segurança
+<a id="seguranca"></a>
+## <img src="https://api.iconify.design/mdi:shield-check-outline.svg?color=%237c3aed" alt="" width="18"/> Segurança
 
 - Senhas hasheadas com **bcrypt**
 - Autenticação via **JWT** (7 dias) + **Google OAuth**
@@ -445,7 +472,8 @@ cd frontend && npm run dev
 
 ---
 
-## 🌐 Deploy
+<a id="deploy"></a>
+## <img src="https://api.iconify.design/mdi:cloud-upload-outline.svg?color=%237c3aed" alt="" width="18"/> Deploy
 
 O projeto possui suporte a deploy na **Vercel** com `vercel.json` configurado para ambos frontend e backend.
 
@@ -457,7 +485,8 @@ O projeto possui suporte a deploy na **Vercel** com `vercel.json` configurado pa
 
 ---
 
-## 📄 Documentação da API
+<a id="documentacao-da-api"></a>
+## <img src="https://api.iconify.design/mdi:file-document-outline.svg?color=%237c3aed" alt="" width="18"/> Documentação da API
 
 Swagger UI disponível após subir o backend:
 ```
@@ -470,20 +499,14 @@ http://localhost:3001/api-docs.json
 
 ---
 
-## 👨‍💻 Autor
+<a id="autor"></a>
+## <img src="https://api.iconify.design/mdi:account-tie-outline.svg?color=%237c3aed" alt="" width="18"/> Autor
 
-Desenvolvido por **Vinícius Pascoal** como projeto Full Stack profissional, demonstrando:
-
-- Arquitetura de software moderna (monorepo)
-- Autenticação multi-provider (JWT + Google OAuth)
-- Integração com APIs externas (Google Calendar)
-- State management avançado (Zustand)
-- Database design com Prisma + PostgreSQL
-- UI/UX moderna com Tailwind + Framer Motion
-- Analytics e data visualization com Recharts
+Desenvolvido por **Vinícius Pascoal** 
 
 ---
 
-## 📄 Licença
+<a id="licenca"></a>
+## <img src="https://api.iconify.design/mdi:license.svg?color=%237c3aed" alt="" width="18"/> Licença
 
 [MIT](./LICENSE) — Fique livre para usar em seus projetos!
